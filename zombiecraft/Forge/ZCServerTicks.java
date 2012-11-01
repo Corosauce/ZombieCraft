@@ -72,9 +72,9 @@ public class ZCServerTicks implements ITickHandler
     public void onTickInGame()
     {
     	
-    	if (zcGame != null && ((ZCGameMP)zcGame).mc == null) {
+    	//if (zcGame != null && ((ZCGameMP)zcGame).mc == null) {
     		((ZCGameMP)zcGame).mc = MinecraftServer.getServer();
-    	}
+    	//}
     	
     	if (((ZCGameMP)zcGame).mc.worldServerForDimension(((ZCGameMP)zcGame).activeZCDimension) != lastWorld || worldRef == null) {
     		if (((ZCGameMP)zcGame).mc != null) {

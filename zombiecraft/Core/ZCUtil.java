@@ -22,39 +22,10 @@ import net.minecraft.src.*;
 
 public class ZCUtil {
 	
-	public static String refl_mcp_Item_maxStackSize = "maxStackSize";
-    public static String refl_c_Item_maxStackSize = "bU";
-    public static String refl_s_Item_maxStackSize = "bU";
-    public static String refl_mcp_Item_navigator = "navigator";
-    public static String refl_c_Item_navigator = "ar";
-    public static String refl_s_Item_navigator = "k";
-
-    public static String refl_mcp_EntityPlayer_itemInUse = "itemInUse";
-    public static String refl_c_EntityPlayer_itemInUse = "e";
-    public static String refl_s_EntityPlayer_itemInUse = "e";
-    public static String refl_mcp_EntityPlayer_itemInUseCount = "itemInUseCount";
-    public static String refl_c_EntityPlayer_itemInUseCount = "f";
-    public static String refl_s_EntityPlayer_itemInUseCount = "f";
-    public static String refl_mcp_FoodStats_foodLevel = "foodLevel";
-    public static String refl_c_FoodStats_foodLevel = "a";
-    public static String refl_s_FoodStats_foodLevel = "a";
-	
 	
 	
 	public ZCUtil() {
 		
-	}
-	
-	public static Field s_getItemInUse() {
-		return tryGetField(EntityPlayer.class, refl_s_EntityPlayer_itemInUse, refl_mcp_EntityPlayer_itemInUse);
-	}
-	
-	public static Field s_getItemInUseCount() {
-		return tryGetField(EntityPlayer.class, refl_s_EntityPlayer_itemInUseCount, refl_mcp_EntityPlayer_itemInUseCount);
-	}
-	
-	public static Field s_getFoodLevel() {
-		return tryGetField(FoodStats.class, refl_s_FoodStats_foodLevel, refl_mcp_FoodStats_foodLevel);
 	}
 	
 	public static Field tryGetField(Class theClass, String obf, String mcp) {

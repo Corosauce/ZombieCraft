@@ -10,7 +10,7 @@ public class ZCChunkProvider implements IChunkProvider
     private World worldObj;
     private Random random;
     private final boolean useStructures;
-    private MapGenVillage villageGen = new MapGenVillage(1);
+    private MapGenVillage villageGen = new MapGenVillage();
 
     public ZCChunkProvider(World par1World, long par2, boolean par4)
     {
@@ -35,11 +35,11 @@ public class ZCChunkProvider implements IChunkProvider
                     {
                         var6 = Block.bedrock.blockID;
                     }
-                    else if (var5 <= 2)
+                    else if (var5 <= 49)
                     {
                         var6 = Block.dirt.blockID;
                     }
-                    else if (var5 == 3)
+                    else if (var5 == 50)
                     {
                         var6 = Block.grass.blockID;
                     }
@@ -164,4 +164,10 @@ public class ZCChunkProvider implements IChunkProvider
     {
         return 0;
     }
+
+	@Override
+	public void func_82695_e(int var1, int var2) {
+		// TODO Auto-generated method stub
+		
+	}
 }

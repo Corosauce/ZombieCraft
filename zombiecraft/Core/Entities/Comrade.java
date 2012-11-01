@@ -19,7 +19,6 @@ public class Comrade extends BaseEntAI_Ally
         
         this.texture = "/zc/entities/comrade/skin0.png";
         this.moveSpeed = 0.35F;
-        this.attackStrength = 4;
         this.getNavigator().setBreakDoors(true);
         
         //addJob(EnumJob.FINDFOOD);

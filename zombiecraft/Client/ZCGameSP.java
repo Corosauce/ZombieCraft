@@ -121,7 +121,7 @@ public class ZCGameSP extends ZCGame {
 	public void handlePacket(EntityPlayer player, PacketMLMP packet) {
 		
 		try {
-			boolean dbg = true;
+			boolean dbg = false;
 			
 			check(ZCClientTicks.player);
 			
@@ -187,7 +187,7 @@ public class ZCGameSP extends ZCGame {
 	        	
 	        	int size = packet.dataInt[0];
 	        	
-	        	System.out.println("AMMO SIZE CODE ADJUST");
+	        	//System.out.println("AMMO SIZE CODE ADJUST");
 	        	//size = (packet.dataInt.length-1);
 	        	
 	        	//System.out.println("size: " + size);
@@ -227,6 +227,9 @@ public class ZCGameSP extends ZCGame {
 	        	mapMan.zcLevel.buildData.recalculateLevelSize(packet.dataInt[0], packet.dataInt[1], packet.dataInt[2], packet.dataInt[3], packet.dataInt[4], packet.dataInt[5]);
 	        } else if (p == PacketTypes.EDITOR_SETLEVELTEXTUREPACK) {
 	        	this.trySetTexturePack(packet.dataString[0] + "");
+	        } else if (p == PacketTypes.EDITOR_BUILDSTATE) {
+	        	//System.out.println("wat " + packet.dataInt[0]);
+	        	this.setCurBuildPercent(packet.dataInt[0]);
 	        } else {
 	        	runInfoCommand(player, packet.packetType, packet.dataInt, packet.dataString);
 	        }
@@ -288,7 +291,7 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public int getItemMaxStackSize(Item item) {
-		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, ZCUtil.refl_c_Item_maxStackSize, ZCUtil.refl_mcp_Item_maxStackSize);
+		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_c_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override
@@ -497,7 +500,7 @@ public class ZCGameSP extends ZCGame {
 			List var3 = mc.texturePackList.availableTexturePacks();
 			
 			for (int i = 0; i < var3.size(); i++) {
-				TexturePackBase it = (TexturePackBase)var3.get(i);
+				ITexturePack it = (ITexturePack)var3.get(i);
 				
 				if ((packFileName+".zip").equals(it.getTexturePackFileName())) {
 					mc.texturePackList.setTexturePack(it);
@@ -528,7 +531,7 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public String getWorldSavePath() {
-		return "saves/" + this.getWorld().getWorldInfo().getWorldName() + "/";
+		return "";//"saves/" + this.getWorld().getWorldInfo().getWorldName() + "/";
 	}
 	
 	@Override
@@ -545,5 +548,11 @@ public class ZCGameSP extends ZCGame {
 	@Override
 	public void sendPacket(EntityPlayer player, int packetType, int[] dataInt, String[] dataString) {
 		ZCClientTicks.sendPacket(packetType, dataInt, dataString);
+	}
+
+	@Override
+	public List<EntityPlayer> getPlayers(int dim) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

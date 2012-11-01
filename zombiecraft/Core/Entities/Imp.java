@@ -18,7 +18,6 @@ public class Imp extends BaseEntAI_Enemy
         super(par1World);
         this.texture = "/mob/zombie.png";
         this.moveSpeed = 0.23F;
-        this.attackStrength = 4;
         this.getNavigator().setBreakDoors(true);
         /*this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIBreakDoor(this));

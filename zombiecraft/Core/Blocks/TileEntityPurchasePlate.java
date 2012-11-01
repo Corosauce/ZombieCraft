@@ -126,7 +126,7 @@ public class TileEntityPurchasePlate extends TileEntity
     }
     
     @Override
-    public void onDataPacket(NetworkManager net, Packet132TileEntityData pkt) {
+    public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
     	this.readFromNBT(pkt.customParam1);
     }
     

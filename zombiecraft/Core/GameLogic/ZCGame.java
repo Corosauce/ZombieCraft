@@ -45,6 +45,10 @@ import zombiecraft.Forge.ZombieCraftMod;
 
 public abstract class ZCGame {
 	
+	public static final int ZCDimensionID = -66;
+	public static final int ZCWorldHeight = 50;
+	public static boolean autostart = false;
+	public static String curLevelOverride = "";
 	//public static MCInt mcInt;
 	
 	//game objects always used, master/slave mode
@@ -61,7 +65,7 @@ public abstract class ZCGame {
 	
 	public boolean resetWaveManager = false;
 	public boolean serverMode; 
-	public int activeZCDimension = 0;
+	public int activeZCDimension = ZCDimensionID;
 	
 	public HashMap entFields;
 	
@@ -109,6 +113,15 @@ public abstract class ZCGame {
 		
 		
 		new Persister();
+	}
+	
+	public void resetDimensionID() {
+		activeZCDimension = ZCGame.ZCDimensionID;
+	}
+	
+	public void setActiveDimension(int id) {
+		System.out.println("Setting active ZC dimension to " + id);
+		activeZCDimension = id;
 	}
 	
 	public int noHookTicks = 0;
@@ -205,12 +218,14 @@ public abstract class ZCGame {
 	
 	public abstract List<EntityPlayer> getPlayers();
 	
+	public abstract List<EntityPlayer> getPlayers(int dim);
+	
 	public void resetPlayer(EntityPlayer player) {
 		
 		
 		entFields.put(player.username, new DataLatcher());
 		
-		player.removeExperience(999999);
+		player.func_82242_a(0);
 		player.experience = 0;
 		player.score = 0;
 		setData(player, DataTypes.zcPoints, 0);
@@ -296,6 +311,8 @@ public abstract class ZCGame {
 			this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
 		}*/
 		
+		//System.out.println(player.dimension);
+		
 		handleBarricadeProximity(player);
 	}
 	
@@ -305,7 +322,7 @@ public abstract class ZCGame {
 		
 		int zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(givePoints/* * wMan.expToPointsFactor*/);
 		
-		System.out.println("zcPoints " + zcPoints);
+		//System.out.println("zcPoints " + zcPoints);
 		
 		//this.setData(player, DataTypes.lastPoints, lastPoints);
 		this.setData(player, DataTypes.zcPoints, zcPoints);
@@ -617,6 +634,14 @@ public abstract class ZCGame {
     	return MinecraftServer.getServer().getFile(".").getAbsolutePath() + "/";
     }
     
+    public String getMapSaveFolderPath() {
+    	return MinecraftServer.getServer().getFile(".").getAbsolutePath() + "/" + getMapFolder() + "/";
+    }
+    
+    public static String getMapFolder() {
+    	return "ZCMaps";
+    }
+    
     public void readGameNBT(World worldRef) {
     	gameData = null;
 		
@@ -741,7 +766,7 @@ public abstract class ZCGame {
 		if (isMaster()) {
 			if (isOp(player)) {
 	    		ZCGame.instance().mapMan.loadLevel();
-	    		ZCGame.instance().mapMan.buildStart();
+	    		ZCGame.instance().mapMan.buildStart(player);
 			}
 		} else sendPacket(player, PacketTypes.COMMAND, new int[] {CommandTypes.REGENERATE});
 	}
@@ -819,6 +844,12 @@ public abstract class ZCGame {
     
     public void notifyBlockUpdates(int x, int y, int z) {
     	
+    }
+    
+    public void setCurBuildPercent(int percent) {
+
+    	mapMan.curBuildPercent = percent;
+		
     }
     
     public void runInfoCommand(EntityPlayer player, int pt, int[] dataInt, String[] dataString) {

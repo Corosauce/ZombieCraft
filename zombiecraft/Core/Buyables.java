@@ -60,6 +60,10 @@ public class Buyables {
 			addBuyItem(new ItemStack(ZombieCraftMod.itemFlamethrower), (int)(priceBase*4));
 			addBuyItem(new ItemStack(ZombieCraftMod.itemSniper), (int)(priceBase*5));
 			
+			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkSpeed), (int)(priceBase*5));
+			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkExStatic), (int)(priceBase*5));
+			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkJugg), (int)(priceBase*5));
+			
 		}
 	}
 }

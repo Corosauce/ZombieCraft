@@ -19,7 +19,6 @@ public class Zombie extends BaseEntAI_Enemy
         super(par1World);
         this.texture = "/mob/zombie.png";
         this.moveSpeed = 0.23F;
-        this.attackStrength = 4;
         this.getNavigator().setBreakDoors(true);
         
         addJob(EnumJob.FINDFOOD);

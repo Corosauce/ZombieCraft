@@ -21,7 +21,7 @@ public class ZCPacketHandler implements IPacketHandler
     }
 
     @Override
-    public void onPacketData(NetworkManager manager, Packet250CustomPayload packet, Player player)
+    public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
     {
     	
     	Side side = FMLCommonHandler.instance().getEffectiveSide();

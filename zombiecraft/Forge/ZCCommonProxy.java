@@ -21,6 +21,7 @@ import zombiecraft.Core.Items.ItemGunFlamethrower;
 import zombiecraft.Core.Items.ItemGunM4;
 import zombiecraft.Core.Items.ItemGunShotgun;
 import zombiecraft.Core.Items.ItemGunSniper;
+import zombiecraft.Core.Items.ItemPerk;
 import zombiecraft.Server.ZCGameMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.CreativeTabs;
@@ -51,17 +52,25 @@ public class ZCCommonProxy implements IGuiHandler
         
 		ZCBlocks.load();
 		ZCItems.load();
+		
+		pMod.zcPotionSpeed = (new ZCPotionSpeed(20, false, 8171462)).setPotionName("potion.zc.speed");
+		pMod.zcPotionExStatic = (new ZCPotionExStatic(21, false, 8171462)).setPotionName("potion.zc.exstatic");
+        pMod.zcPotionJugg = (new ZCPotionJugg(22, false, 8171462)).setPotionName("potion.zc.jugg");
         
         //Items \\
-        pMod.itemDEagle = (new ItemGunDEagle(pMod.itemPistolID)).setIconIndex(pMod.itemPistolTexID).setItemName("itemPistol").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemAk47 = (new ItemGunAk47(pMod.itemAk47ID)).setIconIndex(pMod.itemAk47TexID).setItemName("itemAk47").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemShotgun = (new ItemGunShotgun(pMod.itemShotgunID)).setIconIndex(pMod.itemShotgunTexID).setItemName("itemShotgun").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemM4 = (new ItemGunM4(pMod.itemM4ID)).setIconIndex(pMod.itemM4TexID).setItemName("itemM4").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemSniper = (new ItemGunSniper(pMod.itemSniperID)).setIconIndex(pMod.itemSniperTexID).setItemName("itemSniper").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemFlamethrower = (new ItemGunFlamethrower(pMod.itemFlamethrowerID)).setIconIndex(pMod.itemFlamethrowerTexID).setItemName("itemFlamethrower").setCreativeTab(CreativeTabs.tabMisc);
+        pMod.itemDEagle = (new ItemGunDEagle(pMod.itemPistolID)).setIconIndex(pMod.itemPistolTexID).setItemName("itemPistol").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemAk47 = (new ItemGunAk47(pMod.itemAk47ID)).setIconIndex(pMod.itemAk47TexID).setItemName("itemAk47").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemShotgun = (new ItemGunShotgun(pMod.itemShotgunID)).setIconIndex(pMod.itemShotgunTexID).setItemName("itemShotgun").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemM4 = (new ItemGunM4(pMod.itemM4ID)).setIconIndex(pMod.itemM4TexID).setItemName("itemM4").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemSniper = (new ItemGunSniper(pMod.itemSniperID)).setIconIndex(pMod.itemSniperTexID).setItemName("itemSniper").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemFlamethrower = (new ItemGunFlamethrower(pMod.itemFlamethrowerID)).setIconIndex(pMod.itemFlamethrowerTexID).setItemName("itemFlamethrower").setCreativeTab(ZombieCraftMod.tabBlock);
         
-        pMod.itemGrenade = (new ItemGrenade(pMod.itemGrenadeID)).setIconIndex(pMod.itemGrenadeTexID).setItemName("itemGrenade").setCreativeTab(CreativeTabs.tabMisc);
-        pMod.itemGrenadeStun = (new ItemGrenadeStun(pMod.itemGrenadeStunID)).setIconIndex(pMod.itemGrenadeStunTexID).setItemName("itemGrenadeStun").setCreativeTab(CreativeTabs.tabMisc);
+        pMod.itemGrenade = (new ItemGrenade(pMod.itemGrenadeID)).setIconIndex(pMod.itemGrenadeTexID).setItemName("itemGrenade").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemGrenadeStun = (new ItemGrenadeStun(pMod.itemGrenadeStunID)).setIconIndex(pMod.itemGrenadeStunTexID).setItemName("itemGrenadeStun").setCreativeTab(ZombieCraftMod.tabBlock);
+        
+        pMod.itemPerkSpeed = (new ItemPerk(pMod.itemPerkSpeedID, pMod.zcPotionSpeed.id, 20 * 30)).setIconCoord(11, 10).setItemName("itemPerkSpeed").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemPerkExStatic = (new ItemPerk(pMod.itemPerkExStaticID, pMod.zcPotionExStatic.id, 20 * 30)).setIconCoord(11, 10).setItemName("itemPerkExStatic").setCreativeTab(ZombieCraftMod.tabBlock);
+        pMod.itemPerkJugg = (new ItemPerk(pMod.itemPerkJuggID, pMod.zcPotionJugg.id, 20 * 30)).setIconCoord(11, 10).setItemName("itemPerkJugg").setCreativeTab(ZombieCraftMod.tabBlock);
         
         ModLoader.addName(pMod.itemDEagle, "Desert Eagle");
         ModLoader.addName(pMod.itemAk47, "AK 47");
@@ -72,6 +81,10 @@ public class ZCCommonProxy implements IGuiHandler
         
         ModLoader.addName(pMod.itemGrenade, "Grenade");
         ModLoader.addName(pMod.itemGrenadeStun, "Stun Grenade");
+        
+        ModLoader.addName(pMod.itemPerkSpeed, "Speed Cola");
+        ModLoader.addName(pMod.itemPerkExStatic, "ExStatic");
+        ModLoader.addName(pMod.itemPerkJugg, "Juggernog");
         //Items //
         
         //Blocks \\
@@ -83,10 +96,12 @@ public class ZCCommonProxy implements IGuiHandler
         
         ModLoader.addName(ZCItems.barricade,"ZC Barricade");
     	ModLoader.addName(ZCItems.editTool,"ZC Editor Tool");
-    	ModLoader.addName(ZCItems.buildTool,"ZC Build Tool");
+    	//ModLoader.addName(ZCItems.buildTool,"ZC Build Tool");
     	ModLoader.addName(ZCBlocks.barrier,"ZC Barrier");
         
         //Blocks //
+    	
+    	ModLoader.addLocalization("itemGroup.ZombieCraft", "ZombieCraft Items");
         
     	Buyables.initItems();
     	

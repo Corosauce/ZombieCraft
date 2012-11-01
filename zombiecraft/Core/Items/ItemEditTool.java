@@ -43,9 +43,7 @@ public class ItemEditTool extends Item {
     	int j = (int)par3EntityPlayer.posY-1;
     	int k = (int)par3EntityPlayer.posZ;
     	
-    	if (!par2World.isRemote) {
-    		par3EntityPlayer.addPotionEffect(new PotionEffect(ZombieCraftMod.zcPotionExStatic.id, 600, 1));
-    	}
+    	
     	
     	if (!par2World.isRemote) return par1ItemStack;
     	
@@ -123,14 +121,14 @@ public class ItemEditTool extends Item {
     			ZCGame zcG = ZCGame.instance();
     			zcG.settingSize = true;
     			zcG.sx = x1; zcG.sy = y1; zcG.sz = z1;  
-    			System.out.println("minCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
+    			//System.out.println("minCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
     			zcG.setModeMessage("minCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
     			subMode++;
     		} else {
     			x2 = i; y2 = j; z2 = k;
     			ZCGame zcG = ZCGame.instance();
     			zcG.settingSize = false;
-    			System.out.println("maxCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
+    			//System.out.println("maxCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
     			zcG.setModeMessage("maxCoords Set -> X: "+String.valueOf(i)+" Y: "+String.valueOf(j)+" Z: "+String.valueOf(k));
     			zcG.setLevelSize(x1, y1, z1, x2, y2, z2);
     			subMode = 0;

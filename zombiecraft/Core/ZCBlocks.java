@@ -35,8 +35,8 @@ public class ZCBlocks {
 	}
 	
 	public static void load() {
-		b_mobSpawnerWave  = (new BlockMobSpawnerWave(z_BlockIDStart++, 65)).setBlockName("z_spawnblock").setCreativeTab(CreativeTabs.tabMisc);
-    	b_buyBlock = (new BlockPurchasePlate(z_BlockIDStart++, 65, EnumMobType.players, Material.wood)).setBlockName("z_purchaseBlock").setCreativeTab(CreativeTabs.tabMisc);
+		b_mobSpawnerWave  = (new BlockMobSpawnerWave(z_BlockIDStart++, 65)).setBlockName("z_spawnblock").setCreativeTab(ZombieCraftMod.tabBlock);
+    	b_buyBlock = (new BlockPurchasePlate(z_BlockIDStart++, 65, EnumMobType.players, Material.wood)).setBlockName("z_purchaseBlock").setCreativeTab(ZombieCraftMod.tabBlock);
     	
     	int stateToBlockID[] = {z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++};
     	
@@ -49,7 +49,7 @@ public class ZCBlocks {
 		barricadeS4 = (new BlockBarricade(stateToBlockID, ZombieCraftMod.barricadeTopTexIDs, Material.circuits, 4)).setBlockName("barricadeS4");
 		barricadeS5 = (new BlockBarricade(stateToBlockID, ZombieCraftMod.barricadeTopTexIDs, Material.circuits, 5)).setBlockName("barricade");
 		//barricadeS5 = Block.doorWood;//(new BlockDoor(121, Material.wood, 5)).setHardness(3F).setStepSound(Block.soundWoodFootstep).setBlockName("doorWood");
-		barrier = (new BlockBarrier(z_BlockIDStart++, 1)).setBlockName("barrier").setCreativeTab(CreativeTabs.tabMisc);
+		barrier = (new BlockBarrier(z_BlockIDStart++, 1)).setBlockName("barrier").setCreativeTab(ZombieCraftMod.tabBlock);
 		
     	ModLoader.registerBlock(b_mobSpawnerWave);
     	ModLoader.registerBlock(b_buyBlock);

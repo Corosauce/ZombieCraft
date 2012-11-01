@@ -218,7 +218,7 @@ public class EntityImpFireball extends EntityFireball
                 ;
             }
 
-            this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, 1.0F, true);
+            this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, 1.0F, false, true);
             this.setDead();
         }
     }
@@ -311,4 +311,10 @@ public class EntityImpFireball extends EntityFireball
     {
         return 15728880;
     }
+
+	@Override
+	protected void onImpact(MovingObjectPosition var1) {
+		// TODO Auto-generated method stub
+		
+	}
 }

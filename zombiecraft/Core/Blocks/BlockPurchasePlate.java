@@ -284,7 +284,7 @@ public class BlockPurchasePlate extends BlockContainer
      * Is this block indirectly powering the block on the specified side
      */
     @Override
-    public boolean isIndirectlyPoweringTo(World par1World, int par2, int par3, int par4, int par5)
+    public boolean isIndirectlyPoweringTo(IBlockAccess par1World, int par2, int par3, int par4, int par5)
     {
         return par1World.getBlockMetadata(par2, par3, par4) == 0 ? false : par5 == 1;
     }

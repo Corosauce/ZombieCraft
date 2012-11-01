@@ -105,7 +105,10 @@ public class Level {
 		resetActiveData();
 	}
 	
-	public void newGameFrom(int x, int y, int z) {
+	public void newGameFrom(EntityPlayer player, int x, int y, int z) {
+		if (player != null) { 
+			zcGame.setActiveDimension(player.dimension);
+		} else zcGame.setActiveDimension(ZCGame.ZCDimensionID);
 		lobby_distCheck = true;
 		lobby_tileEntX = x; lobby_tileEntY = y; lobby_tileEntZ = z;
 		resetActiveData();
@@ -122,13 +125,14 @@ public class Level {
 		
 		if (buildData == null) {
 			if (zcGame.gameData == null) {
-				buildData = new Build(0, 0, 0, filename);
+				buildData = new Build(0, ZCGame.ZCWorldHeight, 0, filename);
 			} else {
 				buildData = new Build(zcGame.gameData.getInteger("map_coord_minX"), zcGame.gameData.getInteger("map_coord_minY"), zcGame.gameData.getInteger("map_coord_minZ"), filename);
 			}
 		} else {
 			buildData = new Build(this.buildData.map_coord_minX, this.buildData.map_coord_minY, this.buildData.map_coord_minZ, filename);
 		}
+		buildData.dim = ZCGame.ZCDimensionID;
 		//Build reads its data, then we add ours to it
 		buildData.readNBT(filename);
 		

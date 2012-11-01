@@ -44,7 +44,7 @@ public class ItemBarricade extends Item
                 var8 = Block.doorSteel;
             }*/
 
-            if (par2EntityPlayer.canPlayerEdit(par4, par5, par6) && par2EntityPlayer.canPlayerEdit(par4, par5 + 1, par6))
+            if (par2EntityPlayer.func_82246_f(par4, par5, par6) && par2EntityPlayer.func_82246_f(par4, par5 + 1, par6))
             {
                 if (!var8.canPlaceBlockAt(par3World, par4, par5, par6))
                 {

@@ -52,6 +52,16 @@ public class ZCGameMP extends ZCGame {
 			}
 		}
 		
+		if (ZCGame.autostart) {
+			List<EntityPlayer> players = getPlayers(0);
+			
+			for(int i = 0; i < players.size(); i++) {
+				EntityPlayer plEnt = (EntityPlayer)players.get(i);
+				
+				ZombieCraftMod.teleportPlayerToDim((EntityPlayerMP)plEnt, ZCGame.ZCDimensionID);
+			}
+		}
+		
 		List<EntityPlayer> players = getPlayers();
 		
 		for(int i = 0; i < players.size(); i++) {
@@ -83,6 +93,21 @@ public class ZCGameMP extends ZCGame {
 				this.playerTick(plEnt);
 			} else {
 				markPlayerForReadding(plEnt);
+			}
+		}
+		
+		
+		
+		if (mapMan.buildActive()) {
+			
+			//System.out.println(zcLevel.buildData.curTick + " - " + zcLevel.buildData.maxTicks);
+			float percent = ((float)zcLevel.buildData.curTick + 1) / ((float)zcLevel.buildData.maxTicks) * 100F;
+			//System.out.println(percent);
+			updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {(int)percent});
+		} else {
+			if (zcLevel.buildData.curTick != -1) {
+				zcLevel.buildData.curTick = -1; //mark that the build is done after observing a finished state
+				updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {-1}); //tell client
 			}
 		}
 		
@@ -122,8 +147,13 @@ public class ZCGameMP extends ZCGame {
 	
 	@Override
 	public List<EntityPlayer> getPlayers() {
+		return getPlayers(activeZCDimension);
+	}
+	
+	@Override
+	public List<EntityPlayer> getPlayers(int dim) {
 		List<EntityPlayer> players = new LinkedList();
-		World world = this.mc.worldServerForDimension(activeZCDimension);
+		World world = this.mc.worldServerForDimension(dim);
 		if (world != null) {
 			for(int i = 0; i < world.playerEntities.size(); i++) {
 				players.add((EntityPlayer)world.playerEntities.get(i));
@@ -191,7 +221,7 @@ public class ZCGameMP extends ZCGame {
 		
 		//LinkedList data = new LinkedList();
 		//System.out.println("hashmap size() " + ((AmmoDataLatcher)((zombiecraft.Core.DataLatcher)entFields.get(ent.username)).values.get(DataTypes.ammoAmounts)));
-		System.out.println("ammoMap.size() " + ammoMap.size());
+		//System.out.println("ammoMap.size() " + ammoMap.size());
 		
 		int[] dataInt = new int[1 + (ammoMap.size() * 2)];
 		int index = 0;
@@ -339,13 +369,14 @@ public class ZCGameMP extends ZCGame {
 					updateInfo(null, PacketTypes.EDITOR_NOCLIP, new int[] {(mapMan.doorNoClip ? 1 : 0)});
 				} else if (dataInt[0] == CommandTypes.SET_LEVELSIZE) {
 					mapMan.zcLevel.buildData.recalculateLevelSize(dataInt[1], dataInt[2], dataInt[3], dataInt[4], dataInt[5], dataInt[6], true);
+					setActiveDimension(player.dimension);
 					//updateInfo(null, PacketTypes.EDITOR_SETLEVELCOORDS, new int[] {dataInt[1], dataInt[2], dataInt[3], dataInt[4], dataInt[5], dataInt[6]});
 				} else if (dataInt[0] == CommandTypes.SET_PLAYERSPAWN) {
 					mapMan.setPlayerSpawn(dataInt[1], dataInt[2], dataInt[3]);
 					updateInfo(null, PacketTypes.EDITOR_SETSPAWN, new int[] {dataInt[1], dataInt[2], dataInt[3]});
 				} else if (dataInt[0] == CommandTypes.REGENERATE) {
 					ZCGame.instance().mapMan.loadLevel();
-		    		ZCGame.instance().mapMan.buildStart();
+		    		ZCGame.instance().mapMan.buildStart(player);
 					//updateInfo(null, PacketTypes.EDITOR_SETSPAWN, new int[] {data[1], data[2], data[3]});
 				} else if (dataInt[0] == CommandTypes.SET_LEVELNAME) {
 					this.setMapName(player, packet.dataString[0]);
@@ -418,7 +449,7 @@ public class ZCGameMP extends ZCGame {
 	
 	@Override
 	public int getItemMaxStackSize(Item item) {
-		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, ZCUtil.refl_s_Item_maxStackSize, ZCUtil.refl_mcp_Item_maxStackSize);
+		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_s_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override
@@ -599,6 +630,13 @@ public class ZCGameMP extends ZCGame {
 	public boolean trySetTexturePack(String packFileName) {
 		updateInfo(null, PacketTypes.EDITOR_SETLEVELTEXTUREPACK, new int[0], new String[] { packFileName });
 		return true;
+	}
+	
+	@Override
+	//Setting to -1 tells client build is done
+	public void setCurBuildPercent(int percent) {
+		super.setCurBuildPercent(percent);
+		updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {percent});
 	}
 	
 	@Override

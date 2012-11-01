@@ -1,5 +1,6 @@
 package zombiecraft.Core.Dimension;
 
+import zombiecraft.Core.GameLogic.ZCGame;
 import net.minecraft.src.*;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
@@ -12,7 +13,7 @@ public class ZCWorldProvider extends WorldProvider
     public void registerWorldChunkManager()
     {
         this.worldChunkMgr = new ZCWorldChunkManager(ZCBiomeGen.base, 0.5F, 0.0F);
-        this.dimensionId = 66;
+        this.dimensionId = ZCGame.ZCDimensionID;
         this.hasNoSky = false;
     }
 
@@ -68,7 +69,7 @@ public class ZCWorldProvider extends WorldProvider
         var5 *= var4 * 0.0F + 0.15F;
         var6 *= var4 * 0.0F + 0.15F;
         var7 *= var4 * 0.0F + 0.15F;
-        return Vec3.getVec3Pool().getVecFromPool((double)var5, (double)var6, (double)var7);
+        return Vec3.createVectorHelper((double)var5, (double)var6, (double)var7);
     }
 
     @SideOnly(Side.CLIENT)
@@ -117,12 +118,12 @@ public class ZCWorldProvider extends WorldProvider
      */
     public ChunkCoordinates getEntrancePortalLocation()
     {
-        return new ChunkCoordinates(0, 6, 0);
+        return new ChunkCoordinates(0, ZCGame.ZCWorldHeight, 0);
     }
 
     public int getAverageGroundLevel()
     {
-        return 6;
+        return ZCGame.ZCWorldHeight;
     }
 
     @SideOnly(Side.CLIENT)

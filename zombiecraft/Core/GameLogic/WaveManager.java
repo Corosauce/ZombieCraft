@@ -69,7 +69,7 @@ public class WaveManager {
 	
 	public long lastWorldTime;
 	
-	public boolean levelNeedsRegen = false;
+	public static boolean levelNeedsRegen = true;
 	public boolean waitingToStart = false;
 	//public boolean gameOver = false;
 	public int levelPrepDelay = 0;
@@ -83,7 +83,7 @@ public class WaveManager {
 	
 	public void startGameFromPlayer(EntityPlayer player) {
 		if (zcGame.mapMan.safeToStart()) {
-			zcGame.zcLevel.newGameFrom((int)player.posX, (int)player.posY, (int)player.posZ);
+			zcGame.zcLevel.newGameFrom(player, (int)player.posX, (int)player.posY, (int)player.posZ);
 			prepGame();
 		} else {
 			System.out.println("UNSAVED CHANGES, NOT STARTING");
@@ -92,7 +92,7 @@ public class WaveManager {
 	
 	public void startGameFromPlayerSpawn(EntityPlayer player) {
 		if (zcGame.mapMan.safeToStart()) {
-			zcGame.zcLevel.newGameFrom(this.zcGame.zcLevel.player_spawnX_world, this.zcGame.zcLevel.player_spawnY_world, this.zcGame.zcLevel.player_spawnZ_world);
+			zcGame.zcLevel.newGameFrom(player, this.zcGame.zcLevel.player_spawnX_world, this.zcGame.zcLevel.player_spawnY_world, this.zcGame.zcLevel.player_spawnZ_world);
 			prepGame();
 		} else {
 			System.out.println("UNSAVED CHANGES, NOT STARTING");
@@ -113,18 +113,28 @@ public class WaveManager {
 		killInvaders();
 		if (levelNeedsRegen) {
 			levelNeedsRegen = false;
-			waitingToStart = true;
+			if (ZCGame.autostart) {
+				waitingToStart = true;
+				System.out.println("FIX ME I ONLY WORK FOR SCHEMATIC AUTOLOADING");
+				ZCGame.instance().mapMan.curLevel = ZCGame.curLevelOverride;
+			}
 			ZCGame.instance().mapMan.loadLevel();
-			ZCGame.instance().mapMan.buildStart();
+			ZCGame.instance().mapMan.buildStart(null);
 		} else {
+			
+			
 			zcGame.gameActive = true;
 			zcGame.resetPlayers();
+			//startGameFromPlayer(null);//fix for new autostart
 			setWaveAndStart(1);
 		}
 	}
 	
 	public void levelRegeneratedCallback() {
 		if (waitingToStart) {
+			if (ZCGame.autostart) {
+				zcGame.zcLevel.playersInGame = zcGame.getPlayers(zcGame.activeZCDimension);//fix for new autostart
+			}
 			waitingToStart = false;
 			zcGame.gameActive = true;
 			zcGame.resetPlayers();

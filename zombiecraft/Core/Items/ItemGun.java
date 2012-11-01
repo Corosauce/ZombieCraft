@@ -121,7 +121,7 @@ public class ItemGun extends Item
 	        		reloadDelayClient = 80;
 	        	}
 	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingItem();
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
+	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_82173_br = 5;
 	        }
 	        
 	        

@@ -46,11 +46,12 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import paulscode.sound.SoundSystem;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
 
 @NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
-@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "v3.0 for MC v1.3.2")
+@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "v3.0")
 
 
 public class ZombieCraftMod
@@ -78,6 +79,10 @@ public class ZombieCraftMod
     public static Item itemGrenade;
     public static Item itemGrenadeStun;
     
+    public static Item itemPerkSpeed;
+    public static Item itemPerkExStatic;
+    public static Item itemPerkJugg;
+    
     public static int itemPistolID;
     public static int itemAk47ID;
     public static int itemShotgunID;
@@ -87,6 +92,10 @@ public class ZombieCraftMod
     
     public static int itemGrenadeID;
     public static int itemGrenadeStunID;
+    
+    public static int itemPerkSpeedID;
+    public static int itemPerkExStaticID;
+    public static int itemPerkJuggID;
     
     public static int itemPistolTexID = 0;
     public static int itemAk47TexID = 0;
@@ -105,8 +114,9 @@ public class ZombieCraftMod
     
     public static Potion zcPotionSpeed;
     public static Potion zcPotionExStatic;
+    public static Potion zcPotionJugg;
 
-	//final CreativeTabs tabBlock = new CreativeTabBlock(CreativeTabs.getNextID, "TabNameHere");
+	public static CreativeTabs tabBlock;
     //getNextID()-4
     
     @PreInit
@@ -126,6 +136,9 @@ public class ZombieCraftMod
         	itemGrenadeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemGrenadeID", itemIndexID++).getInt();
         	itemGrenadeStunID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemGrenadeStunID", itemIndexID++).getInt();
         	
+        	itemPerkSpeedID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkSpeedID", itemIndexID++).getInt();
+        	itemPerkExStaticID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkExStaticID", itemIndexID++).getInt();
+        	itemPerkJuggID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkJuggID", itemIndexID++).getInt();
         	
             preInitConfig.load();
             
@@ -133,7 +146,7 @@ public class ZombieCraftMod
         }
         catch (Exception e)
         {
-            FMLLog.log(Level.SEVERE, e, "SkeletonMod has a problem loading it's configuration");
+            FMLLog.log(Level.SEVERE, e, "ZombieCraft has a problem loading it's configuration");
         }
         finally
         {
@@ -144,19 +157,21 @@ public class ZombieCraftMod
     @Init
     public void load(FMLInitializationEvent event)
     {
+    	
+    	tabBlock = new CreativeTabZC(CreativeTabs.getNextID(), "ZombieCraft");
+    	
         proxy.init(this);
         proxy.registerRenderInformation();
         
-        int zcDimID = 66;
-        boolean keepLoaded = true;
+        int zcDimID = ZCGame.ZCDimensionID;
+        boolean keepLoaded = false;
         
         DimensionManager.registerProviderType(zcDimID, ZCWorldProvider.class, keepLoaded);
 		DimensionManager.registerDimension(zcDimID, zcDimID);		
         
 		MinecraftForge.EVENT_BUS.register(new ZCEventHandler());
 		
-        zcPotionSpeed = (new ZCPotionSpeed(20, false, 8171462)).setPotionName("potion.zc.speed");
-        zcPotionExStatic = (new ZCPotionExStatic(21, false, 8171462)).setPotionName("potion.zc.exstatic");
+        
         //int what = Potion.potionTypes[0].id;
     }
 
@@ -171,9 +186,9 @@ public class ZombieCraftMod
 		//TeleporterTropics tropicsTeleporter = new TeleporterTropics();
 		ServerConfigurationManager scm = MinecraftServer.getServer().getConfigurationManager();
 		if (player.dimension == 0) {
-			scm.transferPlayerToDimension(player, ZCGame.instance().activeZCDimension/*, new Teleporter()*/);
+			scm.transferPlayerToDimension(player, ZCGame.instance().ZCDimensionID, new ZCTeleporter());
 		} else {
-			scm.transferPlayerToDimension(player, 0/*, new Teleporter()*/);
+			scm.transferPlayerToDimension(player, 0, new ZCTeleporter());
 		}
 		
 	}
@@ -183,7 +198,7 @@ public class ZombieCraftMod
 		//TeleporterTropics tropicsTeleporter = new TeleporterTropics();
 		ServerConfigurationManager scm = MinecraftServer.getServer().getConfigurationManager();
 		//if (player.dimension == 0) {
-			scm.transferPlayerToDimension(player, dim/*, new Teleporter()*/);
+			scm.transferPlayerToDimension(player, dim, new ZCTeleporter());
 		//} else {
 			//scm.transferPlayerToDimension(player, 0, tropicsTeleporter);
 		//}

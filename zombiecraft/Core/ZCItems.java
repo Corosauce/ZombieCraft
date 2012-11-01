@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import zombiecraft.Core.Items.*;
+import zombiecraft.Forge.ZombieCraftMod;
 
 import net.minecraft.src.*;
 
@@ -21,8 +22,8 @@ public class ZCItems {
 	}
 	
 	public static void load() {
-		barricade = (new ItemBarricade(z_ItemIDStart++, Material.wood)).setIconCoord(11, 2).setItemName("barricade").setCreativeTab(CreativeTabs.tabMisc);
-		editTool = (new ItemEditTool(z_ItemIDStart++, 0)).setIconCoord(5, 4).setItemName("editTool").setCreativeTab(CreativeTabs.tabMisc);
-		buildTool = (new ItemBuildTool(z_ItemIDStart++, 0)).setIconCoord(5, 5).setItemName("buildTool").setCreativeTab(CreativeTabs.tabMisc);
+		barricade = (new ItemBarricade(z_ItemIDStart++, Material.wood)).setIconCoord(11, 2).setItemName("barricade").setCreativeTab(ZombieCraftMod.tabBlock);
+		editTool = (new ItemEditTool(z_ItemIDStart++, 0)).setIconCoord(5, 4).setItemName("editTool").setCreativeTab(ZombieCraftMod.tabBlock);
+		//buildTool = (new ItemBuildTool(z_ItemIDStart++, 0)).setIconCoord(5, 5).setItemName("buildTool").setCreativeTab(ZombieCraftMod.tabBlock);
 	}
 }

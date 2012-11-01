@@ -29,7 +29,7 @@ public class BaseEntAI extends c_EnhAI
         //team = 0;
         maxReach_Melee = 2.0F;
         
-        System.out.println("REMOVING SERVERMODE CHECK BaseEntAI constructor");
+        //System.out.println("REMOVING SERVERMODE CHECK BaseEntAI constructor");
         if (ZCServerTicks.zcGame.serverMode) {
         	this.serverMode = true;
         	

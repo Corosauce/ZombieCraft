@@ -13,7 +13,9 @@ import org.lwjgl.opengl.GL11;
 
 import build.world.Build;
 
+import zombiecraft.Client.GuiMainMenuZC;
 import zombiecraft.Client.ZCGameSP;
+import zombiecraft.Client.ZCSoundManager;
 import zombiecraft.Client.GameLogic.InterfaceManager;
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
 import zombiecraft.Core.Camera.CameraManager;
@@ -32,6 +34,7 @@ public class ZCClientTicks implements ITickHandler
 	
 	public static ZCGameSP zcGame;
 	public static InterfaceManager iMan;
+	public static ZCSoundManager sMan = new ZCSoundManager();
 	
 	public static Minecraft mc = null;
 	public static World worldRef = null;
@@ -88,11 +91,13 @@ public class ZCClientTicks implements ITickHandler
     	if (worldRef == null) worldRef = ModLoader.getMinecraftInstance().theWorld;
         if (player == null) player = ModLoader.getMinecraftInstance().thePlayer;
     	
+        if (mc.currentScreen instanceof GuiMainMenu && !(mc.currentScreen instanceof GuiMainMenuZC)) {
+        	this.mc.displayGuiScreen(new GuiMainMenuZC());
+        }
+        
         if (worldRef == null || player == null || zcGame == null || zcGame.mapMan == null) {
             return;
         }
-        
-        
         
         if(timeout > 0 && msg != null) {
             ScaledResolution var8 = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
@@ -167,6 +172,10 @@ public class ZCClientTicks implements ITickHandler
         
         if (camMan != null) {
         	camMan.gameTick();
+        }
+        
+        if (sMan != null) {
+        	sMan.tick();
         }
         
         //zcGame.trySetTexturePack("ZombieCraft - 16bit");

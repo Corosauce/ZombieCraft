@@ -1,5 +1,6 @@
 package zombiecraft.Core.World;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 
 import zombiecraft.Core.EnumGameMode;
+import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 
@@ -22,6 +24,7 @@ public class MapManager {
 	public int levelBuildID = -1;
 	
 	public String curLevel = "";
+	public int curBuildPercent = -1;
 	/*public int levelStartX = 0;
 	public int levelStartY = 96;
 	public int levelStartZ = 0;*/
@@ -37,6 +40,8 @@ public class MapManager {
 	
 	public boolean shouldEntitiesReset = false;
 	
+	public boolean wasBuildActive = false;
+	
 	public MapManager(ZCGame game) {
 		zcGame = game;
 		zcLevel = zcGame.zcLevel;
@@ -51,8 +56,13 @@ public class MapManager {
 		
 		if (buildActive()) {
 			shouldEntitiesReset = true;
+			wasBuildActive = true;
 		} else {
 			shouldEntitiesReset = false;
+			if (wasBuildActive) {
+				wasBuildActive = false;
+				zcGame.wMan.levelRegeneratedCallback();
+			}
 		}
 		
 		if (!zcGame.gameActive) {
@@ -66,9 +76,6 @@ public class MapManager {
 		
 		//buildMan.updateTick();
 		
-		/*if (buildActive()) {
-			updateBuildProgress();
-		}*/
 	}
 	
 	public boolean buildActive() {
@@ -78,10 +85,14 @@ public class MapManager {
 		return false;
 	}
 	
-	public void buildStart() {
+	public void buildStart(EntityPlayer ent) {
 		if (!buildActive()) {
+			if (ent != null) {
+				//dont change dimension here, just make sure builder is set up right
+				zcLevel.buildData.dim = zcGame.activeZCDimension;
+				//zcGame.setActiveDimension(ent.dimension);
+			}
 			BuildServerTicks.buildMan.newBuild(zcLevel.buildData);
-			
 		}
 	}
 	
@@ -106,21 +117,32 @@ public class MapManager {
 	}
 	
 	public void saveLevel() {
+		checkFolder(zcGame.getMapFolder());
+		zcLevel.buildData.dim = zcGame.activeZCDimension;
+		zcLevel.buildData.file = zcGame.getMapFolder() + "/" + curLevel;
 		zcLevel.writeNBT();
 	}
 	
+	public void checkFolder(String path) {
+		File theDir = new File(path);
+
+		if (!theDir.exists()) {
+			System.out.println("creating directory: " + path);
+			boolean result = theDir.mkdir();  
+			if(result){    
+				System.out.println("DIR created");  
+		    }
+		}
+	}
+	
 	public void loadLevel() {
-		zcLevel.readNBT(this.curLevel);
+		zcLevel.readNBT(zcGame.getMapFolder() + "/" + this.curLevel);
 	}
 	
 	public boolean safeToStart() {
 		if (unsavedChanges) return false;
 		return true;
 	}
-	
-	
-    
-    
 	
 	public void setMapName(String name) {
 		if (name == "") name = "NewWorld";

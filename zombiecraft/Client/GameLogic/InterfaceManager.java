@@ -64,7 +64,7 @@ public abstract class InterfaceManager {
 		zcGame = (ZCGameSP)game;
 		
 		//If client mode
-		System.out.println("REMOVAL OF CLIENT SIDE INIT CODE InterfaceManager construct");
+		//System.out.println("REMOVAL OF CLIENT SIDE INIT CODE InterfaceManager construct");
 		//if (!mc.isMultiplayerWorld()) {
 			//zcGame.gameInit();
 	    	
@@ -287,13 +287,19 @@ public abstract class InterfaceManager {
         	}
         }
         
+        int per = zcGame.mapMan.curBuildPercent;
         
+        if (per != -1) {
+        	String str = "Level Build in Progress: " + per + "%";
+        	
+        	drawString(str, (width/2) - (fr.getStringWidth(str) / 2), 80, color);
+        }
         
         
         
 		drawString(title, width/2 - fr.getStringWidth(title)/2, yPos+(yOffset*0), color);
 		drawString(waveLeft, width/2 - fr.getStringWidth(waveAll)/2 - 20, yPos+(yOffset*1), color);
-		drawString(waveRight, width/2 + fr.getStringWidth(waveLeft)/2 - 25, yPos+(yOffset*1), 0xFFFFFF);
+		drawString(waveRight, width/2 + fr.getStringWidth(waveLeft)/2 - 24, yPos+(yOffset*1), 0xFFFFFF);
 		drawString(mobs, width/2 - fr.getStringWidth(mobs+String.valueOf(zcGame.wMan.wave_Invaders_Count))/2 + 20, yPos+(yOffset*1), color);
 		drawString(String.valueOf(zcGame.wMan.wave_Invaders_Count), width/2 - (fr.getStringWidth(mobs)/2) + 45, yPos+(yOffset*1), 0xFFFFFF);
 		
@@ -338,9 +344,9 @@ public abstract class InterfaceManager {
 		
 		String editTool = "";
 		if (zcGame.mapMan.editToolMode == 0) {
-			editTool = "Link Block to Spawner";
+			editTool = "Link Break Block to Spawner";
 		} else if (zcGame.mapMan.editToolMode == 1) {
-			editTool = "Set Level Size";
+			editTool = "Set Level Location & Size";
 		} else if (zcGame.mapMan.editToolMode == 2) {
 			editTool = "Set Player Spawn";
 		}

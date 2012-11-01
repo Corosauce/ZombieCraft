@@ -29,6 +29,7 @@ public class PacketTypes {
 	public static int EDITOR_SETLEVELNAME = i++;
 	public static int EDITOR_SETLEVELCOORDS = i++;
 	public static int EDITOR_SETLEVELTEXTUREPACK = i++;
+	public static int EDITOR_BUILDSTATE = i++;
 	
 	//Client to Server packets
 	public static int COMMAND = i++;

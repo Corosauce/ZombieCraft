@@ -7,8 +7,10 @@ import cpw.mods.fml.common.asm.SideOnly;
 import net.minecraft.src.Entity;
 import net.minecraft.src.EntityPlayer;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.sound.PlayBackgroundMusicEvent;
 import net.minecraftforge.event.Event;
 import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -18,6 +20,15 @@ public class ZCEventHandler {
          * The key is the @ForgeSubscribe annotation and the cast of the Event you put in as argument.
          * The method name you pick does not matter. Method signature is public void, always.
          */
+		@ForgeSubscribe
+		public void joinedWorld(EntityJoinWorldEvent event) {
+			if (event.entity instanceof EntityPlayer) {
+				//doesnt work
+				//System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!" + event.entity);
+			}
+			
+		}
+	
         @ForgeSubscribe
         public void entityAttacked(LivingAttackEvent event)
         {
@@ -81,4 +92,16 @@ public class ZCEventHandler {
         	}
         }
 	
+        @ForgeSubscribe
+        @SideOnly(Side.CLIENT)
+        public void musicPlayTry(PlayBackgroundMusicEvent event) {
+        	ZCGame zcG = ZCGame.instance();
+        	if (zcG != null) {
+        		if (zcG.gameActive) {
+        			System.out.println("BGMusic Event cancelled, ZC game active");
+        			//event.setCanceled(true);
+        			event.result = null;
+        		}
+        	}
+        }
 }
