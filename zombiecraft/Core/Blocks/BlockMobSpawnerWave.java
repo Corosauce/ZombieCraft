@@ -52,14 +52,14 @@ public class BlockMobSpawnerWave extends BlockContainer
     
     @Override
     public boolean isCollidable() {
-    	if (ZCGame.instance() != null && !ZCGame.instance().mapMan.editMode) return false;
+    	if (ZCGame.instance() != null && ZCGame.instance().mapMan != null && !ZCGame.instance().mapMan.editMode) return false;
     	return true;
     }
     
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int par2, int par3, int par4)
     {
-    	if (!ZCGame.instance().mapMan.editMode) return null;
+    	if (ZCGame.instance() != null && ZCGame.instance().mapMan != null && !ZCGame.instance().mapMan.editMode) return null;
         return super.getCollisionBoundingBoxFromPool(par1World, par2, par3, par4);
     }
     

@@ -13,6 +13,7 @@ import zombiecraft.Client.Blocks.TileEntityPurchasePlateRenderer;
 import zombiecraft.Client.Entities.RenderBullet;
 import zombiecraft.Client.Entities.RenderBulletShot;
 import zombiecraft.Client.Entities.RenderEntityWorldHook;
+import zombiecraft.Client.Entities.RenderZCZombie;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Entities.Comrade;
@@ -73,7 +74,7 @@ public class ZCClientProxy extends ZCCommonProxy
         //RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, new RenderBullet());
         RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, new RenderBulletShot());
         RenderingRegistry.registerEntityRenderingHandler(EntityBulletFlame.class, new RenderBullet());
-        RenderingRegistry.registerEntityRenderingHandler(Zombie.class, new RenderBiped(new ModelZombie(), 0.5F));
+        RenderingRegistry.registerEntityRenderingHandler(Zombie.class, new RenderZCZombie());//new RenderBiped(new ModelZombie(), 0.5F));
         RenderingRegistry.registerEntityRenderingHandler(Comrade.class, new RenderBiped(new ModelZombie(), 0.5F));
         RenderingRegistry.registerEntityRenderingHandler(EntityWorldHook.class, new RenderEntityWorldHook());
         

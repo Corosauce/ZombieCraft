@@ -1,5 +1,6 @@
 package zombiecraft.Core.Dimension;
 
+import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 import net.minecraft.src.*;
 import cpw.mods.fml.common.Side;
@@ -135,6 +136,11 @@ public class ZCWorldProvider extends WorldProvider
     {
         return true;
     }
+    
+    public boolean hasVoidParticles(boolean var1)
+    {
+    	return false;
+    }
 
     /**
      * Returns the dimension's name, e.g. "The End", "Nether", or "Overworld".
@@ -142,5 +148,12 @@ public class ZCWorldProvider extends WorldProvider
     public String getDimensionName()
     {
         return "ZombieCraft Realm";
+    }
+    
+    //fail
+    public boolean canMineBlock(EntityPlayer player, int x, int y, int z)
+    {
+    	//return ZCUtil.areBlocksMineable;
+        return worldObj.canMineBlockBody(player, x, y, z);
     }
 }

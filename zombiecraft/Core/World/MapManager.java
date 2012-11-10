@@ -90,7 +90,7 @@ public class MapManager {
 			if (ent != null) {
 				//dont change dimension here, just make sure builder is set up right
 				zcLevel.buildData.dim = zcGame.activeZCDimension;
-				//zcGame.setActiveDimension(ent.dimension);
+				zcGame.setActiveDimension(ent.dimension);
 			}
 			BuildServerTicks.buildMan.newBuild(zcLevel.buildData);
 		}
@@ -182,9 +182,9 @@ public class MapManager {
 	}
 	
 	public boolean isInsideLevel(TileEntity tEnt) {
-		if (tEnt.xCoord >= zcLevel.buildData.map_coord_minX && tEnt.xCoord <= zcLevel.buildData.map_coord_minX + zcLevel.buildData.map_sizeX) {
-			if (tEnt.yCoord >= zcLevel.buildData.map_coord_minY && tEnt.yCoord <= zcLevel.buildData.map_coord_minY + zcLevel.buildData.map_sizeY) {
-				if (tEnt.zCoord >= zcLevel.buildData.map_coord_minZ && tEnt.zCoord <= zcLevel.buildData.map_coord_minZ + zcLevel.buildData.map_sizeZ) {
+		if (tEnt.xCoord >= zcLevel.buildData.map_coord_minX && tEnt.xCoord < zcLevel.buildData.map_coord_minX + zcLevel.buildData.map_sizeX) {
+			if (tEnt.yCoord >= zcLevel.buildData.map_coord_minY && tEnt.yCoord < zcLevel.buildData.map_coord_minY + zcLevel.buildData.map_sizeY) {
+				if (tEnt.zCoord >= zcLevel.buildData.map_coord_minZ && tEnt.zCoord < zcLevel.buildData.map_coord_minZ + zcLevel.buildData.map_sizeZ) {
 					return true;
 				}
 			}

@@ -34,6 +34,11 @@ public class ZCGameMP extends ZCGame {
 	
 	public List<String> playersToWatchForSpawn = new LinkedList();
 	
+	public int lastPlayerCount = 0;
+	
+	//more fun singleplayer convinience fixes
+	public static boolean adjustedPlayer = true;
+	
 	public ZCGameMP(boolean serverMode) {
 		super(serverMode);
 		System.out.println("new ZCGameMP");
@@ -52,17 +57,33 @@ public class ZCGameMP extends ZCGame {
 			}
 		}
 		
-		if (ZCGame.autostart) {
+		if (ZCGame.autoload) {
 			List<EntityPlayer> players = getPlayers(0);
 			
 			for(int i = 0; i < players.size(); i++) {
 				EntityPlayer plEnt = (EntityPlayer)players.get(i);
 				
+				//System.out.println(plEnt.capabilities);
+				
+				//plEnt.capabilities.isCreativeMode = !ZCGame.autostart;
 				ZombieCraftMod.teleportPlayerToDim((EntityPlayerMP)plEnt, ZCGame.ZCDimensionID);
+			}
+			
+			if (!adjustedPlayer) {
+				players = getPlayers(activeZCDimension);
+				
+				for(int i = 0; i < players.size(); i++) {
+					EntityPlayerMP plEnt = (EntityPlayerMP)players.get(i);
+					
+					plEnt.sendGameTypeToPlayer(ZCGame.autostart ? EnumGameType.SURVIVAL : EnumGameType.CREATIVE);
+					adjustedPlayer = true;
+				}
 			}
 		}
 		
 		List<EntityPlayer> players = getPlayers();
+		
+		zcLevel.playersInGame = players;
 		
 		for(int i = 0; i < players.size(); i++) {
 			EntityPlayer plEnt = (EntityPlayer)players.get(i);
@@ -92,10 +113,14 @@ public class ZCGameMP extends ZCGame {
 			if (!plEnt.isDead) {
 				this.playerTick(plEnt);
 			} else {
-				markPlayerForReadding(plEnt);
+				if (!playersToWatchForSpawn.contains(plEnt.username)) markPlayerForReadding(plEnt);
 			}
 		}
 		
+		if (players.size() != lastPlayerCount)  {
+			lastPlayerCount = players.size();
+			
+		}
 		
 		
 		if (mapMan.buildActive()) {
@@ -114,7 +139,32 @@ public class ZCGameMP extends ZCGame {
 		watchWorldHook();
 		watchForRespawn();
 		
+		if (activeZCDimension == ZCDimensionID) {
+			if (this.getWorld() != null) {
+				GameRules gr = this.getWorld().getWorldInfo().func_82574_x();
+				
+				if (gameActive) {
+					gr.func_82769_a("doFireTick", "false");
+				} else {
+					gr.func_82769_a("doFireTick", "true");
+				}
+				//uhh this isnt per dimension
+				//gr.func_82769_a("doFireTick", "true");
+				//gr.func_82769_a("mobGriefing", "true");
+		        //gr.func_82769_a("doMobLoot", "true");
+		        //gr.func_82769_a("doTileDrops", "true");
+			}
+		}
+		
 		super.tick();
+	}
+	
+	public void updatePlayerList() {
+		List<EntityPlayer> allPlayers = getPlayers();
+		for(int i = 0; i < allPlayers.size(); i++) {
+			EntityPlayer plEnt = (EntityPlayer)allPlayers.get(i);
+			
+		}
 	}
 	
 	public void watchForRespawn() {
@@ -128,9 +178,11 @@ public class ZCGameMP extends ZCGame {
 					zcLevel.playersInGame.add(plEnt);
 					zcLevel.playersInGame_Names.add(plEnt.username);
 					playersToWatchForSpawn.remove(h);
+					resetPlayer(plEnt);
 					
 					if (mapMan.zcLevel.player_spawnY != 999)  {
 						mapMan.movePlayerToSpawn(plEnt);
+						
 					}
 				}
 				
@@ -170,11 +222,15 @@ public class ZCGameMP extends ZCGame {
 	@Override
 	public void playerTick(EntityPlayer player) {
 		super.playerTick(player);
-		player.getFoodStats().addStats(20, 1F);
-		if (player instanceof c_EntityPlayerMPExt) {
-			((c_EntityPlayerMPExt)player).setFoodLevel(20);
+		if (this.gameActive) {
+			player.getFoodStats().addStats(20, 1F);
+			if (player instanceof c_EntityPlayerMPExt) {
+				((c_EntityPlayerMPExt)player).setFoodLevel(20);
+			}
 		}
 		handleBarricadeProximity(player);
+		
+		
 	}
 	
 	/*@Override

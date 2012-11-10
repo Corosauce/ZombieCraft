@@ -9,6 +9,7 @@ import net.minecraft.src.*;
 import org.lwjgl.input.Keyboard;
 
 import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZCKeybindHandler;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -85,9 +86,14 @@ public class CameraManager {
 	
 	public void gameTick() {
 		//test code
-		if (Keyboard.isKeyDown(Keyboard.KEY_SEMICOLON)) {
+		if (mc.currentScreen == null && Keyboard.isKeyDown(ZCKeybindHandler.cameraKey.keyCode)) {
 			if (!isPressed) {
 				if (camState == EnumCameraState.OFF) {
+					freeCam();
+				} else if (camState == EnumCameraState.FREE) {
+					disableCamera();
+				}
+				/*if (camState == EnumCameraState.OFF) {
 					spectate(mc.thePlayer);
 				} else if (camState == EnumCameraState.FOLLOW) {
 					freeCam();
@@ -95,7 +101,7 @@ public class CameraManager {
 					startScript();
 				} else if (camState == EnumCameraState.SCRIPT) {
 					disableCamera();
-				}
+				}*/
 			}
 			isPressed = true;
 		} else {

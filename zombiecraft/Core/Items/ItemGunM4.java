@@ -12,12 +12,13 @@ public class ItemGunM4 extends ItemGun
         this.firingSound = "sdk.m";
         this.numBullets = 1;
         //this.burstShots = 2;
-        this.damage = 7;
+        this.damage = 10;
         this.muzzleVelocity = 4.0F;
         this.spread = 0.5F;
         this.useDelay = 5;
         this.recoil = 1.0F;
         magSize = 48;
+        hitCount = 1;
         ammoType = EnumAmmo.AUTORIFLE;
     }
 }

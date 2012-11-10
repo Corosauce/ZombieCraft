@@ -13,7 +13,7 @@ public class ItemGunFlamethrower extends ItemGun
         this.firingSound = "sdk.flamethrower";
         //this.requiredBullet = mod_ZCSdkGuns.itemOil;
         this.numBullets = 1;
-        this.damage = 1;
+        this.damage = 5;
         this.muzzleVelocity = 0.75F;
         this.spread = 0.0F;
         this.useDelay = 1;

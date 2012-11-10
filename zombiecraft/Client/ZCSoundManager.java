@@ -8,6 +8,7 @@ import net.minecraft.src.SoundPool;
 import net.minecraft.src.SoundPoolEntry;
 import net.minecraftforge.client.ModCompatibilityClient;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
 import cpw.mods.fml.common.asm.SideOnly;
 import cpw.mods.fml.common.Side;
@@ -41,7 +42,7 @@ public class ZCSoundManager {
 		
 		if (SoundManager.sndSystem != null) {
 		
-			if (ZCClientTicks.zcGame.gameActive) {
+			if (ZCClientTicks.mc.thePlayer != null && ZCClientTicks.mc.thePlayer.dimension == ZCGame.ZCDimensionID/*ZCClientTicks.zcGame.gameActive*/) {
 				//ZCUtil.setPrivateValueBoth(SoundManager.class, ZCClientTicks.mc.sndManager, "j", "ticksBeforeMusic", SoundManager.MUSIC_INTERVAL);
 				
 				if (!soundSwapped) {
@@ -91,7 +92,7 @@ public class ZCSoundManager {
 	
 	public void addLevelMusic() {
 		
-		String path = "music/zc/";
+		String path = "mod/music/zc/";
 		
 		tryInstallSound(path + "Bent and Broken.ogg");
 		tryInstallSound(path + "Return of Lazarus.ogg");

@@ -11,10 +11,11 @@ public class ItemGunShotgun extends ItemGun
         super(var1);
         this.firingSound = "sdk.shotgun";
         this.numBullets = 12;
+        reloadTime = 20 * (numBullets / 2);
         this.damage = 3;
         this.muzzleVelocity = 3.0F;
         this.spread = 14.0F;
-        this.useDelay = 16;
+        this.useDelay = 25;
         this.recoil = 8.0F;
         ammoType = EnumAmmo.SHELL;
     }

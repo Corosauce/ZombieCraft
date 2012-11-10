@@ -3,8 +3,6 @@ package zombiecraft.Core.Items;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
-import weather.blocks.structure.Structure;
-import weather.storm.EntTornado;
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.EntityBullet;
@@ -31,26 +29,28 @@ import net.minecraft.src.World;
 
 public class ItemGun extends Item
 {
-    //public static Item requiredBullet;
+    //Main gun configurations
 	public EnumAmmo ammoType;
-	public int type;
 	public int damage;
 	public float spread;
-	public float muzzleVelocity;
-	
-	public String firingSound;
+	public float muzzleVelocity;	
 	public int numBullets;
 	public int magSize;
 	public int useDelay;
+	public int reloadTime;
+	public String firingSound;
+	public int hitCount;
+	
+	//unused
+	public float soundRangeFactor;
 	public float recoil;
 	
+	//internal counters
 	public int reloadDelay = 0;
 	public int reloadDelayClient = 0;
 	public int fireDelay = 0;
+	public int fireDelayClient = 0;
 	
-	public float soundRangeFactor;
-	
-
     public ItemGun(int var1)
     {
         super(var1);
@@ -59,6 +59,10 @@ public class ItemGun extends Item
         magSize = 16;
         ammoType = EnumAmmo.PISTOL;
         soundRangeFactor = 1F;
+        reloadTime = 50;
+        hitCount = 1;
+        
+        setFull3D();
     }
 
     public EntityBullet getBulletEntity(World var1, Entity var2, float var3, float var4, float var5, float var6, float var7)
@@ -69,8 +73,17 @@ public class ItemGun extends Item
     @Override
     public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3)
     {
-    
-    	if (reloadDelay != 0) return var1;
+    	if (var2.isRemote) {
+    		if (reloadDelayClient != 0 || fireDelayClient != 0) {
+    			return var1;
+    		}
+    	} else {
+    		if (reloadDelay != 0 || fireDelay != 0) {
+	    		
+	    		//fixDelay();
+	    		return var1;
+	    	}
+    	}
     	
         //var2.playSoundAtEntity(var3, "random.pop", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
     	int var10 = 0;
@@ -111,16 +124,16 @@ public class ItemGun extends Item
 		        
 		        
 		        if (var10 == 2) {
-		        	reloadDelay = 80;
+		        	reloadDelay = reloadTime;
 		        	var2.playSoundAtEntity(var3, "sdk.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 		        	
 		        }
 	
 	        } else {
 	        	if (var10 == 2) {
-	        		reloadDelayClient = 80;
+	        		reloadDelayClient = reloadTime;
 	        	}
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingItem();
+	        	//if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingItem();
 	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_82173_br = 5;
 	        }
 	        
@@ -134,7 +147,10 @@ public class ItemGun extends Item
         }
         
         if (var2.isRemote) {
+        	fireDelayClient = useDelay;
 	        fixDelay();
+        } else {
+        	fireDelay = useDelay;
         }
         
         return var1;
@@ -144,9 +160,8 @@ public class ItemGun extends Item
     public void fixDelay() {
     	Minecraft mc = FMLClientHandler.instance().getClient();
     	
-    	ZCUtil.setPrivateValueBoth(Minecraft.class, mc, "ac", "rightClickDelayTimer", useDelay);
-    	fireDelay = 5;
-    	ZCUtil.setPrivateValueBoth(ItemRenderer.class, mc.entityRenderer.itemRenderer, "c", "equippedProgress", 0.95F);
+    	ZCUtil.setPrivateValueBoth(Minecraft.class, mc, ZCUtil.field_obf_rightClickDelayTimer, ZCUtil.field_mcp_rightClickDelayTimer, useDelay);
+    	ZCUtil.setPrivateValueBoth(ItemRenderer.class, mc.entityRenderer.itemRenderer, ZCUtil.field_obf_equippedProgress, ZCUtil.field_mcp_equippedProgress, 0.95F);
     	
         //rightClickDelayTimer
     }
@@ -160,19 +175,20 @@ public class ItemGun extends Item
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, int X, int Y, int Z, EntityPlayer player) 
     {
-    	if (!player.worldObj.isRemote) {
-			System.out.println("hurr");
-		}
         return true;
     }
     
     @Override
     public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
+    	
+    	
+    	
     	if (!par2World.isRemote) {
-    		if (reloadDelay > 0) {
-    			reloadDelay--;
-    		}
+    		if (reloadDelay > 0) reloadDelay--;
+    		if (fireDelay > 0) fireDelay--;
     	} else {
+    		if (reloadDelayClient > 0) reloadDelayClient--;
+    		if (fireDelayClient > 0) fireDelayClient--;
     		
     		if (fireDelay == 0) {
 	    		//if (par3Entity instanceof EntityPlayer) ((EntityPlayer)par3Entity).swingItem();
@@ -181,11 +197,10 @@ public class ItemGun extends Item
     			//if (par3Entity instanceof EntityPlayer) ((EntityPlayer)par3Entity).swingItem();
 	    		//if (par3Entity instanceof EntityPlayer) ((EntityPlayer)par3Entity).swingProgressInt = 5;
     		}
-    		if (fireDelay > 0) fireDelay--;
+    		
     		if (reloadDelayClient > 0) {
-    			reloadDelayClient--;
     			Minecraft mc = FMLClientHandler.instance().getClient();
-    			ZCUtil.setPrivateValueBoth(ItemRenderer.class, mc.entityRenderer.itemRenderer, "c", "equippedProgress", 0.4F);
+    			ZCUtil.setPrivateValueBoth(ItemRenderer.class, mc.entityRenderer.itemRenderer, ZCUtil.field_obf_equippedProgress, ZCUtil.field_mcp_equippedProgress, 0.4F);
     		} else {
     			
     		}

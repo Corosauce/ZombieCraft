@@ -263,6 +263,8 @@ public class GuiEditorCP extends GuiScreen
         			var2.displayString = (ZCGame.instance().mapMan.editMode ? "\u00A7" + '4' : "") + "Edit Mode";
         		} else if (var2.id == this.G_TOGGLEGAME) {
         			var2.displayString = (!ZCGame.instance().gameActive ? "Start Game" : "\u00A72Stop Game");
+        		} else if (var2.id == this.G_DOORNOCLIP) {
+        			var2.displayString = (!ZCGame.instance().mapMan.doorNoClip ? "Door No-Clip" : "\u00A74Door No-Clip");
         		}
         	}
         }

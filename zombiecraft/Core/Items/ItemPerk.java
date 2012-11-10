@@ -1,6 +1,8 @@
 package zombiecraft.Core.Items;
 
+import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.ZCBlocks;
+import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZombieCraftMod;
@@ -27,7 +29,17 @@ public class ItemPerk extends Item {
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
     	if (!par2World.isRemote) {
-    		par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
+    		if (potionID == 28) {
+    			
+    		} else if (potionID == 29) {
+    			System.out.println("spawn comrade");
+    		} else {
+    			par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
+    		}
+    	} else {
+    		if (potionID == 28) {
+    			ZCUtil.setData(par3EntityPlayer, DataTypes.hasCharge, 1);
+    		}
     	}
     	
         return par1ItemStack;

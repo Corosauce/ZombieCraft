@@ -24,13 +24,16 @@ import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Blocks.*;
+import zombiecraft.Core.Camera.EnumCameraState;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZCCommonProxy;
 import zombiecraft.Forge.ZombieCraftMod;
 
 public class ZCGameSP extends ZCGame {
 	
 	public Minecraft mc;
+	public boolean waitingToSpawn = false;
 	
 	public ZCGameSP(boolean serverMode) {
 		super(serverMode);
@@ -120,6 +123,8 @@ public class ZCGameSP extends ZCGame {
 	@Override
 	public void handlePacket(EntityPlayer player, PacketMLMP packet) {
 		
+		if (player.worldObj.provider.dimensionId != ZCGame.ZCDimensionID) return;
+		
 		try {
 			boolean dbg = false;
 			
@@ -149,9 +154,15 @@ public class ZCGameSP extends ZCGame {
 				ZCClientTicks.zcGame.setData(mc.thePlayer, DataTypes.purchaseCoordZ, packet.dataInt[3]);
 	        			
 	        } else if (p == PacketTypes.MENU_BUY_TRANSACTCONFIRM) {
-	        	if (packet.dataInt.length >= 3) {
+	        	if (packet.dataInt.length >= 3 && packet.dataInt[2] != 0) {
 	        		resetBuyState(mc.thePlayer, packet.dataInt[2]);
-	        	} else resetBuyState(mc.thePlayer);
+	        	} else {
+	        		resetBuyState(mc.thePlayer);
+	        		if (ZombieCraftMod.itemPerkCharge.shiftedIndex == packet.dataInt[0]) {
+	        			//ZCClientTicks.iMan.hasCharge = true;
+	        			ZCUtil.setData(player, DataTypes.hasCharge, 1);
+	        		}
+	        	}
 	        	ZCClientTicks.zcGame.setData(mc.thePlayer, DataTypes.zcPoints, packet.dataInt[1]);
 	        	//ClientTickHandler.iMan.reBuyDelay = ;
 	        	//Buyables.barricadeRepairCooldown
@@ -195,7 +206,7 @@ public class ZCGameSP extends ZCGame {
 	        	if (size > 0) {
 		        	int i = 1;
 		        	
-		        	while (i <= size) {
+		        	while (i <= size * 2) {
 		        		ZCUtil.setAmmoData(ZCClientTicks.player, packet.dataInt[i], packet.dataInt[i+1]);
 		        		if (dbg) System.out.println("cl ammo data -> id: " + packet.dataInt[i] + " val: " + packet.dataInt[i+1]);
 		        		i+=2;
@@ -256,9 +267,31 @@ public class ZCGameSP extends ZCGame {
 	public void playerTick(EntityPlayer player) {
 		super.playerTick(player);
 		
+		if (this.gameActive) {
+			player.getFoodStats().setFoodLevel(20);
+			
+			if (waitingToSpawn) {
+				if (/*ZCClientTicks.camMan.camState != EnumCameraState.OFF && */(!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0)) {
+		    		mc.thePlayer.respawnPlayer();
+		    		ZCClientTicks.camMan.disableCamera();
+		    	}
+			}
+		}
 		
+		if (ZCClientTicks.iMan != null) {
+			if (ZCClientTicks.iMan.chargeCooldown > 0) {
+				ZCClientTicks.iMan.chargeCooldown--;
+			}
+			if (ZCClientTicks.iMan.chargeTick > 0) {
+				ZCClientTicks.iMan.chargeTick--;
+				
+				if (player.onGround) {
+					player.motionX *= 1.5F;
+					player.motionZ *= 1.5F;
+				}
+			}
+		}
 		
-		player.getFoodStats().setFoodLevel(20);
 		
 	}
 	

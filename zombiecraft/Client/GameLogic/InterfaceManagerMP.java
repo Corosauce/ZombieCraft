@@ -30,17 +30,7 @@ public class InterfaceManagerMP extends InterfaceManager {
 	public void tick() {
 		super.tick();
 		
-		if (holdingUse) {
-			if (reBuyDelay == 0) {
-				if ((Integer)zcGame.getData(mc.thePlayer, DataTypes.purchaseTimeout) > 0) {
-					//buyMenuState = 0;
-					zcGame.resetBuyState(mc.thePlayer, Buyables.barricadeRepairCooldown);
-					ZCClientTicks.sendPacket(PacketTypes.COMMAND, new int[] {CommandTypes.USE});
-					//resetBuyState(mc.thePlayer, Buyables.barricadeRepairCooldown);
-					//ModLoaderMp.sendKey(ModLoaderMp.getModInstance(mod_ZombieCraft.class), CommandTypes.USE);
-				}
-			}
-		}
+		
 		//debug
 		/*if (Keyboard.isKeyDown(Keyboard.KEY_INSERT)) {
 			ModLoaderMp.sendKey(ModLoaderMp.getModInstance(mod_ZombieCraft.class), Keyboard.KEY_INSERT);

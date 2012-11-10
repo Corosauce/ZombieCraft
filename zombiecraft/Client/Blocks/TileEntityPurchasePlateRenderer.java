@@ -32,7 +32,7 @@ public class TileEntityPurchasePlateRenderer extends TileEntitySpecialRenderer
     public void renderTileEntityMobSpawner(TileEntityPurchasePlate par1TileEntityMobSpawner, double par2, double par4, double par6, float par8)
     {
     	
-    	if (ZCGame.instance().mapMan.editMode && ZCGame.instance().mapMan.infoOverlay) {
+    	if (ZCGame.instance() != null && ZCGame.instance().mapMan != null && ZCGame.instance().mapMan.editMode && ZCGame.instance().mapMan.infoOverlay) {
     		if (par1TileEntityMobSpawner.cycleItems) renderLivingLabel(("Cycling"), par2+0.5F, par4 - 0.5F, par6+0.5F, 0);
     	}
     	

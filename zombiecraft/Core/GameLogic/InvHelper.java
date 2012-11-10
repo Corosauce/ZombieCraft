@@ -1,7 +1,7 @@
 package zombiecraft.Core.GameLogic;
 
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Items.ItemGun;
+import zombiecraft.Core.Items.*;
 import net.minecraft.src.*;
 
 public class InvHelper {
@@ -11,7 +11,38 @@ public class InvHelper {
 	
 	static InventoryPlayer inventoryRef;
 	
+	//returns: -1 = no go, -2 = dont give item, just use it (possible?) - use for guns too to just give ammo, rest = slot number to place in
 	public static int getOptimalBuySlot(EntityPlayer player, InventoryPlayer inventory, ItemStack item) {
+		inventoryRef = inventory;
+		Item buyItem = null;
+		if (item != null) {
+			buyItem = item.getItem();
+		}
+		
+		if (buyItem != null) {
+			if (buyItem instanceof ItemGun) {
+				int slot = getInventorySlotContainItem(item.itemID);
+				
+				if (slot > -1) {
+					return -2;
+				} else {
+					int emtpySlot = getEmtpySlot();
+					
+					if (emtpySlot > -1) {
+						return emtpySlot;
+					}
+				}
+			} else if (buyItem instanceof ItemPerk) {
+				return -2;
+			} else {
+				return getEmtpySlot();
+			}
+		}
+		
+		return -1;
+	}
+	
+	public static int getOptimalBuySlotOld(EntityPlayer player, InventoryPlayer inventory, ItemStack item) {
 		
 		Item buyItem = null;
 		if (item != null) {
@@ -306,6 +337,31 @@ public class InvHelper {
                 return j;
             }
         }*/
+
+        return -1;
+    }
+    
+    private static int getEmtpySlot()
+    {
+    	
+    	/*for(int j = 0; j < 9; j++)
+        {
+    		for (int k = 0; k < 4; k++) {
+    			int ii = j + (k*9);
+    			if(inventoryRef.mainInventory[ii] == null)
+	            {
+	                return ii;
+	            }
+    		}
+        }*/
+    	
+        for(int j = 0; j < 9; j++)
+        {
+            if(inventoryRef.mainInventory[j] == null)
+            {
+                return j;
+            }
+        }
 
         return -1;
     }

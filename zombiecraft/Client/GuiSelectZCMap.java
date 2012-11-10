@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Server.ZCGameMP;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
@@ -278,16 +279,19 @@ public class GuiSelectZCMap extends GuiScreen
         var66.enableCommands();
         //this.mc.displayGuiScreen(var5);
         
+        ZCGame.autoload = true;
+        WaveManager.levelNeedsRegen = true;
+        WaveManager.waitingToStart = false;
+        ZCGameMP.adjustedPlayer = false;
+        
         if (!edit) {
         	ZCGame.autostart = true;
-        	WaveManager.levelNeedsRegen = true;
         } else {
         	ZCGame.autostart = false;
-        	WaveManager.levelNeedsRegen = false;
         }
         
         ZombieSaveRecord zsr = (ZombieSaveRecord)saveList.get(selectedWorld);
-        if (zsr != null) {
+        if (zsr != null && zsr.worldFile.getName().length() >= 10) {
         	ZCGame.curLevelOverride = zsr.worldFile.getName().substring(0, zsr.worldFile.getName().length() - 10);
         	System.out.println("Set to load: " + ZCGame.curLevelOverride);
         }

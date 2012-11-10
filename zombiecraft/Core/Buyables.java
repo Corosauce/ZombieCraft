@@ -50,7 +50,7 @@ public class Buyables {
 		if (!hasInit) {
 			hasInit = true;
 			
-			addBuyItem(new ItemStack(Item.swordSteel), priceBase);
+			addBuyItem(new ItemStack(ZombieCraftMod.itemSword), priceBase);
 			
 			addBuyItem(new ItemStack(ZombieCraftMod.itemDEagle), (int)(priceBase*1.5));
 			addBuyItem(new ItemStack(ZombieCraftMod.itemAk47), (int)(priceBase*2.5));
@@ -63,6 +63,8 @@ public class Buyables {
 			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkSpeed), (int)(priceBase*5));
 			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkExStatic), (int)(priceBase*5));
 			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkJugg), (int)(priceBase*5));
+			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkCharge), (int)(priceBase*5));
+			addBuyItem(new ItemStack(ZombieCraftMod.itemPerkComrade), (int)(priceBase*5));
 			
 		}
 	}

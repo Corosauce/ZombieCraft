@@ -12,12 +12,13 @@ public class ItemGunSniper extends ItemGun
         this.firingSound = "sdk.sniper";
         //this.requiredBullet = mod_ZCSdkGuns.itemBulletHeavy;
         this.numBullets = 1;
-        this.damage = 12;
+        this.damage = 30;
         this.muzzleVelocity = 8.0F;
         this.spread = 0.0F;
         this.useDelay = 20;
         this.recoil = 8.0F;
         ammoType = EnumAmmo.RIFLE;
+        hitCount = 50;
         //this.soundRangeFactor = 8.0F;
     }
 }

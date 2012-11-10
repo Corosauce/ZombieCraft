@@ -17,12 +17,19 @@ import zombiecraft.Core.Entities.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
+import zombiecraft.Server.ZCGameMP;
 
 import net.minecraft.src.*;
 
 public class ZCUtil {
 	
 	
+	public static String field_obf_blockResistance = "co";
+	public static String field_obf_rightClickDelayTimer = "ac";
+	public static String field_obf_equippedProgress = "d";
+	public static String field_mcp_blockResistance = "blockResistance";
+	public static String field_mcp_rightClickDelayTimer = "rightClickDelayTimer";
+	public static String field_mcp_equippedProgress = "equippedProgress";
 	
 	public ZCUtil() {
 		
@@ -127,8 +134,13 @@ public class ZCUtil {
 		try {
 			return ((DataLatcher)ZCGame.instance().entFields.get(ent.username)).values.get(dtEnum);
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
+			try {
+				ZCGame.instance().check(ent);
+				return ((DataLatcher)ZCGame.instance().entFields.get(ent.username)).values.get(dtEnum);
+			} catch (Exception ex2) {
+				ex.printStackTrace();
+				return null;
+			}
 		}
 	}
 	
@@ -222,6 +234,12 @@ public class ZCUtil {
 	public static float[] blockResistance;
 	
 	public static void setBlocksMineable(boolean var1)
+	{
+		areBlocksMineable = var1;
+		
+	}
+	
+	public static void setBlocksMineable2(boolean var1)
     {
 		
 		//bug, if double set to true or false (happens when going from ssp to smp & vice versa), backup settings are set as unbreakable

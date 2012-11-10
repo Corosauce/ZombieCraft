@@ -31,10 +31,12 @@ public class ZCPotionSpeed extends Potion
     {
         super.performEffect(par1EntityLiving, par2);
         
-        par1EntityLiving.motionX *= 1.4F;
-        par1EntityLiving.motionZ *= 1.4F;
+        if (par1EntityLiving.worldObj.isRemote && par1EntityLiving.onGround) {
+        	par1EntityLiving.motionX *= 1.4F;
+        	par1EntityLiving.motionZ *= 1.4F;
+        }
         
-        System.out.println("hmm");
+        //System.out.println("hmm");
     }
 
 }

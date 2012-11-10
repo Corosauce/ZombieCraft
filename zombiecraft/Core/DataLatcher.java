@@ -23,6 +23,7 @@ public class DataLatcher {
 		values.put(DataTypes.purchaseItemIndex, 0);
 		values.put(DataTypes.lastPoints, 0);
 		values.put(DataTypes.zcPoints, 0);
+		values.put(DataTypes.hasCharge, 0);
 		values.put(DataTypes.ammoAmounts, new AmmoDataLatcher());
 		
 	}

@@ -35,6 +35,7 @@ import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.EntityWorldHook;
 import zombiecraft.Core.Items.ItemGun;
+import zombiecraft.Core.Items.ItemPerk;
 import zombiecraft.Core.World.Level;
 import zombiecraft.Core.World.MapManager;
 import zombiecraft.Core.Blocks.*;
@@ -48,6 +49,7 @@ public abstract class ZCGame {
 	public static final int ZCDimensionID = -66;
 	public static final int ZCWorldHeight = 50;
 	public static boolean autostart = false;
+	public static boolean autoload = false;
 	public static String curLevelOverride = "";
 	//public static MCInt mcInt;
 	
@@ -228,6 +230,12 @@ public abstract class ZCGame {
 		player.func_82242_a(0);
 		player.experience = 0;
 		player.score = 0;
+		player.heal(20);
+		if (!player.capabilities.isCreativeMode) {
+			for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+				player.inventory.mainInventory[i] = null;
+			}
+		}
 		setData(player, DataTypes.zcPoints, 0);
 		
 		giveStartItems(player);
@@ -318,11 +326,21 @@ public abstract class ZCGame {
 	
 	public void playerKillEvent(EntityPlayer player, Entity killed) {
 		
-		int givePoints = 20;
+		givePoints(player, 20);
 		
-		int zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(givePoints/* * wMan.expToPointsFactor*/);
+	}
+	
+	public void givePoints(EntityPlayer player, int amount) {
 		
-		//System.out.println("zcPoints " + zcPoints);
+		int zcPoints = 0;
+		try {
+			zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(amount/* * wMan.expToPointsFactor*/);
+		} catch (Exception ex) {
+			System.out.println("Something horrible has happened!");
+			ex.printStackTrace();
+		}
+		
+		System.out.println("zcPoints " + zcPoints);
 		
 		//this.setData(player, DataTypes.lastPoints, lastPoints);
 		this.setData(player, DataTypes.zcPoints, zcPoints);
@@ -474,7 +492,11 @@ public abstract class ZCGame {
 		int tryID = -1;
 		tryID = InvHelper.getOptimalBuySlot(player, inventory, newItem);
 		
-		if (tryID > -1) {
+		//System.out.println("itemIndex: " + itemIndex);
+		
+		if (tryID == -2) buyItem = false;
+		
+		if (tryID != -1) {
 			
 			int newPoints = (Integer)this.getData(player, DataTypes.zcPoints) - cost;
 			
@@ -482,18 +504,16 @@ public abstract class ZCGame {
 			//this.setData(player, DataTypes.zcPoints, 0);
 			//mc.thePlayer.score = mc.thePlayer.score - cost;
 			
-			if (buyItem) {
-				
-				givePlayerItem(player, itemtype, tryID);
-				
-				
-				
+			if (itemtype instanceof ItemPerk) {
+				ItemPerk itemP = (ItemPerk)itemtype;
+				itemP.onItemRightClick(newItem, player.worldObj, player);
 			} else {
-				//inventory.setInventorySlotContents(tryID, new ItemStack(blocktype, count));
+				givePlayerItem(player, itemtype, tryID, buyItem);
 			}
+			//inventory.setInventorySlotContents(tryID, new ItemStack(blocktype, count));
 			
 			
-			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {itemIndex, newPoints});
+			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {newItem.itemID, newPoints});
 			
 		}
 		
@@ -501,6 +521,10 @@ public abstract class ZCGame {
 	}
 	
 	public void givePlayerItem(EntityPlayer player, Item item, int slot) {
+		givePlayerItem(player, item, slot, true);
+	}
+	
+	public void givePlayerItem(EntityPlayer player, Item item, int slot, boolean giveGun) {
 		InventoryPlayer inventory = player.inventory;
 		
 		//modify for grenades, etc
@@ -509,20 +533,20 @@ public abstract class ZCGame {
 		//Ammo, soon unneeded
 		if (item instanceof ItemGun) 
 		{
-			int maxStackSize = ((ItemGun)item).magSize;//getItemMaxStackSize(((ItemGun)item).requiredBullet);
-			int ammoID = ((ItemGun)item).ammoType.ordinal();//((ItemGun)item).requiredBullet.shiftedIndex;
+			int maxStackSize = ((ItemGun)item).magSize;
+			int ammoID = ((ItemGun)item).ammoType.ordinal();
 			
 			int curAmmoCount = ZCUtil.getAmmoData(player, ammoID); 
 			
 			ZCUtil.setAmmoData(player, ammoID, curAmmoCount + (maxStackSize * 3));
 			updateAmmoData(player);
 			
-			//inventory.mainInventory[9+slot] = new ItemStack(((SdkItemGun)item).requiredBullet, maxStackSize);
-			//inventory.mainInventory[18+slot] = new ItemStack(((SdkItemGun)item).requiredBullet, maxStackSize);
-			//inventory.mainInventory[27+slot] = new ItemStack(((SdkItemGun)item).requiredBullet, maxStackSize);
+			if (giveGun) inventory.setInventorySlotContents(slot, new ItemStack(item, count));
+		} else {
+			inventory.setInventorySlotContents(slot, new ItemStack(item, count));
 		}
 		
-		inventory.setInventorySlotContents(slot, new ItemStack(item, count));
+		
 	}
 	
 	public void triggerBarricadeRepair(EntityPlayer player) {

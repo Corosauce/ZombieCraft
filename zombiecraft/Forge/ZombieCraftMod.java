@@ -69,6 +69,7 @@ public class ZombieCraftMod
 	public static boolean bulletsDestroyGlass = true;
 	
 	//Gun fields \\
+	public static Item itemSword;
     public static Item itemDEagle;
     public static Item itemAk47;
     public static Item itemShotgun;
@@ -82,7 +83,10 @@ public class ZombieCraftMod
     public static Item itemPerkSpeed;
     public static Item itemPerkExStatic;
     public static Item itemPerkJugg;
+    public static Item itemPerkCharge;
+    public static Item itemPerkComrade;
     
+    public static int itemSwordID;
     public static int itemPistolID;
     public static int itemAk47ID;
     public static int itemShotgunID;
@@ -96,6 +100,8 @@ public class ZombieCraftMod
     public static int itemPerkSpeedID;
     public static int itemPerkExStaticID;
     public static int itemPerkJuggID;
+    public static int itemPerkChargeID;
+    public static int itemPerkComradeID;
     
     public static int itemPistolTexID = 0;
     public static int itemAk47TexID = 0;
@@ -126,6 +132,7 @@ public class ZombieCraftMod
 
         try
         {
+        	itemSwordID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSwordID", itemIndexID++).getInt();
         	itemAk47ID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemAk47ID", itemIndexID++).getInt();
         	itemPistolID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPistolID", itemIndexID++).getInt();
         	itemShotgunID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemShotgunID", itemIndexID++).getInt();
@@ -139,6 +146,8 @@ public class ZombieCraftMod
         	itemPerkSpeedID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkSpeedID", itemIndexID++).getInt();
         	itemPerkExStaticID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkExStaticID", itemIndexID++).getInt();
         	itemPerkJuggID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkJuggID", itemIndexID++).getInt();
+        	itemPerkChargeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkChargeID", itemIndexID++).getInt();
+        	itemPerkComradeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkComradeID", itemIndexID++).getInt();
         	
             preInitConfig.load();
             
@@ -213,7 +222,7 @@ public class ZombieCraftMod
     public static void setHardness(int id, float val) {
 		Block.blocksList[id].setHardness(val);
 		//Sets original resistance, so explosives work, maybe change later?
-		ZCUtil.setPrivateValueBoth(Block.class, Block.blocksList[id], "cc", "blockResistance", ZCUtil.blockHardness[id]*5F);
+		ZCUtil.setPrivateValueBoth(Block.class, Block.blocksList[id], ZCUtil.field_obf_blockResistance, ZCUtil.field_mcp_blockResistance, ZCUtil.blockHardness[id]*5F);
 	}
     
 }

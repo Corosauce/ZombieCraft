@@ -30,16 +30,18 @@ public class ZCPotionJugg extends Potion
     {
         super.performEffect(par1EntityLiving, par2);
         
-        if (par1EntityLiving instanceof EntityPlayer) {
-        	EntityPlayer ent = (EntityPlayer)par1EntityLiving;
-        	ItemStack is = ent.inventory.armorInventory[0];
-        	
-        	if (is == null) {
-        		is = new ItemStack(Item.helmetSteel);
-        	}
+        if (!par1EntityLiving.worldObj.isRemote) {
+	        if (par1EntityLiving instanceof EntityPlayer) {
+	        	EntityPlayer ent = (EntityPlayer)par1EntityLiving;
+	        	ItemStack is = ent.inventory.armorInventory[0];
+	        	
+	        	if (is == null) {
+	        		is = new ItemStack(Item.helmetSteel);
+	        	}
+	        }
         }
         
-        System.out.println(par2);
+        //System.out.println(par2);
     }
 
 }

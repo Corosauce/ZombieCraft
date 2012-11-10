@@ -69,8 +69,8 @@ public class WaveManager {
 	
 	public long lastWorldTime;
 	
-	public static boolean levelNeedsRegen = true;
-	public boolean waitingToStart = false;
+	public static boolean levelNeedsRegen = false;
+	public static boolean waitingToStart = false;
 	//public boolean gameOver = false;
 	public int levelPrepDelay = 0;
 	
@@ -114,16 +114,20 @@ public class WaveManager {
 		if (levelNeedsRegen) {
 			levelNeedsRegen = false;
 			if (ZCGame.autostart) {
-				waitingToStart = true;
-				System.out.println("FIX ME I ONLY WORK FOR SCHEMATIC AUTOLOADING");
-				ZCGame.instance().mapMan.curLevel = ZCGame.curLevelOverride;
+				waitingToStart = true;	
 			}
-			ZCGame.instance().mapMan.loadLevel();
-			ZCGame.instance().mapMan.buildStart(null);
+			if (ZCGame.autoload) {
+				
+				System.out.println("FIX ME I ONLY WORK FOR SCHEMATIC AUTOLOADING - aka not folders or zips?");
+				ZCGame.instance().mapMan.curLevel = ZCGame.curLevelOverride;
+				ZCGame.instance().mapMan.loadLevel();
+				ZCGame.instance().zcLevel.buildData.map_coord_minY = ZCGame.ZCWorldHeight;
+				ZCGame.instance().mapMan.buildStart(null);
+			}
 		} else {
 			
-			
 			zcGame.gameActive = true;
+			zcGame.zcLevel.playersInGame = zcGame.getPlayers(zcGame.activeZCDimension);
 			zcGame.resetPlayers();
 			//startGameFromPlayer(null);//fix for new autostart
 			setWaveAndStart(1);
@@ -131,14 +135,33 @@ public class WaveManager {
 	}
 	
 	public void levelRegeneratedCallback() {
+		
+		ZCGame.autoload = false;
+		
 		if (waitingToStart) {
 			if (ZCGame.autostart) {
 				zcGame.zcLevel.playersInGame = zcGame.getPlayers(zcGame.activeZCDimension);//fix for new autostart
+				ZCGame.autostart = false;
 			}
+			removeExtraEntities();
 			waitingToStart = false;
 			zcGame.gameActive = true;
 			zcGame.resetPlayers();
 			setWaveAndStart(1);
+		}
+	}
+	
+	public void removeExtraEntities() {
+		World world = zcGame.getWorld();
+		
+		for (int i = 0; i < world.loadedEntityList.size(); i++) {
+			Entity ent = (Entity)world.loadedEntityList.get(i);
+			
+			if (ent instanceof EntityPlayer) {
+				continue;
+			}
+			
+			ent.setDead();
 		}
 	}
 	
@@ -204,7 +227,16 @@ public class WaveManager {
 		wave_StartDelay = 100;
 		wave_Kills = 0;
 		wave_Invaders.clear();
-		wave_MaxKills = (int)(killMaxBase + (killMaxBase * (amp_KillMax * wave_Stage)));//(int)(killMaxBase + (wave_Stage * amp_KillMax));
+		List list = zcGame.getPlayers();
+		int plCount = 1;
+		if (list != null) {
+			plCount = list.size();
+		}
+		
+		//debug
+		//plCount = 5;
+		
+		wave_MaxKills = (int)(killMaxBase + (killMaxBase * (1 + ((plCount-1) * 0.7)) * (amp_KillMax * wave_Stage)));//(int)(killMaxBase + (wave_Stage * amp_KillMax));
 		zcGame.updateInfo(null, PacketTypes.INFO_WAVE, new int[] {wave_Stage, (int)wave_StartDelay, wave_MaxKills, 0});
 		
 		System.out.println("wave_Stage = " + wave_Stage + " | wave_MaxKills: " + wave_MaxKills);

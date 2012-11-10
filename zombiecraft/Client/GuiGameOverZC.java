@@ -63,6 +63,7 @@ public class GuiGameOverZC extends GuiScreen
         		//this.mc.thePlayer.posY = 256; //wont work client side derp
         		//mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
         		this.mc.displayGuiScreen((GuiScreen)null);
+        		ZCClientTicks.zcGame.waitingToSpawn = true;
         		ZCClientTicks.camMan.freeCam();
                 break;
             case 1:

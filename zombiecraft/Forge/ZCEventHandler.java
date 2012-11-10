@@ -1,5 +1,6 @@
 package zombiecraft.Forge;
 
+import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import cpw.mods.fml.common.Side;
@@ -13,6 +14,7 @@ import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public class ZCEventHandler {
@@ -20,11 +22,19 @@ public class ZCEventHandler {
          * The key is the @ForgeSubscribe annotation and the cast of the Event you put in as argument.
          * The method name you pick does not matter. Method signature is public void, always.
          */
+	
+		@ForgeSubscribe
+		public void breakSpeed(BreakSpeed event) {
+			if (event.entityPlayer.dimension == ZCGame.ZCDimensionID && !ZCUtil.areBlocksMineable) {
+				event.newSpeed = 0F;
+			}
+		}
+	
 		@ForgeSubscribe
 		public void joinedWorld(EntityJoinWorldEvent event) {
 			if (event.entity instanceof EntityPlayer) {
 				//doesnt work
-				//System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!" + event.entity);
+				//System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!" + event.entity + " - " + event.world.provider.dimensionId);
 			}
 			
 		}
@@ -68,17 +78,19 @@ public class ZCEventHandler {
         @ForgeSubscribe
         public void deathEvent(LivingDeathEvent event) {
         	
-        	Entity entSource = event.source.getSourceOfDamage();
-        	
-        	if (entSource instanceof EntityBullet) {
-        		entSource = ((EntityBullet)entSource).owner;
-        	}
-        	
-        	if (entSource instanceof EntityPlayer) {
-        		ZCGame zcG = ZCGame.instance();
-            	if (zcG != null) {
-            		zcG.playerKillEvent((EntityPlayer)entSource, event.entity);
-            	}
+        	if (event.entityLiving.dimension == ZCGame.ZCDimensionID) {
+	        	Entity entSource = event.source.getSourceOfDamage();
+	        	
+	        	if (entSource instanceof EntityBullet) {
+	        		entSource = ((EntityBullet)entSource).owner;
+	        	}
+	        	
+	        	if (entSource instanceof EntityPlayer) {
+	        		ZCGame zcG = ZCGame.instance();
+	            	if (zcG != null) {
+	            		zcG.playerKillEvent((EntityPlayer)entSource, event.entity);
+	            	}
+	        	}
         	}
         }
         
@@ -88,7 +100,9 @@ public class ZCEventHandler {
         {
         	ZCGame zcG = ZCGame.instance();
         	if (zcG != null) {
-        		if (zcG.mapMan.editMode) ZCGame.instance().renderInWorldOverlay();
+        		if (zcG.getWorld() != null && zcG.getWorld().provider.dimensionId == ZCGame.ZCDimensionID) {
+        			if (zcG.mapMan.editMode) ZCGame.instance().renderInWorldOverlay();
+        		}
         	}
         }
 	
@@ -98,7 +112,7 @@ public class ZCEventHandler {
         	ZCGame zcG = ZCGame.instance();
         	if (zcG != null) {
         		if (zcG.gameActive) {
-        			System.out.println("BGMusic Event cancelled, ZC game active");
+        			//System.out.println("BGMusic Event cancelled, ZC game active");
         			//event.setCanceled(true);
         			event.result = null;
         		}

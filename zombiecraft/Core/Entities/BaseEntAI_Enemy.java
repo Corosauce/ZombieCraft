@@ -1,6 +1,6 @@
 package zombiecraft.Core.Entities;
 
-import CoroAI.entity.EnumTeam;
+import CoroAI.entity.*;
 import net.minecraft.src.*;
 
 public class BaseEntAI_Enemy extends BaseEntAI
@@ -21,14 +21,27 @@ public class BaseEntAI_Enemy extends BaseEntAI
         
     }
     
-    @Override
-    public boolean isEnemy(Entity ent) {
+    //@Override
+    public boolean isEnemy2(Entity ent) {
     	if (super.isEnemy(ent) && (ent instanceof EntityAnimal || ent instanceof EntityMob || (ent instanceof EntityPlayer && dipl_hostilePlayer))) {
     		return true;
     	} else {
     		return false;
     	}
     }
+    
+    public boolean isEnemy(Entity entity1) {
+		if (entity1 instanceof c_EnhAI) {
+			if (dipl_team != ((c_EnhAI) entity1).dipl_team) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			//return c_CoroAIUtil.isEnemy(this, entity1);
+			return (entity1 instanceof EntityAnimal || entity1 instanceof EntityMob || (entity1 instanceof EntityPlayer));
+		}
+	}
     
     public float getMoveSpeed() {
     	return this.moveSpeed;
@@ -73,7 +86,7 @@ public class BaseEntAI_Enemy extends BaseEntAI
     	if (!worldObj.isRemote) {
     		deathTimer++;
     		if (deathTimer > deathTimerMax) {
-    			setDead();
+    			//setDead();
     		}
     	}
     	

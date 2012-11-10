@@ -1,5 +1,6 @@
 package zombiecraft.Forge;
 
+import zombiecraft.Core.GameLogic.ZCGame;
 import net.minecraft.src.CommandBase;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
@@ -14,15 +15,26 @@ public class CommandTeleportZC extends CommandBase {
 
 	@Override
 	public void processCommand(ICommandSender var1, String[] var2) {
-		EntityPlayer player = getCommandSenderAsPlayer(var1);
-		if(player instanceof EntityPlayerMP)
-		{
-			ZombieCraftMod.teleportPlayerToggle((EntityPlayerMP)player);
-		}
-		else
-		{
-			System.out.println("Not EntityPlayerMP");
+		
+		if (var2 != null && var2.length > 0) {
+			EntityPlayer ent = ZCGame.instance().getWorld().getPlayerEntityByName(var2[0]);
+			
+			if (ent != null) {
+				ZombieCraftMod.teleportPlayerToggle((EntityPlayerMP)ent);
+			}
+		} else {
+			if(var1 instanceof EntityPlayerMP)
+			{
+				EntityPlayer player = getCommandSenderAsPlayer(var1);
+				ZombieCraftMod.teleportPlayerToggle((EntityPlayerMP)player);
+			}
 		}
 	}
+	
+	@Override
+	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender)
+    {
+        return true/*par1ICommandSender.canCommandSenderUseCommand(this.func_82362_a(), this.getCommandName())*/;
+    }
 
 }

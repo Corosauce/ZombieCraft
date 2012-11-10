@@ -385,9 +385,28 @@ public class BlockBarricade extends BlockDoor
     @Override
     public void onEntityCollidedWithBlock(World world, int i, int j, int k, Entity entity)
     {
-    	if (world.isRemote) return;
     	
     	int oldid = world.getBlockId(i, j - 1, k);
+    	
+    	if (world.isRemote) {
+    		if (entity instanceof EntityPlayer) {
+    			//if (!ZCGame.instance().canEdit((EntityPlayer)entity)) {
+    				if (/*((EntityPlayer)entity).pushDelay == 0 && */oldid == ZCBlocks.barricadeS0.blockID) {
+    					double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+    					if (speed < 0.0001) speed = 0.1D;
+    					if (speed < 0.5) {
+    						entity.motionX = entity.motionX*-(1F/speed);
+    						entity.motionZ = entity.motionZ*-(1F/speed);
+    						//entity.attackEntityFrom(DamageSource.causeThrownDamage(entity, entity), 0);
+    					}
+    					
+    					//((EntityPlayer)entity).pushDelay = 5;
+    				}
+    		}
+    		return;
+    	}
+    	
+    	
 		if ((oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
 		{
 			//System.out.println(oldid);
@@ -435,7 +454,7 @@ public class BlockBarricade extends BlockDoor
 		}
 		
 		if (entity instanceof EntityPlayer) {
-			if (!ZCGame.instance().canEdit((EntityPlayer)entity)) {
+			//if (!ZCGame.instance().canEdit((EntityPlayer)entity)) {
 				if (/*((EntityPlayer)entity).pushDelay == 0 && */oldid == ZCBlocks.barricadeS0.blockID) {
 					double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
 					if (speed < 0.0001) speed = 0.1D;
@@ -447,7 +466,7 @@ public class BlockBarricade extends BlockDoor
 					
 					//((EntityPlayer)entity).pushDelay = 5;
 				}
-			}
+			//}
 			//entity.prevPosX = entity.posX;
 			//entity.prevPosZ = entity.posZ;
 			//entity.posZ += entity.motionZ*-5F;

@@ -1,6 +1,7 @@
 package zombiecraft.Core.Dimension;
 
 import net.minecraft.src.BiomeGenBase;
+import net.minecraft.src.EntityBat;
 import net.minecraft.src.EntityZombie;
 import net.minecraft.src.SpawnListEntry;
 
@@ -12,6 +13,9 @@ public class ZCBiomeGen extends BiomeGenBase
     {
         super(par1);
         this.spawnableCreatureList.clear();
-        this.spawnableMonsterList.add(new SpawnListEntry(EntityZombie.class, 100, 10, 10));
+        this.spawnableMonsterList.clear();
+        this.spawnableWaterCreatureList.clear();
+        
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityBat.class, 100, 10, 10));
     }
 }

@@ -18,6 +18,6 @@ final class CreativeTabZC extends CreativeTabs
      */
     public int getTabIconItemIndex()
     {
-        return Item.swordGold.shiftedIndex;
+        return ZombieCraftMod.itemAk47.shiftedIndex;
     }
 }

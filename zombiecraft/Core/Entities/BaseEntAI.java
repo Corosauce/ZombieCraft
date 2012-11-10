@@ -1,9 +1,12 @@
 package zombiecraft.Core.Entities;
 
+import build.render.Overlays;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.*;
+import CoroAI.entity.*;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
 public class BaseEntAI extends c_EnhAI
@@ -184,9 +187,11 @@ public class BaseEntAI extends c_EnhAI
 	    		if (ent.lungeFactor > wMan.amp_Lunge_Max) ent.lungeFactor = wMan.amp_Lunge_Max;
 	    		
 	    		//System.out.println("ent.lungeFactor " + ent.lungeFactor);
-	    		//System.out.println("ent.getHealth() " + ent.getHealth());
+	    		System.out.println("ent.getHealth() " + ent.getHealth());
     		}
     	}
+    	
+    	
     	
         super.onLivingUpdate();
     }

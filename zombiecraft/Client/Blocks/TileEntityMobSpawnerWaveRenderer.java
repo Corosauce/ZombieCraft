@@ -22,7 +22,7 @@ public class TileEntityMobSpawnerWaveRenderer extends TileEntitySpecialRenderer
     public void renderTileEntityMobSpawner(TileEntityMobSpawnerWave par1TileEntityMobSpawner, double par2, double par4, double par6, float par8)
     {
     	
-    	if (ZCGame.instance().mapMan.editMode && ZCGame.instance().mapMan.infoOverlay) {
+    	if (ZCGame.instance() != null && ZCGame.instance().mapMan != null && ZCGame.instance().mapMan.editMode && ZCGame.instance().mapMan.infoOverlay) {
 	    	renderLivingLabel((par1TileEntityMobSpawner.act_Watch ? "Watch | " : "") + (par1TileEntityMobSpawner.act_Proximity ? "Proximity" : ""), par2+0.5F, par4, par6+0.5F, 0);
 	    	Overlays.renderLineFromToBlockCenter(par1TileEntityMobSpawner.xCoord, par1TileEntityMobSpawner.yCoord, par1TileEntityMobSpawner.zCoord, par1TileEntityMobSpawner.watchX, par1TileEntityMobSpawner.watchY, par1TileEntityMobSpawner.watchZ, 0x00AA00);
     	}

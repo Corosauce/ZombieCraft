@@ -82,6 +82,7 @@ public class ZCServerTicks implements ITickHandler
     			lastWorld = worldRef;
     			
     			((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandTeleportZC());
+    			((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandPoints());
     		}
     	} else {
     		if (worldRef != null) {

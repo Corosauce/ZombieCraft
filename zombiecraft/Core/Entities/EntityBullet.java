@@ -24,6 +24,8 @@ public class EntityBullet extends Entity
     protected float soundRangeFactor;
     protected boolean serverSoundPlayed;
     public boolean serverSpawned;
+    public int penetrateCount;
+    public Entity lastHit;
 
     public EntityBullet(World var1)
     {
@@ -64,6 +66,7 @@ public class EntityBullet extends Entity
     {
         this(var1);
         this.owner = var2;
+        this.penetrateCount = var3.hitCount;
         this.damage = var3.damage;
         this.headshotMultiplier = 1;//var3.headshotMultiplier;
         float var9 = var2.rotationYaw;
@@ -274,122 +277,39 @@ public class EntityBullet extends Entity
         Vec3 var8 = null;
         int var9;
         float var11;
-
-        for (var9 = 0; var9 < var5.size(); ++var9)
-        {
-            Entity var10 = (Entity)var5.get(var9);
-
-            if (var10.canBeCollidedWith() && (var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
-            {
-                var11 = 0.3F;
-                AxisAlignedBB var12 = var10.boundingBox.expand((double)var11, (double)var11, (double)var11);
-                MovingObjectPosition var13 = var12.calculateIntercept(var17, var2);
-
-                if (var13 != null)
-                {
-                    double var14 = var17.distanceTo(var13.hitVec);
-
-                    if (var14 < var6 || var6 == 0.0D)
-                    {
-                        var8 = var13.hitVec;
-                        var4 = var10;
-                        var6 = var14;
-                    }
-                }
-            }
-        }
-
-        if (var4 != null)
-        {
-            var3 = new MovingObjectPosition(var4);
-        }
-
         float var22;
-
-        if (var3 != null)
-        {
-            var9 = this.worldObj.getBlockId(var3.blockX, var3.blockY, var3.blockZ);
-
-            if ((var3.entityHit != null && !var3.entityHit.isDead && var3.entityHit instanceof EntityLiving && ((EntityLiving)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
-            {
-                if (var3.entityHit != null)
-                {
-                	
-                	if (ZCUtil.shouldBulletHurt(this, var3.entityHit)) {
-	                    int var20 = this.damage;
-	
-	                    if (this.owner instanceof IMob && var3.entityHit instanceof EntityPlayer)
-	                    {
-	                        if (this.worldObj.difficultySetting == 0)
-	                        {
-	                            var20 = 0;
-	                        }
-	
-	                        if (this.worldObj.difficultySetting == 1)
-	                        {
-	                            var20 = var20 / 3 + 1;
-	                        }
-	
-	                        if (this.worldObj.difficultySetting == 3)
-	                        {
-	                            var20 = var20 * 3 / 2;
-	                        }
-	                    }
-	
-	                    //var20 = this.checkHeadshot(var3, var8, var20);
-	
-	                    if (this.owner != var3.entityHit) {
-		                    if (var3.entityHit instanceof EntityLiving)
+        
+        if (!this.worldObj.isRemote) {
+	        
+        	if (penetrateCount > 0) {
+		        for (var9 = 0; var9 < var5.size(); ++var9)
+		        {
+		            Entity var10 = (Entity)var5.get(var9);
+		
+		            if (var10.canBeCollidedWith() && (var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
+		            {
+		                var11 = 0.3F;
+		                AxisAlignedBB var12 = var10.boundingBox.expand((double)var11, (double)var11, (double)var11);
+		                MovingObjectPosition var13 = var12.calculateIntercept(var17, var2);
+		
+		                if (var13 != null)
+		                {
+		                    double var14 = var17.distanceTo(var13.hitVec);
+		
+		                    if (var14 < var6 || var6 == 0.0D)
 		                    {
-		                    	((EntityLiving)var3.entityHit).hurtResistantTime = 0;//((EntityLiving)var3.entityHit).maxHurtResistantTime;
-		                    	var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
-		                        //ZCSdkTools.attackEntityIgnoreDelay((EntityLiving)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var20);
+		                        var8 = var13.hitVec;
+		                        var4 = var10;
+		                        var6 = var14;
+		                        
+		                        tryHit(var4);
 		                    }
-		                    else
-		                    {
-		                        var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
-		                    }
-	                    }
-                	}
-                }
-                else
-                {
-                    this.xTile = var3.blockX;
-                    this.yTile = var3.blockY;
-                    this.zTile = var3.blockZ;
-                    this.inTile = var9;
-                    this.motionX = (double)((float)(var3.hitVec.xCoord - this.posX));
-                    this.motionY = (double)((float)(var3.hitVec.yCoord - this.posY));
-                    this.motionZ = (double)((float)(var3.hitVec.zCoord - this.posZ));
-                    var22 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-                    this.posX -= this.motionX / (double)var22 * 0.05D;
-                    this.posY -= this.motionY / (double)var22 * 0.05D;
-                    this.posZ -= this.motionZ / (double)var22 * 0.05D;
-                    this.inGround = true;
-
-                    if (ZombieCraftMod.bulletsDestroyGlass && (this.inTile == Block.glass.blockID || this.inTile == Block.thinGlass.blockID))
-                    {
-                        Block var19;
-
-                        if (this.inTile == Block.glass.blockID)
-                        {
-                            var19 = Block.glass;
-                        }
-                        else
-                        {
-                            var19 = Block.thinGlass;
-                        }
-
-                        //ZCSdkTools.minecraft.effectRenderer.addBlockDestroyEffects(this.xTile, this.yTile, this.zTile, var19.blockID & 255, Block.glass.blockID >> 8 & 255);
-                        this.worldObj.playSound((float)this.xTile + 0.5F, (float)this.yTile + 0.5F, (float)this.zTile + 0.5F, var19.stepSound.getBreakSound(), (var19.stepSound.getVolume() + 1.0F) / 2.0F, var19.stepSound.getPitch() * 0.8F);
-                        this.worldObj.setBlockWithNotify(this.xTile, this.yTile, this.zTile, 0);
-                        var19.onBlockDestroyedByPlayer(this.worldObj, this.xTile, this.yTile, this.zTile, this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile));
-                    }
-                }
-
-                this.worldObj.playSoundAtEntity(this, "sdk.impact", 0.2F, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
-                this.setDead();
-            }
+		                }
+		            }
+		        }
+        	} else {
+                setDead();
+        	}
         }
 
         this.posX += this.motionX;
@@ -443,6 +363,109 @@ public class EntityBullet extends Entity
         this.motionZ *= (double)var22;
         this.motionY -= (double)var11;
         this.setPosition(this.posX, this.posY, this.posZ);
+    }
+    
+    public boolean tryHit(Entity var4) {
+    	MovingObjectPosition var3 = null;
+    	float var22;
+    	if (var4 != null)
+        {
+            var3 = new MovingObjectPosition(var4);
+        }
+    	
+        if (var3 != null)
+        {
+            int var9 = this.worldObj.getBlockId(var3.blockX, var3.blockY, var3.blockZ);
+
+            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && var3.entityHit instanceof EntityLiving && ((EntityLiving)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
+            {
+                if (var3.entityHit != null)
+                {
+                	
+                	if (ZCUtil.shouldBulletHurt(this, var3.entityHit)) {
+	                    int var20 = this.damage;
+	
+	                    if (this.owner instanceof IMob && var3.entityHit instanceof EntityPlayer)
+	                    {
+	                        if (this.worldObj.difficultySetting == 0)
+	                        {
+	                            var20 = 0;
+	                        }
+	
+	                        if (this.worldObj.difficultySetting == 1)
+	                        {
+	                            var20 = var20 / 3 + 1;
+	                        }
+	
+	                        if (this.worldObj.difficultySetting == 3)
+	                        {
+	                            var20 = var20 * 3 / 2;
+	                        }
+	                    }
+	
+	                    //var20 = this.checkHeadshot(var3, var8, var20);
+	
+	                    if (this.owner != var3.entityHit) {
+	                    	lastHit = var3.entityHit;
+		                    if (var3.entityHit instanceof EntityLiving)
+		                    {
+		                    	((EntityLiving)var3.entityHit).hurtResistantTime = 0;//((EntityLiving)var3.entityHit).maxHurtResistantTime;
+		                    	var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
+		                        //ZCSdkTools.attackEntityIgnoreDelay((EntityLiving)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var20);
+		                    }
+		                    else
+		                    {
+		                        var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
+		                    }
+	                    }
+                	}
+                }
+                else
+                {
+                    this.xTile = var3.blockX;
+                    this.yTile = var3.blockY;
+                    this.zTile = var3.blockZ;
+                    this.inTile = var9;
+                    this.motionX = (double)((float)(var3.hitVec.xCoord - this.posX));
+                    this.motionY = (double)((float)(var3.hitVec.yCoord - this.posY));
+                    this.motionZ = (double)((float)(var3.hitVec.zCoord - this.posZ));
+                    var22 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+                    this.posX -= this.motionX / (double)var22 * 0.05D;
+                    this.posY -= this.motionY / (double)var22 * 0.05D;
+                    this.posZ -= this.motionZ / (double)var22 * 0.05D;
+                    this.inGround = true;
+
+                    if (ZombieCraftMod.bulletsDestroyGlass && (this.inTile == Block.glass.blockID || this.inTile == Block.thinGlass.blockID))
+                    {
+                        Block var19;
+
+                        if (this.inTile == Block.glass.blockID)
+                        {
+                            var19 = Block.glass;
+                        }
+                        else
+                        {
+                            var19 = Block.thinGlass;
+                        }
+
+                        //ZCSdkTools.minecraft.effectRenderer.addBlockDestroyEffects(this.xTile, this.yTile, this.zTile, var19.blockID & 255, Block.glass.blockID >> 8 & 255);
+                        this.worldObj.playSound((float)this.xTile + 0.5F, (float)this.yTile + 0.5F, (float)this.zTile + 0.5F, var19.stepSound.getBreakSound(), (var19.stepSound.getVolume() + 1.0F) / 2.0F, var19.stepSound.getPitch() * 0.8F);
+                        this.worldObj.setBlockWithNotify(this.xTile, this.yTile, this.zTile, 0);
+                        var19.onBlockDestroyedByPlayer(this.worldObj, this.xTile, this.yTile, this.zTile, this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile));
+                    }
+                }
+
+                
+                if (penetrateCount <= 0) {
+	                this.worldObj.playSoundAtEntity(this, "sdk.impact", 0.2F, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
+                } else {
+                	penetrateCount--;
+                	System.out.println("penetrateCount: " + penetrateCount);
+                }
+                
+            }
+        }
+        return true;
     }
 
     /*protected int checkHeadshot(MovingObjectPosition var1, Vec3 var2, int var3)

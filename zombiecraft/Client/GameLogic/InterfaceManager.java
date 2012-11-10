@@ -59,6 +59,12 @@ public abstract class InterfaceManager {
 	public KeyBinding keyBindAttackOrig;
 	public KeyBinding keyBindUseItemOrig;
 	
+	//public boolean hasCharge = false;
+	public int chargeLengthTicks = 30;
+	public int chargeLengthCooldown = 20 * 30;
+	public int chargeCooldown = 0;
+	public int chargeTick = 0;
+	
 	public InterfaceManager(Minecraft mc, ZCGame game) {
 		this.mc = mc;
 		zcGame = (ZCGameSP)game;
@@ -95,7 +101,7 @@ public abstract class InterfaceManager {
 		    	}
 				//this.mc.displayGuiScreen((GuiScreen)null);
 	            //this.mc.setIngameFocus();
-			} else {
+			} else if (mc.currentScreen == null) {
 				if (consoleOpenDelay == 0) {
 					consoleOpenDelay = 5;
 					ModLoader.openGUI(mc.thePlayer, new GuiEditorCP());
@@ -107,6 +113,13 @@ public abstract class InterfaceManager {
 	    		mc.thePlayer.respawnPlayer();
 	    		ZCClientTicks.camMan.disableCamera();
 	    	}
+	    } else if (key.keyDescription.equals("ZC_Charge")) {
+	    	if ((Integer)zcGame.getData(mc.thePlayer, DataTypes.hasCharge) == 1) {
+	    		if (chargeCooldown == 0) {
+	    			chargeCooldown = chargeLengthCooldown;
+	    			chargeTick = chargeLengthTicks;
+	    		}
+			}
 	    }
 		
 	}
@@ -114,6 +127,8 @@ public abstract class InterfaceManager {
 	public void tick() {
 		
 		if (mc.thePlayer == null) return;
+		
+		if (mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID) return;
 		
 		/*if (!mc.isMultiplayerWorld()) {
 			zcGame.tick();
@@ -205,6 +220,17 @@ public abstract class InterfaceManager {
 		handleGunBinds();
 		//handleBarricadeProximity();
 		
+		if (holdingUse) {
+			if (reBuyDelay == 0) {
+				if ((Integer)zcGame.getData(mc.thePlayer, DataTypes.purchaseTimeout) > 0) {
+					//buyMenuState = 0;
+					zcGame.resetBuyState(mc.thePlayer, Buyables.barricadeRepairCooldown);
+					ZCClientTicks.sendPacket(PacketTypes.COMMAND, new int[] {CommandTypes.USE});
+					//resetBuyState(mc.thePlayer, Buyables.barricadeRepairCooldown);
+					//ModLoaderMp.sendKey(ModLoaderMp.getModInstance(mod_ZombieCraft.class), CommandTypes.USE);
+				}
+			}
+		}
 	}
 	
 	public void handleGunBinds() {
@@ -254,7 +280,7 @@ public abstract class InterfaceManager {
 		
         FontRenderer fr = FMLClientHandler.instance().getClient().fontRenderer;
         
-        String title = "ZombieCraft " + "["+gameMode+"]";
+        String title = "ZombieCraft " + "["+zcGame.mapMan.curLevel+"]";
         String waveAll = "Wave: "+String.valueOf(zcGame.wMan.wave_Stage);
         String waveLeft = "Wave:";
         String waveRight = String.valueOf(zcGame.wMan.wave_Stage);
