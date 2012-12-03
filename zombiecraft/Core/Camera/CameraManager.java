@@ -22,6 +22,7 @@ public class CameraManager {
 	public EnumCameraState camState = EnumCameraState.OFF;
 	public EntityLiving activeCamera = null;
 	public EntityLiving spectateTarget = null;
+	public int spectateTargetIndex;
 	public MovementInputProxy mip = null;
 	public Minecraft mc = null;
 	public List<CameraPoint> camPoints;
@@ -31,6 +32,14 @@ public class CameraManager {
 	public float lockPitch;
 	public float oldYaw;
 	public float oldPitch;
+	
+	public float aimYaw;
+	public float smoothYaw;
+	
+	//Recoil
+	public float curRecoil;
+	public float curRecoilForce;
+	public float recoilResist;
 	
 	public CameraManager() {
 		mc = FMLClientHandler.instance().getClient();
@@ -79,6 +88,10 @@ public class CameraManager {
 	        float var5 = (float)this.mc.mouseHelper.deltaY * var3;
 	        byte var6 = 1;
 	        activeCamera.setAngles(var4, var5 * (float)var6);
+		} else {
+			
+			
+			
 		}
 	}
 	
@@ -91,6 +104,8 @@ public class CameraManager {
 				if (camState == EnumCameraState.OFF) {
 					freeCam();
 				} else if (camState == EnumCameraState.FREE) {
+					spectate(mc.thePlayer);
+				} else if (camState == EnumCameraState.FOLLOW) {
 					disableCamera();
 				}
 				/*if (camState == EnumCameraState.OFF) {
@@ -104,16 +119,33 @@ public class CameraManager {
 				}*/
 			}
 			isPressed = true;
+		} else if (mc.currentScreen == null && camState == EnumCameraState.FOLLOW && Keyboard.isKeyDown(ZCKeybindHandler.chargeKey.keyCode)) {
+			if (!isPressed) {
+				spectateNext();
+			}
+			isPressed = true;		
 		} else {
 			isPressed = false;
 		}
 		
 		checkCamera();
 		
+		if (camState == EnumCameraState.OFF) {
+			//Handle recoil
+			
+		}
+		
+		
+		
+		
+		
+		recoilTick();
+		
 		if (mc.thePlayer != null && activeCamera != null && mip != null) {
 			if (camState == EnumCameraState.FOLLOW) {
 				if (spectateTarget != null) {
-					activeCamera.setPosition(spectateTarget.posX, spectateTarget.posY - 1.2F, spectateTarget.posZ);
+					//OVER THE SHOULDER CODE
+					/*activeCamera.setPosition(spectateTarget.posX, spectateTarget.posY - 1.2F, spectateTarget.posZ);
 					activeCamera.rotationPitch = spectateTarget.rotationPitch;
 					activeCamera.rotationYaw = spectateTarget.rotationYaw;
 					
@@ -122,7 +154,65 @@ public class CameraManager {
 					
 					activeCamera.posX += (Math.sin(angle * Math.PI / 180) * dist);
 					activeCamera.posY += (Math.sin(activeCamera.rotationPitch * Math.PI / 180) * dist);
+					activeCamera.posZ -= (Math.cos(angle * Math.PI / 180) * dist);*/
+					
+					float yOffset = 0F;
+					
+					if (spectateTarget instanceof EntityOtherPlayerMP) {
+						yOffset = 1F;
+					}
+					
+					activeCamera.setPosition(spectateTarget.posX, spectateTarget.posY + 0.6F + yOffset, spectateTarget.posZ);
+					//activeCamera.rotationPitch = spectateTarget.rotationPitch;
+					
+					//float rate = 3F;
+					
+					
+					
+					float bestMove = MathHelper.wrapAngleTo180_float(activeCamera.rotationYaw - spectateTarget.rotationYaw);
+					
+					float camRotateSpeed = bestMove * 0.03F;
+					
+					if (camRotateSpeed < 0.03F) camRotateSpeed = 0F;
+					
+					//System.out.println(bestMove);
+					
+					//if (Math.abs(bestMove) < 180 - (camRotateSpeed * 2)) {
+						if (bestMove > camRotateSpeed * 1) {
+							if (bestMove < camRotateSpeed * 2) {
+								activeCamera.rotationYaw = spectateTarget.rotationYaw;
+							} else {
+								activeCamera.rotationYaw -= camRotateSpeed;
+							}
+						} else if (bestMove < camRotateSpeed * 1) {
+							if (bestMove > camRotateSpeed * 2) {
+								activeCamera.rotationYaw = spectateTarget.rotationYaw;
+							} else {
+								activeCamera.rotationYaw += camRotateSpeed;
+							}
+							
+						}
+						
+						while (activeCamera.rotationYaw >= 180.0F) activeCamera.rotationYaw -= 360.0F;
+			            while (activeCamera.rotationYaw < -180.0F) activeCamera.rotationYaw += 360.0F;
+						
+						//System.out.println("activeCamera.rotationYaw: " + activeCamera.rotationYaw);
+					//}
+					
+					/*if (this.aimYaw+rate < spectateTarget.rotationYaw) {
+						this.aimYaw += rate;
+					} else if (this.aimYaw-rate > spectateTarget.rotationYaw) {
+						this.aimYaw -= rate;
+					}
+					activeCamera.rotationYaw = this.aimYaw;*/
+					
+					float dist = 0.5F;
+					float angle = activeCamera.rotationYaw - 0;
+					
+					activeCamera.posX += (Math.sin(angle * Math.PI / 180) * dist);
+					//activeCamera.posY += (Math.sin(activeCamera.rotationPitch * Math.PI / 180) * dist);
 					activeCamera.posZ -= (Math.cos(angle * Math.PI / 180) * dist);
+					
 					//activeCamera.setAngles(spectateTarget.rotationPitch, spectateTarget.rotationYaw);
 				}
 			} else if (camState == EnumCameraState.FREE) {
@@ -246,6 +336,36 @@ public class CameraManager {
 		camState = EnumCameraState.FOLLOW;
 	}
 	
+	public void spectateNext() {
+		
+		//spectateTargetIndex++;
+		int safetyBreak = 0;
+		
+		System.out.println("mc.theWorld.playerEntities.size(): " + mc.theWorld.playerEntities.size());
+		
+		if (mc.theWorld.playerEntities.size() > 1) {
+			if (spectateTargetIndex > mc.theWorld.playerEntities.size()) spectateTargetIndex = 0;
+			
+			for (int i = spectateTargetIndex + 1; i != spectateTargetIndex; i++) {
+				if (safetyBreak++ > 100) return;
+				if (i >= mc.theWorld.playerEntities.size()) i = 0;
+				EntityPlayer entP = (EntityPlayer)mc.theWorld.playerEntities.get(i);
+				System.out.println("what: " + i + " - " + entP + " - h: " + entP.getHealth());
+				if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.getHealth() > 1) {
+					System.out.println("Spectating: " + entP.username);
+					spectate(entP);
+					spectateTargetIndex = i;
+					return;
+				}
+				
+				
+			}
+		}
+		
+		spectateTargetIndex = -1;
+		
+	}
+	
 	public void freeCam() {
 		checkCamera();
 		
@@ -265,6 +385,42 @@ public class CameraManager {
 	public EntityCamera newCamera(EntityLiving entity) {
 		EntityCamera cam = new EntityCamera(entity.worldObj);
 		return cam;
+	}
+	
+	public void recoilTick() {
+		
+		if (mc.thePlayer == null) return;
+		
+		recoilResist = 1F;
+		
+		float adj = 0F;
+		if (curRecoil + curRecoilForce < 0) {
+			adj = (curRecoil + curRecoilForce) * -1F;
+		}
+		curRecoil += curRecoilForce - adj;
+		mc.thePlayer.rotationPitch -= curRecoilForce + adj;
+		
+		if (curRecoil > 0) {
+		
+			curRecoilForce -= recoilResist;
+			
+			
+			
+			//float amount = 2F;
+			//curRecoil -= amount;
+			//if (curRecoil < 0) amount = amount - curRecoil;
+			
+		} else {
+			curRecoilForce = 0;
+			curRecoil = 0; //evening out
+		}
+	}
+	
+	public void recoil(float amount) {
+		//if (curRecoil <= 0) {
+			//mc.thePlayer.rotationPitch -= amount;
+			curRecoilForce += (amount * 0.4F);
+		//}
 	}
 	
 }

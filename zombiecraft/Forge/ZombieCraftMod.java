@@ -41,16 +41,18 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
 import paulscode.sound.SoundSystem;
 import zombiecraft.Core.PacketTypes;
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
 
-@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
+@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input", "CoroAI_Inv" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
 @Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "v3.0")
 
 
@@ -68,59 +70,7 @@ public class ZombieCraftMod
 	public static boolean explosionsDestroyBlocks = false;
 	public static boolean bulletsDestroyGlass = true;
 	
-	//Gun fields \\
-	public static Item itemSword;
-    public static Item itemDEagle;
-    public static Item itemAk47;
-    public static Item itemShotgun;
-    public static Item itemM4;
-    public static Item itemSniper;
-    public static Item itemFlamethrower;
-    
-    public static Item itemGrenade;
-    public static Item itemGrenadeStun;
-    
-    public static Item itemPerkSpeed;
-    public static Item itemPerkExStatic;
-    public static Item itemPerkJugg;
-    public static Item itemPerkCharge;
-    public static Item itemPerkComrade;
-    
-    public static int itemSwordID;
-    public static int itemPistolID;
-    public static int itemAk47ID;
-    public static int itemShotgunID;
-    public static int itemM4ID;
-    public static int itemSniperID;
-    public static int itemFlamethrowerID;
-    
-    public static int itemGrenadeID;
-    public static int itemGrenadeStunID;
-    
-    public static int itemPerkSpeedID;
-    public static int itemPerkExStaticID;
-    public static int itemPerkJuggID;
-    public static int itemPerkChargeID;
-    public static int itemPerkComradeID;
-    
-    public static int itemPistolTexID = 0;
-    public static int itemAk47TexID = 0;
-    public static int itemShotgunTexID = 0;
-    public static int itemM4TexID = 0;
-    public static int itemSniperTexID = 0;
-    public static int itemFlamethrowerTexID = 0;
-    
-    public static int itemGrenadeTexID = 0;
-    public static int itemGrenadeStunTexID = 0;
-    
-    public static int barricadeTopTexIDs[] = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-    //Gun fields //
-    
-    public static int itemIndexID = 22701;
-    
-    public static Potion zcPotionSpeed;
-    public static Potion zcPotionExStatic;
-    public static Potion zcPotionJugg;
+	
 
 	public static CreativeTabs tabBlock;
     //getNextID()-4
@@ -132,7 +82,11 @@ public class ZombieCraftMod
 
         try
         {
-        	itemSwordID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSwordID", itemIndexID++).getInt();
+        	
+        	ZCItems.itemIndexID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemIndexIDStart", 22701).getInt();
+        	ZCItems.abilityIndexID = preInitConfig.get("Potion", "potionIndexIDStart", 25).getInt();
+        	
+        	/*itemSwordID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSwordID", itemIndexID++).getInt();
         	itemAk47ID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemAk47ID", itemIndexID++).getInt();
         	itemPistolID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPistolID", itemIndexID++).getInt();
         	itemShotgunID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemShotgunID", itemIndexID++).getInt();
@@ -147,7 +101,7 @@ public class ZombieCraftMod
         	itemPerkExStaticID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkExStaticID", itemIndexID++).getInt();
         	itemPerkJuggID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkJuggID", itemIndexID++).getInt();
         	itemPerkChargeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkChargeID", itemIndexID++).getInt();
-        	itemPerkComradeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkComradeID", itemIndexID++).getInt();
+        	itemPerkComradeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkComradeID", itemIndexID++).getInt();*/
         	
             preInitConfig.load();
             
@@ -179,6 +133,12 @@ public class ZombieCraftMod
 		DimensionManager.registerDimension(zcDimID, zcDimID);		
         
 		MinecraftForge.EVENT_BUS.register(new ZCEventHandler());
+		GameRegistry.registerPlayerTracker(new ZCPlayerTracker());
+		
+		//custom texture sheet info:
+		//just do MinecraftForge.registerTextureSheet or something like that in ClientProxy
+		//then in your block class in the constructor call setTexture("/yourterrain.png");
+		//same goes with items
 		
         
         //int what = Potion.potionTypes[0].id;
@@ -195,9 +155,9 @@ public class ZombieCraftMod
 		//TeleporterTropics tropicsTeleporter = new TeleporterTropics();
 		ServerConfigurationManager scm = MinecraftServer.getServer().getConfigurationManager();
 		if (player.dimension == 0) {
-			scm.transferPlayerToDimension(player, ZCGame.instance().ZCDimensionID, new ZCTeleporter());
+			scm.transferPlayerToDimension(player, ZCGame.instance().ZCDimensionID, new ZCTeleporter((WorldServer)player.worldObj));
 		} else {
-			scm.transferPlayerToDimension(player, 0, new ZCTeleporter());
+			scm.transferPlayerToDimension(player, 0, new ZCTeleporter((WorldServer)player.worldObj));
 		}
 		
 	}
@@ -207,7 +167,7 @@ public class ZombieCraftMod
 		//TeleporterTropics tropicsTeleporter = new TeleporterTropics();
 		ServerConfigurationManager scm = MinecraftServer.getServer().getConfigurationManager();
 		//if (player.dimension == 0) {
-			scm.transferPlayerToDimension(player, dim, new ZCTeleporter());
+			scm.transferPlayerToDimension(player, dim, new ZCTeleporter((WorldServer)player.worldObj));
 		//} else {
 			//scm.transferPlayerToDimension(player, 0, tropicsTeleporter);
 		//}

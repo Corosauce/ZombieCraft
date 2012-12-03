@@ -21,9 +21,21 @@ public class DataLatcher {
 		values.put(DataTypes.purchaseState, 0);
 		values.put(DataTypes.purchaseTimeout, 0);
 		values.put(DataTypes.purchaseItemIndex, 0);
-		values.put(DataTypes.lastPoints, 0);
+		values.put(DataTypes.lastPoints, 0); //unused
 		values.put(DataTypes.zcPoints, 0);
+		
+		//Abilities
 		values.put(DataTypes.hasCharge, 0);
+		values.put(DataTypes.comrades, 0);
+		values.put(DataTypes.juggTime, 0);
+		values.put(DataTypes.speedTime, 0);
+		values.put(DataTypes.exStaticTime, 0);
+		values.put(DataTypes.exStaticCooldown, -1); //-1 = doesnt have
+		values.put(DataTypes.doublePointsTime, 0);
+		values.put(DataTypes.instaKillTime, 0);
+		
+		
+		
 		values.put(DataTypes.ammoAmounts, new AmmoDataLatcher());
 		
 	}

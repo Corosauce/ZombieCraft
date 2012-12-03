@@ -9,6 +9,7 @@ import net.minecraft.src.*;
 
 import org.lwjgl.opengl.GL11;
 
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
 
@@ -17,7 +18,7 @@ public class RenderZCZombie extends RenderBiped
 {
     public RenderZCZombie()
     {
-        super(new ModelZombie(), 0.5F);
+        super(new ModelZombieZC(), 0.5F);
     }
     
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
@@ -28,6 +29,10 @@ public class RenderZCZombie extends RenderBiped
     	
     	if (debug) renderDebug((Zombie)par1Entity, par2, par4, par6, par8, par9);
     	
+    }
+    
+    public ModelBase getMainModel() {
+    	return modelBipedMain;
     }
     
     public void renderDebug(Zombie par1Entity, double par2, double par4, double par6, float par8, float par9) {
@@ -47,7 +52,7 @@ public class RenderZCZombie extends RenderBiped
 			}
 		
 		
-			if (pe != null/*par1Entity.currentAction != null*/) {
+			if (pe != null && z.job != null && z.job.getJobClass() != null/*par1Entity.currentAction != null*/) {
 				//if () {
 					this.renderLivingLabel(par1Entity, String.valueOf(pe.getCurrentPathIndex() + " - " + z.job.getJobClass().state), par2, par4, par6, 999);
 				//}
@@ -56,5 +61,27 @@ public class RenderZCZombie extends RenderBiped
 			}
 		}
 		
+    }
+    
+    protected void rotateCorpse(EntityLiving par1EntityLiving, float par2, float par3, float par4)
+    {
+        GL11.glRotatef(180.0F - par3, 0.0F, 1.0F, 0.0F);
+
+        if (par1EntityLiving.deathTime > 0)
+        {
+            float var5 = ((float)par1EntityLiving.deathTime + par4 - 1.0F) / 20.0F * 1.6F;
+            var5 = MathHelper.sqrt_float(var5);
+
+            if (var5 > 1.0F)
+            {
+                var5 = 1.0F;
+            }
+
+            if (((BaseEntAI)par1EntityLiving).wasHeadshot) {
+            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLiving), 1.0F, 0.0F, 0.0F);
+            } else {
+            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLiving), 0.0F, 0.0F, 1.0F);
+            }
+        }
     }
 }

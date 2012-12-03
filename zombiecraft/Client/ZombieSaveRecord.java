@@ -18,7 +18,7 @@ class ZombieSaveRecord
     public File worldFile;
 	public int type; //0 = folder, 1 = zip, 2 = schematic
 	
-	public int tex = 0;
+	//public int tex = 0;
 
     public ZombieSaveRecord(File f1, String s2, int parType)
     {
@@ -87,8 +87,8 @@ class ZombieSaveRecord
         {
 			if (type == 0) {
 				File file = new File(worldFile.getPath() + "/" + "info.txt");
-				System.out.println(worldFile.getPath() + "/" + "map.png");
-				tex = FMLClientHandler.instance().getClient().renderEngine.getTexture(worldFile.getPath() + "/" + "map.png");
+				//System.out.println(worldFile.getPath() + "/" + "map.png");
+				//tex = FMLClientHandler.instance().getClient().renderEngine.getTexture(worldFile.getPath() + "/" + "map.png");
 				inputstream = new FileInputStream(file);
 				readInfo(inputstream);
 			} else if (type == 1) {

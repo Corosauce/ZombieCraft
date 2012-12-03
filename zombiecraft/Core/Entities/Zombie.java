@@ -17,12 +17,14 @@ public class Zombie extends BaseEntAI_Enemy
     public Zombie(World par1World)
     {
         super(par1World);
-        this.texture = "/mob/zombie.png";
-        this.moveSpeed = 0.23F;
+        this.texture = "/zc/entities/zombie.png";
+        //this.moveSpeed = 0.23F;
         this.getNavigator().setBreakDoors(true);
         
         addJob(EnumJob.FINDFOOD);
         addJob(EnumJob.INVADER);
+        
+        maxReach_Ranged = 0;
         
         /*this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIBreakDoor(this));
@@ -79,7 +81,7 @@ public class Zombie extends BaseEntAI_Enemy
      */
     protected String getLivingSound()
     {
-        return "mob.zombie";
+        return "mob.zombie.say";
     }
 
     /**
@@ -87,7 +89,7 @@ public class Zombie extends BaseEntAI_Enemy
      */
     protected String getHurtSound()
     {
-        return "mob.zombiehurt";
+        return "mob.zombie.hurt";
     }
 
     /**
@@ -95,15 +97,7 @@ public class Zombie extends BaseEntAI_Enemy
      */
     protected String getDeathSound()
     {
-        return "mob.zombiedeath";
-    }
-
-    /**
-     * Returns the item ID for the item the mob drops on death.
-     */
-    protected int getDropItemId()
-    {
-        return 0;
+        return "mob.zombie.death";
     }
 
     /**

@@ -4,7 +4,10 @@ public enum DataTypes {
 	//Integers
 	purchaseTimeout, purchaseState, purchaseItemIndex,
 	purchaseCoordX, purchaseCoordY, purchaseCoordZ, 
-	lastPoints, zcPoints, hasCharge, 
+	lastPoints, zcPoints, 
+	
+	//Player abilities
+	hasCharge, comrades, juggTime, exStaticTime, exStaticCooldown, speedTime, doublePointsTime, instaKillTime, 
 	
 	//AmmoDataLatcher
 	ammoAmounts

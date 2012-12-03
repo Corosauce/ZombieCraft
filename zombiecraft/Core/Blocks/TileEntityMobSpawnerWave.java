@@ -1,5 +1,7 @@
 package zombiecraft.Core.Blocks;
 
+import java.util.List;
+
 import build.SchematicData;
 import build.world.Build;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -100,6 +102,9 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     	//this was crashing game
     	//ZCGame.wMan.winCountdown = 20;
     	
+    	//temp
+    	//mobID = "ZombieCraftMod.EntityZCImp";
+    	
     	if (!this.worldObj.isRemote)
         {
     		//ServerTickHandler.sendPacketToAll(this.getDescriptionPacket());
@@ -142,14 +147,27 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
                     --this.delay;
                     return;
                 }
-
-                byte var7 = 4;
+                
+                int var7 = 3;
+                
+                int plCount = ZCGame.instance().getPlayerCount();
+                
+                if (plCount > 1) {
+                	var7 *= plCount * 0.8F;
+                }
 
                 for (int var8 = 0; var8 < var7; ++var8)
                 {
-                    EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(this.mobID, this.worldObj));
+                	
+                	String mob = mobID;
+                	
+                	if (ZCServerTicks.zcGame.wMan.wave_Stage % 10 == 0 && this.worldObj.rand.nextInt(60) == 0) {
+                		mob = "ZombieCraftMod.EntityZCImp";
+                	}
+                	
+                    EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
                     
-                    if (var9 == null) var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(fixPrefix + this.mobID, this.worldObj));
+                    if (var9 == null) var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
 
                     if (var9 == null)
                     {
@@ -187,6 +205,8 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
             }
 
             super.updateEntity();
+        } else {
+        	this.updateDelay();
         }
     }
 

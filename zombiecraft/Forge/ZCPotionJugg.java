@@ -1,9 +1,13 @@
 package zombiecraft.Forge;
 
+import zombiecraft.Core.Buyables;
 import net.minecraft.src.*;
 
 public class ZCPotionJugg extends Potion
 {
+	
+	public int tickCount = 0;
+	
     public ZCPotionJugg(int par1, boolean par2, int par3)
     {
         super(par1, par2, par3);
@@ -32,16 +36,24 @@ public class ZCPotionJugg extends Potion
         
         if (!par1EntityLiving.worldObj.isRemote) {
 	        if (par1EntityLiving instanceof EntityPlayer) {
-	        	EntityPlayer ent = (EntityPlayer)par1EntityLiving;
-	        	ItemStack is = ent.inventory.armorInventory[0];
 	        	
-	        	if (is == null) {
-	        		is = new ItemStack(Item.helmetSteel);
+	        	tickCount++;
+	        	EntityPlayer ent = (EntityPlayer)par1EntityLiving;
+	        	
+	        	System.out.println(tickCount);
+	        	
+	        	if (tickCount + 20 < Buyables.perkLengthJugg) {
+		        	if (ent.inventory.armorInventory[2] == null) {
+		        		ent.inventory.armorInventory[2] = new ItemStack(Item.plateSteel);
+		        	}
+	        	} else {
+	        		ent.inventory.armorInventory[2] = null;
+	        		tickCount = 0;
 	        	}
 	        }
         }
         
-        //System.out.println(par2);
+        
     }
 
 }

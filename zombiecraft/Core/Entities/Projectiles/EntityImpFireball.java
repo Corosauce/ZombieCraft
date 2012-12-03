@@ -1,4 +1,4 @@
-package zombiecraft.Core.Entities;
+package zombiecraft.Core.Entities.Projectiles;
 
 import java.util.List;
 

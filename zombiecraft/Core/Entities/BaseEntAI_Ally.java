@@ -18,7 +18,13 @@ public class BaseEntAI_Ally extends BaseEntAI
         this.dipl_team = EnumTeam.COMRADE;
         //team = 1;
         
+        maxReach_Ranged = 32F;
     }
+    
+    @Override
+    public boolean isBreaking() {
+		return false;
+	}
     
     @Override
     public boolean isEnemy(Entity entity1) {

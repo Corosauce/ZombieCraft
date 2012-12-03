@@ -13,7 +13,7 @@ import zombiecraft.Core.Blocks.BlockMobSpawnerWave;
 import zombiecraft.Core.Blocks.BlockPurchasePlate;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
-import zombiecraft.Core.Entities.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
@@ -27,9 +27,11 @@ public class ZCUtil {
 	public static String field_obf_blockResistance = "co";
 	public static String field_obf_rightClickDelayTimer = "ac";
 	public static String field_obf_equippedProgress = "d";
+	public static String field_obf_cameraZoom = "X";
 	public static String field_mcp_blockResistance = "blockResistance";
 	public static String field_mcp_rightClickDelayTimer = "rightClickDelayTimer";
 	public static String field_mcp_equippedProgress = "equippedProgress";
+	public static String field_mcp_cameraZoom = "cameraZoom";
 	
 	public ZCUtil() {
 		
@@ -57,7 +59,7 @@ public class ZCUtil {
 	}
 	
 	public static boolean shouldBulletPassThrough(EntityBullet bullet, int blockID) {
-		if (blockID == 0 || blockID == Block.fence.blockID || blockID == Block.fenceIron.blockID || blockID == Block.fenceGate.blockID || blockID == ZCBlocks.barrier.blockID || (blockID >= ZCBlocks.barricadeS0.blockID && blockID <= ZCBlocks.barricadeS5.blockID)) {
+		if (blockID == 0 || blockID == Block.fence.blockID || blockID == Block.fenceIron.blockID || blockID == Block.fenceGate.blockID || blockID == ZCBlocks.barrier.blockID || blockID == ZCBlocks.barricadePlaceable.blockID || (blockID >= ZCBlocks.barricadeS0.blockID && blockID <= ZCBlocks.barricadeS5.blockID)) {
 			return true;
 		}
 		return false;
@@ -100,25 +102,33 @@ public class ZCUtil {
     	}
     }
 	
-	public static void ammoDLCheck(EntityPlayer me, int ammoID) {
+	public static void ammoDLCheck(String name, int ammoID) {
 		
-		if (!((AmmoDataLatcher)getData(me, DataTypes.ammoAmounts)).values.containsKey(ammoID)) {
-			((AmmoDataLatcher)getData(me, DataTypes.ammoAmounts)).values.put(ammoID, 0);
+		if (!((AmmoDataLatcher)getData(name, DataTypes.ammoAmounts)).values.containsKey(ammoID)) {
+			((AmmoDataLatcher)getData(name, DataTypes.ammoAmounts)).values.put(ammoID, 0);
 		}
 	}
 	
 	public static void setAmmoData(EntityPlayer ent, int ammoID, int ammoAmount) {
-		ZCGame.instance().check(ent);
-		ammoDLCheck(ent, ammoID);
+		setAmmoData(ent.username, ammoID, ammoAmount);
+	}
+	
+	public static void setAmmoData(String name, int ammoID, int ammoAmount) {
+		ZCGame.instance().check(name);
+		ammoDLCheck(name, ammoID);
 		
-		((AmmoDataLatcher)getData(ent, DataTypes.ammoAmounts)).values.put(ammoID, ammoAmount);
+		((AmmoDataLatcher)getData(name, DataTypes.ammoAmounts)).values.put(ammoID, ammoAmount);
 		
 	}
 	
 	public static int getAmmoData(EntityPlayer ent, int ammoID) {
-		ZCGame.instance().check(ent);
-		ammoDLCheck(ent, ammoID);
-		return (Integer)((AmmoDataLatcher)getData(ent, DataTypes.ammoAmounts)).values.get(ammoID);
+		return getAmmoData(ent.username, ammoID);
+	}
+	
+	public static int getAmmoData(String name, int ammoID) {
+		ZCGame.instance().check(name);
+		ammoDLCheck(name, ammoID);
+		return (Integer)((AmmoDataLatcher)getData(name, DataTypes.ammoAmounts)).values.get(ammoID);
 	}
 	
 	public static void setData(EntityPlayer ent, DataTypes dtEnum, Object obj) {
@@ -129,14 +139,18 @@ public class ZCUtil {
 	}
 	
 	public static Object getData(EntityPlayer ent, DataTypes dtEnum) {
+		return getData(ent.username, dtEnum);
+	}
+	
+	public static Object getData(String name, DataTypes dtEnum) {
 		//DataLatcher dl = (DataLatcher)entFields.get(ent.entityId);
 		//System.out.println("get: " + ent.entityId + "|" + ((DataLatcher)entFields.get(ent.entityId)).values.get(dtEnum));
 		try {
-			return ((DataLatcher)ZCGame.instance().entFields.get(ent.username)).values.get(dtEnum);
+			return ((DataLatcher)ZCGame.instance().entFields.get(name)).values.get(dtEnum);
 		} catch (Exception ex) {
 			try {
-				ZCGame.instance().check(ent);
-				return ((DataLatcher)ZCGame.instance().entFields.get(ent.username)).values.get(dtEnum);
+				ZCGame.instance().check(name);
+				return ((DataLatcher)ZCGame.instance().entFields.get(name)).values.get(dtEnum);
 			} catch (Exception ex2) {
 				ex.printStackTrace();
 				return null;
@@ -163,24 +177,25 @@ public class ZCUtil {
 	}
 	
 	//var1 = item ammo shifted index
-	public static int useItemInInventory(EntityPlayer var0, ItemGun item)
+	public static int useItemInInventory(EntityPlayer var0, String name, ItemGun item)
     {
 		//ammoDLCheck(var0, var1);
         //if data > 0: if data quantifies to clipsize: return 2, else: return 1;, else: return 0;
 		//if ZCGame.instance.getData(var0, dtEnum)
-		int ammoCount = getAmmoData(var0, item.ammoType.ordinal());
+		int ammoCount = getAmmoData(name, item.ammoType.ordinal());
 		int clipSize = item.magSize;
 		
-		System.out.println("ammoCount: " + ammoCount);
+		//System.out.println("ammoCount for " + name + ": " + ammoCount);
 		
 		//TEMP HACK FOR SERVER UNLIMITED AMMO, broken datalatcher
 		//ammoCount = 250;
 		
 		if (ammoCount > 0) {
 			ammoCount--;
-			setAmmoData(var0, item.ammoType.ordinal(), ammoCount);
+			setAmmoData(name, item.ammoType.ordinal(), ammoCount);
 			try {
-				ZCGame.instance().updateAmmoData(var0);
+				//if its a real player, not an ai
+				if (!name.contains("fakePlayer")) ZCGame.instance().updateAmmoData(var0);
 			} catch (Exception ex) {
 				
 				System.out.println("Caught!"); ex.printStackTrace();

@@ -26,21 +26,35 @@ public class InvHelper {
 				if (slot > -1) {
 					return -2;
 				} else {
-					int emtpySlot = getEmtpySlot();
+					int emtpySlot = getEmptySlot();
 					
 					if (emtpySlot > -1) {
 						return emtpySlot;
 					}
 				}
-			} else if (buyItem instanceof ItemPerk) {
+			} else if (buyItem instanceof ItemAbility) {
 				return -2;
 			} else {
-				return getEmtpySlot();
+				return getEmptyOrStackableSlot(buyItem); //getItemStackLimit
 			}
 		}
 		
 		return -1;
 	}
+	
+	private static int getEmptyOrStackableSlot(Item buyItem)
+    {
+    	
+        for(int j = 0; j < 9; j++)
+        {
+            if(inventoryRef.mainInventory[j] == null || inventoryRef.mainInventory[j].stackSize < inventoryRef.mainInventory[j].getItem().getItemStackLimit())
+            {
+                return j;
+            }
+        }
+
+        return -1;
+    }
 	
 	public static int getOptimalBuySlotOld(EntityPlayer player, InventoryPlayer inventory, ItemStack item) {
 		
@@ -341,7 +355,7 @@ public class InvHelper {
         return -1;
     }
     
-    private static int getEmtpySlot()
+    private static int getEmptySlot()
     {
     	
     	/*for(int j = 0; j < 9; j++)

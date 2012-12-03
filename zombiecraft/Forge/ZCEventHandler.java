@@ -1,11 +1,14 @@
 package zombiecraft.Forge;
 
+import CoroAI.entity.c_EnhAI;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Entities.EntityBullet;
+import zombiecraft.Core.Entities.BaseEntAI;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
 import net.minecraft.src.Entity;
+import net.minecraft.src.EntityClientPlayerMP;
 import net.minecraft.src.EntityPlayer;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.sound.PlayBackgroundMusicEvent;
@@ -25,7 +28,8 @@ public class ZCEventHandler {
 	
 		@ForgeSubscribe
 		public void breakSpeed(BreakSpeed event) {
-			if (event.entityPlayer.dimension == ZCGame.ZCDimensionID && !ZCUtil.areBlocksMineable) {
+			//lock out survival entirely, only creative mode allowed now
+			if (event.entityPlayer.dimension == ZCGame.ZCDimensionID/* && !ZCUtil.areBlocksMineable*/) {
 				event.newSpeed = 0F;
 			}
 		}
@@ -59,7 +63,8 @@ public class ZCEventHandler {
         @ForgeSubscribe
         public void interact(PlayerInteractEvent event)
         {
-        	//System.out.println("attacked");
+        	if (event.entityPlayer.worldObj.isRemote && event.entityPlayer instanceof EntityClientPlayerMP) ((EntityClientPlayerMP)event.entityPlayer).sendMotionUpdates();
+        	
         	if (event.entityLiving instanceof EntityPlayer) {
         		//needs to be client side - knockback is called on server side and transmits somehow...
         		/*event.entityLiving.motionX = 0;
@@ -85,11 +90,26 @@ public class ZCEventHandler {
 	        		entSource = ((EntityBullet)entSource).owner;
 	        	}
 	        	
-	        	if (entSource instanceof EntityPlayer) {
+	        	EntityPlayer playerRef = null;
+	        	if (entSource instanceof c_EnhAI) {
+	        		playerRef = ((c_EnhAI)entSource).fakePlayer;
+	        	} else if (entSource instanceof EntityPlayer) {
+	        		playerRef = (EntityPlayer)entSource;
+	        	}
+	        	
+	        	if (!event.entityLiving.worldObj.isRemote) {
+		        	if (event.entityLiving instanceof BaseEntAI) {
+		        		((BaseEntAI)event.entityLiving).dropItems();
+		        	}
+	        	}
+	        	
+	        	if (playerRef instanceof EntityPlayer) {
 	        		ZCGame zcG = ZCGame.instance();
 	            	if (zcG != null) {
-	            		zcG.playerKillEvent((EntityPlayer)entSource, event.entity);
+	            		zcG.playerKillEvent(playerRef, event.entity);
 	            	}
+	        	} else {
+	        		//System.out.println("entSource: " + entSource);
 	        	}
         	}
         }
@@ -100,7 +120,7 @@ public class ZCEventHandler {
         {
         	ZCGame zcG = ZCGame.instance();
         	if (zcG != null) {
-        		if (zcG.getWorld() != null && zcG.getWorld().provider.dimensionId == ZCGame.ZCDimensionID) {
+        		if (zcG.getWorld() != null && (zcG.getWorld().provider.dimensionId == ZCGame.ZCDimensionID || zcG.mapMan.editMode)) {
         			if (zcG.mapMan.editMode) ZCGame.instance().renderInWorldOverlay();
         		}
         	}

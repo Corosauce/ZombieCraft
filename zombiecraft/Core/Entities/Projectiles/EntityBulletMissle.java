@@ -1,28 +1,30 @@
-package zombiecraft.Core.Entities;
+package zombiecraft.Core.Entities.Projectiles;
 
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.src.*;
 
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
 
-public class EntityBulletFlame extends EntityBullet
+public class EntityBulletMissle extends EntityBullet
 {
-    public EntityBulletFlame(World var1)
+    public EntityBulletMissle(World var1)
     {
         super(var1);
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityBulletFlame(World var1, double var2, double var4, double var6)
+    public EntityBulletMissle(World var1, double var2, double var4, double var6)
     {
         super(var1, var2, var4, var6);
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityBulletFlame(World var1, Entity var2, ItemGun var3, float var4, float var5, float var6, float var7, float var8)
+    public EntityBulletMissle(World var1, Entity var2, ItemGun var3, float var4, float var5, float var6, float var7, float var8)
     {
         super(var1, var2, var3, var4, var5, var6, var7, var8);
         this.setSize(0.5F, 0.5F);
@@ -30,7 +32,7 @@ public class EntityBulletFlame extends EntityBullet
 
     public void playServerSound(World var1)
     {
-        var1.playSoundAtEntity(this, ((ItemGun)ZombieCraftMod.itemFlamethrower).firingSound, ((ItemGun)ZombieCraftMod.itemFlamethrower).soundRangeFactor, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
+        var1.playSoundAtEntity(this, ((ItemGun)ZCItems.itemFlamethrower).firingSound, ((ItemGun)ZCItems.itemFlamethrower).soundRangeFactor, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
     }
 
     /**
@@ -174,7 +176,7 @@ public class EntityBulletFlame extends EntityBullet
                     boolean var20 = this.worldObj.getBlockId(this.xTile, this.yTile - var18, this.zTile) == 0 || this.worldObj.getBlockId(this.xTile, this.yTile - var18, this.zTile) == Block.snow.blockID;
                     boolean var21 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile - var17) == 0 || this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile - var17) == Block.snow.blockID;
 
-                    if (var19)
+                    /*if (var19)
                     {
                         this.worldObj.setBlockWithNotify(this.xTile - var9, this.yTile, this.zTile, Block.fire.blockID);
                     }
@@ -187,9 +189,11 @@ public class EntityBulletFlame extends EntityBullet
                     if (var21)
                     {
                         this.worldObj.setBlockWithNotify(this.xTile, this.yTile, this.zTile - var17, Block.fire.blockID);
-                    }
+                    }*/
                 }
             }
+            
+            explode();
 
             this.setDead();
         }
@@ -205,6 +209,35 @@ public class EntityBulletFlame extends EntityBullet
         }
 
         this.setPosition(this.posX, this.posY, this.posZ);
+    }
+    
+    public void explode() {
+    	
+    	float size = 2F;
+    	
+    	Explosion var11 = new Explosion(worldObj, this, posX, posY, posZ, size);
+        var11.isFlaming = false;
+        var11.isSmoking = true;
+        var11.doExplosionA();
+        //var11.doExplosionB(false);
+        this.worldObj.playSoundEffect(posX, posY, posZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+    	
+    	//if (!par10)
+        //{
+        var11.affectedBlockPositions.clear();
+        //}
+
+        Iterator var12 = worldObj.playerEntities.iterator();
+
+        while (var12.hasNext())
+        {
+            EntityPlayer var13 = (EntityPlayer)var12.next();
+
+            if (var13.getDistanceSq(posX, posY, posZ) < 4096.0D)
+            {
+                ((EntityPlayerMP)var13).playerNetServerHandler.sendPacketToPlayer(new Packet60Explosion(posX, posY, posZ, size, var11.affectedBlockPositions, (Vec3)var11.func_77277_b().get(var13)));
+            }
+        }
     }
 
     public void setRotationToVelocity()

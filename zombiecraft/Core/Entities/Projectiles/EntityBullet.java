@@ -1,8 +1,17 @@
-package zombiecraft.Core.Entities;
+package zombiecraft.Core.Entities.Projectiles;
 
 import java.util.List;
 
+import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.asm.SideOnly;
+
+import CoroAI.entity.*;
+
+import zombiecraft.Client.Entities.RenderZCZombie;
+import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Entities.BaseEntAI;
+import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
 
@@ -68,8 +77,9 @@ public class EntityBullet extends Entity
         this.owner = var2;
         this.penetrateCount = var3.hitCount;
         this.damage = var3.damage;
-        this.headshotMultiplier = 1;//var3.headshotMultiplier;
+        this.headshotMultiplier = 2.5F;//var3.headshotMultiplier;
         float var9 = var2.rotationYaw;
+        
         float var10 = var9 * 0.017453292F;
         double var11 = (double)(var4 * MathHelper.cos(var10) - var6 * MathHelper.sin(var10));
         double var13 = (double)(var4 * MathHelper.sin(var10) + var6 * MathHelper.cos(var10));
@@ -147,10 +157,12 @@ public class EntityBullet extends Entity
             this.owner = var2.riddenByEntity;
         }
 
+        //this.rotationPitch = 0;
+        
         this.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI));
         this.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI));
         this.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI));
-        this.setBulletHeading(this.motionX, this.motionY, this.motionZ, var3.muzzleVelocity, var15 / 2.0F);
+        this.setBulletHeading(this.motionX, this.motionY, this.motionZ, var3.muzzleVelocity/* * 0.2F*/, var15 / 2.0F);
         double var22 = 0.0D;
         double var18 = 0.0D;
         double var20 = 0.0D;
@@ -286,7 +298,7 @@ public class EntityBullet extends Entity
 		        {
 		            Entity var10 = (Entity)var5.get(var9);
 		
-		            if (var10.canBeCollidedWith() && (var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
+		            if (var10.canBeCollidedWith() && !(var10 instanceof EntityPlayer) && (!(var10 instanceof c_EnhAI && ((c_EnhAI)var10).dipl_team == EnumTeam.COMRADE) && var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
 		            {
 		                var11 = 0.3F;
 		                AxisAlignedBB var12 = var10.boundingBox.expand((double)var11, (double)var11, (double)var11);
@@ -302,7 +314,7 @@ public class EntityBullet extends Entity
 		                        var4 = var10;
 		                        var6 = var14;
 		                        
-		                        tryHit(var4);
+		                        tryHit(var4, var8);
 		                    }
 		                }
 		            }
@@ -365,7 +377,7 @@ public class EntityBullet extends Entity
         this.setPosition(this.posX, this.posY, this.posZ);
     }
     
-    public boolean tryHit(Entity var4) {
+    public boolean tryHit(Entity var4, Vec3 vec) {
     	MovingObjectPosition var3 = null;
     	float var22;
     	if (var4 != null)
@@ -377,14 +389,14 @@ public class EntityBullet extends Entity
         {
             int var9 = this.worldObj.getBlockId(var3.blockX, var3.blockY, var3.blockZ);
 
-            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && var3.entityHit instanceof EntityLiving && ((EntityLiving)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
+            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && (var3.entityHit instanceof EntityLiving) && ((EntityLiving)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
             {
                 if (var3.entityHit != null)
                 {
                 	
                 	if (ZCUtil.shouldBulletHurt(this, var3.entityHit)) {
 	                    int var20 = this.damage;
-	
+	                    
 	                    if (this.owner instanceof IMob && var3.entityHit instanceof EntityPlayer)
 	                    {
 	                        if (this.worldObj.difficultySetting == 0)
@@ -403,12 +415,30 @@ public class EntityBullet extends Entity
 	                        }
 	                    }
 	
-	                    //var20 = this.checkHeadshot(var3, var8, var20);
+	                    boolean wasHeadshot = this.checkHeadshot(var3, vec);
+	                    
+	                    if (wasHeadshot) {
+	                    	var20 *= headshotMultiplier;
+	                    }
+	                    
+	                    //System.out.println("bullet damage: " + var20);
 	
+	                    if (owner instanceof EntityPlayer) {
+	                    	if ((Integer)ZCGame.instance().getData((EntityPlayer)owner, DataTypes.instaKillTime) > 0) {
+	                    		var20 += 99999;
+	                    	}
+	                    }
+	                    
 	                    if (this.owner != var3.entityHit) {
+	                    	//System.out.println("lasthit temp disabled");
 	                    	lastHit = var3.entityHit;
 		                    if (var3.entityHit instanceof EntityLiving)
 		                    {
+		                    	if (wasHeadshot && var3.entityHit instanceof BaseEntAI && var20 >= ((BaseEntAI)var3.entityHit).getHealth()) {
+		                    		//((BaseEntAI)var3.entityHit).wasHeadshot = wasHeadshot;
+		                    		((BaseEntAI)var3.entityHit).headshot();
+		                    		
+		                    	}
 		                    	((EntityLiving)var3.entityHit).hurtResistantTime = 0;//((EntityLiving)var3.entityHit).maxHurtResistantTime;
 		                    	var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
 		                        //ZCSdkTools.attackEntityIgnoreDelay((EntityLiving)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var20);
@@ -417,6 +447,11 @@ public class EntityBullet extends Entity
 		                    {
 		                        var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
 		                    }
+		                    
+		                    //knockback fix
+		                    if (var3.entityHit.motionY > 0) var3.entityHit.motionY = 0;
+		                    if (Math.abs(var3.entityHit.motionX) > 0) var3.entityHit.motionX *= 0.2F;
+		                    if (Math.abs(var3.entityHit.motionZ) > 0) var3.entityHit.motionZ *= 0.2F;
 	                    }
                 	}
                 }
@@ -457,10 +492,10 @@ public class EntityBullet extends Entity
 
                 
                 if (penetrateCount <= 0) {
-	                this.worldObj.playSoundAtEntity(this, "sdk.impact", 0.2F, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
+	                //this.worldObj.playSoundAtEntity(this, "zc.gun.impact", 0.2F, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
                 } else {
                 	penetrateCount--;
-                	System.out.println("penetrateCount: " + penetrateCount);
+                	//System.out.println("penetrateCount: " + penetrateCount + " - " + var3.entityHit);
                 }
                 
             }
@@ -468,47 +503,65 @@ public class EntityBullet extends Entity
         return true;
     }
 
-    /*protected int checkHeadshot(MovingObjectPosition var1, Vec3 var2, int var3)
+    protected boolean checkHeadshot(MovingObjectPosition var1, Vec3 var2)
+    {
+    	
+    	float mobHitY = (float) (var2.yCoord - var1.entityHit.boundingBox.minY);
+    	
+    	if (mobHitY > 1.6F) {
+    		return true;
+    	}
+
+        return false;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    protected boolean checkHeadshot2(MovingObjectPosition var1, Vec3 var2)
     {
         Render var4 = RenderManager.instance.getEntityClassRenderObject(var1.entityHit.getClass());
 
-        if (var4 instanceof RenderLiving)
+        if (var4 instanceof RenderZCZombie)
         {
-            RenderLiving var5 = (RenderLiving)var4;
+        	RenderZCZombie var5 = (RenderZCZombie)var4;
             float var6 = 0.0F;
             ModelBox var8;
             ModelBox var9;
 
-            if (var5.mainModel instanceof ModelBiped)
+            if (var5.getMainModel() instanceof ModelBiped)
             {
-                ModelBiped var7 = (ModelBiped)var5.mainModel;
+                ModelBiped var7 = (ModelBiped)var5.getMainModel();
                 var8 = (ModelBox)var7.bipedHead.cubeList.get(0);
                 var9 = (ModelBox)var7.bipedRightLeg.cubeList.get(0);
                 var6 = (var8.posY2 - var8.posY1) / (var9.posY2 + var7.bipedRightLeg.rotationPointY - (var8.posY1 + var7.bipedHead.rotationPointY));
             }
-            else if (var5.mainModel instanceof ModelCreeper)
+            /*else if (var5.mainModel instanceof ModelCreeper)
             {
                 ModelCreeper var13 = (ModelCreeper)var5.mainModel;
                 var8 = (ModelBox)var13.head.cubeList.get(0);
                 var9 = (ModelBox)var13.leg1.cubeList.get(0);
                 var6 = (var8.posY2 - var8.posY1) / (var9.posY2 + var13.leg1.rotationPointY - (var8.posY1 + var13.head.rotationPointY));
-            }
+            }*/
 
+            //System.out.println("what the: " + var6);
+            
+            float jawAdjust = 0.2F;
+            
             if (var6 > 0.0F)
             {
                 double var14 = var1.entityHit.boundingBox.maxY;
                 double var15 = var1.entityHit.boundingBox.minY;
                 double var11 = var14 - var15;
 
-                if (var2.yCoord > var14 - var11 * (double)var6)
+                if (var2.yCoord - jawAdjust > var14 - var11 * (double)var6)
                 {
-                    var3 = Math.round((float)var3 * this.headshotMultiplier);
+                	return true;
+                    //var3 = Math.round((float)var3 * this.headshotMultiplier);
                 }
             }
         }
 
-        return var3;
-    }*/
+        return false;
+    }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
@@ -547,5 +600,6 @@ public class EntityBullet extends Entity
     {
         super.setDead();
         this.owner = null;
+        this.lastHit = null;
     }
 }

@@ -34,7 +34,7 @@ public class CommandTeleportZC extends CommandBase {
 	@Override
 	public boolean canCommandSenderUseCommand(ICommandSender par1ICommandSender)
     {
-        return true/*par1ICommandSender.canCommandSenderUseCommand(this.func_82362_a(), this.getCommandName())*/;
+        return true/*par1ICommandSender.canCommandSenderUseCommand(this.getRequiredPermissionLevel(), this.getCommandName())*/;
     }
 
 }

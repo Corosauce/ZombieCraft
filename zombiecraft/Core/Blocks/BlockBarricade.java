@@ -369,7 +369,7 @@ public class BlockBarricade extends BlockDoor
 	        world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8);
 	    }
 	    world.setBlockMetadataWithNotify(i, j, k, (l));
-	    world.markBlocksDirty(i, j - 1, k, i, j, k);
+	    world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
 		
 	    /*System.out.print("Setting meta: ");
 	    System.out.println((l ^ 4) + stateToBit(state));*/
@@ -407,7 +407,7 @@ public class BlockBarricade extends BlockDoor
     	}
     	
     	
-		if ((oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
+		if (world.getBlockId(i, j, k) != ZCBlocks.barricadeS0.blockID && (oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
 		{
 			//System.out.println(oldid);
 			BaseEntAI ent = (BaseEntAI)entity;
@@ -417,8 +417,8 @@ public class BlockBarricade extends BlockDoor
 			ent.motionY = -0.4F;
 			//System.out.println(ent.curBlockDamage);
 			
-			if (ent.curBlockDamage % 110 == 0) {
-				ent.swingArm = true;
+			if (ent.curBlockDamage % 65 == 0) {
+				ent.swingItem();
 			}
 			
 			if (ent.curBlockDamage % 130 == 0)
@@ -439,9 +439,9 @@ public class BlockBarricade extends BlockDoor
 				
 				if (newid != oldid) {
 		            if(newid == ZCBlocks.barricadeS0.blockID) {
-		            	world.playSoundAtEntity(entity, "sdkzc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, "zc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            } else {
-		            	world.playSoundAtEntity(entity, "sdkzc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, "zc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            }
 				}
 				//if (success) {
@@ -548,7 +548,7 @@ public class BlockBarricade extends BlockDoor
             world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8);
         }
         world.setBlockMetadataWithNotify(i, j, k, (l));
-        world.markBlocksDirty(i, j - 1, k, i, j, k);
+        world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
     	
         /*System.out.print("Setting meta: ");
         System.out.println((l ^ 4) + stateToBit(state));*/
@@ -610,7 +610,7 @@ public class BlockBarricade extends BlockDoor
             world.setBlockMetadataWithNotify(i, j + 1, k, (l ^ 4) + 8);
         }
         world.setBlockMetadataWithNotify(i, j, k, l ^ 4);
-        world.markBlocksDirty(i, j - 1, k, i, j, k);
+        world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
         if(Math.random() < 0.5D)
         {
             world.playSoundEffect((double)i + 0.5D, (double)j + 0.5D, (double)k + 0.5D, "random.door_open", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);

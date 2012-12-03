@@ -3,6 +3,9 @@ package zombiecraft.Forge;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.EnumSet;
+import java.util.HashMap;
+
+import CoroAI.entity.c_EnhAI;
 
 import zombiecraft.Client.ZCGameSP;
 import zombiecraft.Client.GameLogic.InterfaceManager;
@@ -28,6 +31,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.EntityRegistry;
 
 public class ZCServerTicks implements ITickHandler
@@ -41,6 +45,8 @@ public class ZCServerTicks implements ITickHandler
 	public World lastWorld;
 	
 	//public static int zcDim;
+	
+	
 	
     @Override
     public void tickStart(EnumSet<TickType> type, Object... tickData)
@@ -80,6 +86,7 @@ public class ZCServerTicks implements ITickHandler
     		if (((ZCGameMP)zcGame).mc != null) {
     			worldRef = ((ZCGameMP)zcGame).mc.worldServerForDimension(((ZCGameMP)zcGame).activeZCDimension);
     			lastWorld = worldRef;
+    			zcGame.wMan.stopGame();
     			
     			((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandTeleportZC());
     			((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandPoints());
@@ -158,7 +165,7 @@ public class ZCServerTicks implements ITickHandler
         	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(packet);
         }
     	
-    	
+    	//PacketDispatcher.sendPacketToPlayer(packet, player);
     	
     	
     }

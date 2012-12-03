@@ -18,13 +18,14 @@ public class ItemSwordZC extends ItemSword {
 	public boolean hitEntity(ItemStack par1ItemStack, EntityLiving par2EntityLiving, EntityLiving par3EntityLiving)
     {
         //par1ItemStack.damageItem(1, par3EntityLiving);
+		par2EntityLiving.worldObj.playSoundAtEntity(par2EntityLiving, "zc.meleehit", 1.0F, 1.0F);
         return true;
     }
 	
 	public int getDamageVsEntity(Entity par1Entity)
     {
 		if (par1Entity instanceof EntityPlayer) return 0;
-        return 5;
+        return 10;
     }
 
 }

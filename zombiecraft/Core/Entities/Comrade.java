@@ -1,6 +1,7 @@
 package zombiecraft.Core.Entities;
 
 import CoroAI.entity.EnumJob;
+import CoroAI.entity.JobProtect;
 import net.minecraft.src.*;
 
 public class Comrade extends BaseEntAI_Ally
@@ -17,15 +18,27 @@ public class Comrade extends BaseEntAI_Ally
     {
         super(par1World);
         
-        this.texture = "/zc/entities/comrade/skin0.png";
-        this.moveSpeed = 0.35F;
+        this.texture = "/zc/entities/comrade/skin10.png";
+        //this.moveSpeed = 0.35F;
+        setMoveSpeed(0.33F);
         this.getNavigator().setBreakDoors(true);
         
         //addJob(EnumJob.FINDFOOD);
-        addJob(EnumJob.PROTECT);
-        addJob(EnumJob.HUNTER);
+        //addJob(EnumJob.PROTECT);
+        //addJob(EnumJob.HUNTER);
         
-        initJobAndStates(EnumJob.HUNTER);
+        //addJob(EnumJob.PROTECT);
+        //addJob(EnumJob.INVADER);
+        
+        job.jobTypes.put(EnumJob.PROTECT, new JobZCProtect(job));
+        job.jobTypes.put(EnumJob.HUNTER, new JobSurvivor(job));
+        
+        initJobAndStates(EnumJob.PROTECT, false);
+        
+        //job.setPrimaryJob(EnumJob.PROTECT);
+        //job.clearJobs();
+        
+        //JobZCProtect
         
         /*this.tasks.addTask(0, new EntityAISwimming(this));
         //this.tasks.addTask(1, new EntityAIAvoidEntity(this, BaseEntAI_Enemy.class, 4.0F, 0.3F, 0.35F));

@@ -1,5 +1,6 @@
-package zombiecraft.Core.Entities;
+package zombiecraft.Core.Entities.Projectiles;
 
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Forge.ZombieCraftMod;
 import net.minecraft.src.*;
 
@@ -25,7 +26,7 @@ public class EntityGrenade extends EntityItem
         this.exploded = false;
         this.fuse = 50;
         this.yOffset = 0.0F;
-        this.item = new ItemStack(ZombieCraftMod.itemGrenade, 1, 0);
+        this.item = new ItemStack(ZCItems.itemGrenade, 1, 0);
     }
 
     public EntityGrenade(World var1, double var2, double var4, double var6)

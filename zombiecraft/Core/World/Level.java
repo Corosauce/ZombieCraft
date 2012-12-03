@@ -28,10 +28,15 @@ public class Level {
 	public String levelName = "";
 	public Build buildData;
 	
+	//lets reuse this for the statically set lobby room coordinates - adjust these for the min x y z corner of lobby room for generation
+	public static int lobby_coord_minX = -36;
+	public static int lobby_coord_minY = 98;
+	public static int lobby_coord_minZ = 26;
 	
-	public int lobby_coord_minX = 0;
-	public int lobby_coord_minY = 0;
-	public int lobby_coord_minZ = 0;
+	public static int lobby_coord_playerX = -32;
+	public static int lobby_coord_playerY = 100;
+	public static int lobby_coord_playerZ = 30;
+	
 	public int lobby_coord_maxX = 0;
 	public int lobby_coord_maxY = 0;
 	public int lobby_coord_maxZ = 0;
@@ -45,6 +50,7 @@ public class Level {
 	
 	public boolean lobby_distCheck = true;
 	public int lobby_scanSize = 16;
+	
 	public int lobby_tileEntX = 0;
 	public int lobby_tileEntY = 0;
 	public int lobby_tileEntZ = 0;

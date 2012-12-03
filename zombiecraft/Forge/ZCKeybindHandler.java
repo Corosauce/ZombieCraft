@@ -19,11 +19,12 @@ public class ZCKeybindHandler extends KeyHandler {
 	public static KeyBinding reloadKey = new KeyBinding("ZC_Reload", Keyboard.KEY_R);
 	public static KeyBinding chargeKey = new KeyBinding("ZC_Charge", Keyboard.KEY_LCONTROL);
 	public static KeyBinding cameraKey = new KeyBinding("ZC_Camera", Keyboard.KEY_SEMICOLON);
+	public static KeyBinding zoomKey = new KeyBinding("ZC_Zoom", Keyboard.KEY_Z);
 
     public ZCKeybindHandler() {
             //the first value is an array of KeyBindings, the second is whether or not the call
             //keyDown should repeat as long as the key is down
-            super(new KeyBinding[]{consoleKey, useKey, reloadKey, chargeKey, cameraKey}, new boolean[]{false, false, false, false, false});
+            super(new KeyBinding[]{consoleKey, useKey, reloadKey, chargeKey, cameraKey, zoomKey}, new boolean[]{false, false, false, false, false, false});
     }
 
     @Override

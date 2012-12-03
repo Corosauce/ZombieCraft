@@ -230,7 +230,7 @@ public abstract class GuiSlotZC
         this.mouseY = par2;
         this.drawBackground();
         int var4 = this.getSize();
-        int var5 = this.func_77225_g();
+        int var5 = this.getScrollBarX();
         int var6 = var5 + 6;
         int var9;
         int var10;
@@ -462,7 +462,7 @@ public abstract class GuiSlotZC
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    protected int func_77225_g()
+    protected int getScrollBarX()
     {
         return this.width / 2 + (slotSizeHalf + 14);
     }

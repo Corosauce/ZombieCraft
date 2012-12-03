@@ -1,7 +1,9 @@
 package zombiecraft.Core.GameLogic;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,13 +12,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import build.BuildServerTicks;
 import build.world.Build;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.asm.SideOnly;
 
 import CoroAI.Persister;
 import CoroAI.entity.EnumJob;
+import CoroAI.entity.JobBase;
+import CoroAI.entity.JobProtect;
 import CoroAI.entity.c_EnhAI;
 
 import net.minecraft.server.MinecraftServer;
@@ -35,7 +42,7 @@ import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.EntityWorldHook;
 import zombiecraft.Core.Items.ItemGun;
-import zombiecraft.Core.Items.ItemPerk;
+import zombiecraft.Core.Items.ItemAbility;
 import zombiecraft.Core.World.Level;
 import zombiecraft.Core.World.MapManager;
 import zombiecraft.Core.Blocks.*;
@@ -163,6 +170,8 @@ public abstract class ZCGame {
 		
 		mapMan.loadLevel();
 		
+		//mapMan.buildLobbyIfMissing(getWorld());
+		
 		levelHasInit = true;
 	}
 	
@@ -210,11 +219,18 @@ public abstract class ZCGame {
 		
 	}
 	
+	public void movePlayersToLobby() {
+		for (int var1 = 0; var1 < zcLevel.playersInGame.size(); ++var1)
+        {
+			mapMan.movePlayerToLobby(zcLevel.playersInGame.get(var1));
+        }
+	}
+	
 	public void resetPlayers() {
 		for (int var1 = 0; var1 < zcLevel.playersInGame.size(); ++var1)
         {
 			resetPlayer(zcLevel.playersInGame.get(var1));
-			mapMan.movePlayerToSpawn(zcLevel.playersInGame.get(var1));
+			
         }
 	}
 	
@@ -223,20 +239,44 @@ public abstract class ZCGame {
 	public abstract List<EntityPlayer> getPlayers(int dim);
 	
 	public void resetPlayer(EntityPlayer player) {
+		resetPlayer(player, true, false);
+	}
+	
+	public void resetPlayer(EntityPlayer player, boolean teleport, boolean keepPoints) {
+		
+		//preserve points if needed
+		int curPoints = (Integer)getData(player.username, DataTypes.zcPoints);
 		
 		
-		entFields.put(player.username, new DataLatcher());
 		
-		player.func_82242_a(0);
+		//give them their points back
+		//setData(player.username, DataTypes.zcPoints, curPoints);
+		
+		player.addExperienceLevel(0);
 		player.experience = 0;
-		player.score = 0;
+		//player.score = 0;
 		player.heal(20);
 		if (!player.capabilities.isCreativeMode) {
+			
+			//Full datalatcher reset
+			entFields.put(player.username, new DataLatcher());
+
+			if (keepPoints) setData(player, DataTypes.zcPoints, curPoints); //regive points for now until better fall and recover / die and respawn system is figured out
+			
+			if (this.gameActive) {
+				if (teleport) mapMan.movePlayerToSpawn(player);
+			} else {
+				if (teleport) mapMan.movePlayerToLobby(player);
+				
+			}
+			
 			for (int i = 0; i < player.inventory.mainInventory.length; i++) {
 				player.inventory.mainInventory[i] = null;
 			}
 		}
-		setData(player, DataTypes.zcPoints, 0);
+		
+		
+		syncPlayer(player);
 		
 		giveStartItems(player);
 		
@@ -244,7 +284,27 @@ public abstract class ZCGame {
 	}
 	
 	public void giveStartItems(EntityPlayer player) {
-		givePlayerItem(player, ZombieCraftMod.itemDEagle, 0);
+		givePlayerItem(player, ZCItems.itemDEagle, 0);
+	}
+	
+	public void refillAmmo(EntityPlayer player) {
+		HashMap ammoMap = ((AmmoDataLatcher)this.getData(player, DataTypes.ammoAmounts)).values;
+		
+		Iterator it = ammoMap.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        
+	        int ammoID = (Integer)pairs.getKey();
+	        int curAmmo = (Integer)pairs.getValue();
+	        
+	        int give = 60; //temp hardcore, base off of a max ammo setting later
+	        
+	        ZCUtil.setAmmoData(player, ammoID, curAmmo + give);
+	    }
+	}
+	
+	public void nukeInvaders(EntityPlayer player) {
+		wMan.killInvaders(false);
 	}
 	
 	/*public void contentInit() {
@@ -321,30 +381,114 @@ public abstract class ZCGame {
 		
 		//System.out.println(player.dimension);
 		
+		handlePlayerAbilities(player);
+		
 		handleBarricadeProximity(player);
+		
+		handlePickupProximity(player);
+	}
+	
+	public void handlePickupProximity(EntityPlayer player) {
+		
+		if (player.worldObj.provider.dimensionId != ZCGame.ZCDimensionID) return;
+		
+		List<Entity> list = player.worldObj.getEntitiesWithinAABB(EntityItem.class, player.boundingBox.expand(10D, 2D, 10D));
+		
+		if (list != null) {
+			for (Entity ent : list) {
+				double var1 = 8.0D;
+				double var3 = (player.posX - ent.posX) / var1;
+	            double var5 = (player.posY + (double)player.getEyeHeight() - ent.posY) / var1;
+	            double var7 = (player.posZ - ent.posZ) / var1;
+	            double var9 = Math.sqrt(var3 * var3 + var5 * var5 + var7 * var7);
+	            double var11 = 1D - var9;
+
+	            if (var11 > 0.0D)
+	            {
+	                var11 *= var11;
+	                ent.motionX += var3 / var9 * var11 * 0.01D;
+	                ent.motionY += var5 / var9 * var11 * 0.01D;
+	                ent.motionZ += var7 / var9 * var11 * 0.01D;
+	            }
+			}
+		}
+	}
+	
+	public void handlePlayerAbilities(EntityPlayer player) {
+		
 	}
 	
 	public void playerKillEvent(EntityPlayer player, Entity killed) {
 		
-		givePoints(player, 20);
+		int points = 20;
 		
+		if (player.username.contains("fakePlayer")) {
+			int ammoID = 0;
+			int giveAmount = 0;
+			if (player.inventory.mainInventory[1] != null && player.inventory.mainInventory[1].getItem() instanceof ItemGun) {
+				ammoID = ((ItemGun)player.inventory.mainInventory[1].getItem()).ammoType.ordinal();
+				
+				int curPoints = Integer.valueOf((ZCUtil.getData(player, DataTypes.zcPoints)).toString());
+				
+				int spend = 50;
+				
+				if (curPoints > spend) {
+					giveAmount = ((ItemGun)player.inventory.mainInventory[1].getItem()).magSize / 4 * (spend / 20);
+					ZCUtil.setData(player, DataTypes.zcPoints, curPoints - 50);
+				}
+				
+				//System.out.println("comrade points: " + curPoints);
+				ZCUtil.setAmmoData(player.username, ammoID, giveAmount + ZCUtil.getAmmoData(player.username, ammoID));
+			}
+			
+			
+			//System.out.println("comrade ammo: " + ZCUtil.getAmmoData(player.username, ammoID));
+			
+			
+			c_EnhAI ent = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(player.username);
+			if (ent != null) {
+				JobBase jb = ent.job.getJobClass();
+				if (jb instanceof JobProtect) {
+					String owner = ((JobProtect)jb).playerName;
+					if (owner != null && owner.length() > 0) {
+						EntityPlayer ownerPlayer = player.worldObj.getPlayerEntityByName(owner);
+						if (ownerPlayer != null) {
+							givePoints(ownerPlayer, points / 2);
+						}
+					}
+				}
+			}
+			givePoints(player, points / 2);
+		} else {
+			givePoints(player, points);
+		}
 	}
 	
 	public void givePoints(EntityPlayer player, int amount) {
+		givePoints(player, amount, false);
+	}
+	
+	public void givePoints(EntityPlayer player, int amount, boolean noBonus) {
+		
+		check(player);
 		
 		int zcPoints = 0;
 		try {
-			zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(amount/* * wMan.expToPointsFactor*/);
+			int extra = 0;
+			if (!noBonus) {
+				extra = (Integer)this.getData(player, DataTypes.doublePointsTime) > 0 ? amount : 0;
+			}
+			zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(amount + extra);
 		} catch (Exception ex) {
-			System.out.println("Something horrible has happened!");
+			System.out.println("Something horrible has happened! username - " + (player != null ? player.username : "??"));
 			ex.printStackTrace();
 		}
 		
-		System.out.println("zcPoints " + zcPoints);
+		//System.out.println("zcPoints " + zcPoints);
 		
 		//this.setData(player, DataTypes.lastPoints, lastPoints);
 		this.setData(player, DataTypes.zcPoints, zcPoints);
-		this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
+		if (!player.username.contains("fakePlayer")) this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
 	}
 	
 	public void entTick(c_EnhAI ent) {
@@ -412,9 +556,17 @@ public abstract class ZCGame {
 	
 	//Generic stuff
 	public void check(EntityPlayer me) {
-		if (!(entFields.containsKey(me.username))) {
-			entFields.put(me.username, new DataLatcher());
+		check(me.username);
+	}
+	
+	public void check(String name) {
+		if (!(entFields.containsKey(name))) {
+			entFields.put(name, new DataLatcher());
 		}
+	}
+	
+	public void setData(String name, DataTypes dtEnum, Object obj) {
+		((DataLatcher)entFields.get(name)).values.put(dtEnum, obj);
 	}
 	
 	public void setData(EntityPlayer ent, DataTypes dtEnum, Object obj) {
@@ -425,10 +577,14 @@ public abstract class ZCGame {
 	}
 	
 	public Object getData(EntityPlayer ent, DataTypes dtEnum) {
+		return getData(ent.username, dtEnum);
+	}
+	
+	public Object getData(String name, DataTypes dtEnum) {
 		//DataLatcher dl = (DataLatcher)entFields.get(ent.entityId);
 		//System.out.println("get: " + ent.entityId + "|" + ((DataLatcher)entFields.get(ent.entityId)).values.get(dtEnum));
 		try {
-			return ((DataLatcher)entFields.get(ent.username)).values.get(dtEnum);
+			return ((DataLatcher)entFields.get(name)).values.get(dtEnum);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
@@ -496,7 +652,7 @@ public abstract class ZCGame {
 		
 		if (tryID == -2) buyItem = false;
 		
-		if (tryID != -1) {
+		if (tryID != -1 || itemtype instanceof ItemAbility) {
 			
 			int newPoints = (Integer)this.getData(player, DataTypes.zcPoints) - cost;
 			
@@ -504,11 +660,13 @@ public abstract class ZCGame {
 			//this.setData(player, DataTypes.zcPoints, 0);
 			//mc.thePlayer.score = mc.thePlayer.score - cost;
 			
-			if (itemtype instanceof ItemPerk) {
-				ItemPerk itemP = (ItemPerk)itemtype;
+			if (itemtype instanceof ItemAbility) {
+				ItemAbility itemP = (ItemAbility)itemtype;
 				itemP.onItemRightClick(newItem, player.worldObj, player);
+				this.playSoundEffect("zc.perk", player, 1, 1);
 			} else {
 				givePlayerItem(player, itemtype, tryID, buyItem);
+				this.playSoundEffect("zc.ammo", player, 1, 1);
 			}
 			//inventory.setInventorySlotContents(tryID, new ItemStack(blocktype, count));
 			
@@ -530,6 +688,10 @@ public abstract class ZCGame {
 		//modify for grenades, etc
 		int count = 1;
 		
+		if (item instanceof ItemBlock && ((ItemBlock)item).getBlockID() == ZCBlocks.betty.blockID) {
+			count = 6;
+		}
+		
 		//Ammo, soon unneeded
 		if (item instanceof ItemGun) 
 		{
@@ -543,7 +705,13 @@ public abstract class ZCGame {
 			
 			if (giveGun) inventory.setInventorySlotContents(slot, new ItemStack(item, count));
 		} else {
-			inventory.setInventorySlotContents(slot, new ItemStack(item, count));
+			if (inventory.getStackInSlot(slot) != null) {
+				inventory.addItemStackToInventory(new ItemStack(item, count));
+				//inventory.setInventorySlotContents(slot, new ItemStack(item, count));
+			} else {
+				inventory.setInventorySlotContents(slot, new ItemStack(item, count));
+			}
+			
 		}
 		
 		
@@ -561,11 +729,15 @@ public abstract class ZCGame {
 		if (((BlockBarricade)ZCBlocks.barricadeS5).isFixableBarricade(player.worldObj,x,y,z)) {
 			
 			if (((BlockBarricade)Block.blocksList[id]).tryRepairDoor(player.worldObj,x,y,z,player)) {
-				points += Buyables.barricadeRepairRedeem;
-				this.setData(player, DataTypes.zcPoints, points);
-				updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {-2, points, Buyables.barricadeRepairCooldown});
-				this.playSound("sdkzc.repair", x, y, z, 1, 1);
-				this.playSound("sdkzc.chaching", x, y, z, 1, 0.8F);
+				this.givePoints(player, Buyables.barricadeRepairRedeem);
+				/*points += Buyables.barricadeRepairRedeem;
+				this.setData(player, DataTypes.zcPoints, points);*/
+				
+				int cooldown = Buyables.barricadeRepairCooldown;
+				
+				updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {-2, points, cooldown});
+				this.playSound("zc.repair", x, y, z, 1, 1);
+				this.playSound("zc.chaching", x, y, z, 1, 0.8F);
 				/*mc.theWorld.playSoundEffect(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, "repair", 1F, 1.0F);
 				mc.theWorld.playSoundEffect(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, "chaching", 1F, 0.8F);*/
 			}
@@ -586,6 +758,8 @@ public abstract class ZCGame {
 			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {-1, points});
 			
 			player.worldObj.setBlockWithNotify(x, y, z, 0);
+			
+			this.playSound("zc.barrierbreak", x, y, z, 1, 1);
 		}
 	}
     
@@ -654,16 +828,27 @@ public abstract class ZCGame {
     	return "";
     }
     
-    public String getSaveFolderPath() {
-    	return MinecraftServer.getServer().getFile(".").getAbsolutePath() + "/";
+    public static String getSaveFolderPath() {
+    	if (MinecraftServer.getServer() == null || MinecraftServer.getServer().isSinglePlayer()) {
+    		return getClientSidePath() + File.separator;
+    	} else {
+    		return /*MinecraftServer.getServer().get*/new File(".").getAbsolutePath() + File.separator;
+    	}
+    	
     }
     
-    public String getMapSaveFolderPath() {
-    	return MinecraftServer.getServer().getFile(".").getAbsolutePath() + "/" + getMapFolder() + "/";
+    @SideOnly(Side.CLIENT)
+	public static String getClientSidePath() {
+		//System.out.println("pathhhh: " + FMLClientHandler.instance().getClient().getMinecraftDir().getAbsolutePath());
+		return FMLClientHandler.instance().getClient().getMinecraftDir().getPath();
+	}
+    
+    public static String getMapSaveFolderPath() {
+    	return getSaveFolderPath() + getMapFolder() + File.separator;
     }
     
     public static String getMapFolder() {
-    	return "ZCMaps";
+    	return "ZC3Maps";
     }
     
     public void readGameNBT(World worldRef) {
@@ -787,7 +972,7 @@ public abstract class ZCGame {
 	}
 	
 	public void regenerateLevel(EntityPlayer player) {
-		if (isMaster()) {
+		if (isMaster()) { //never now
 			if (isOp(player)) {
 	    		ZCGame.instance().mapMan.loadLevel();
 	    		ZCGame.instance().mapMan.buildStart(player);
@@ -885,15 +1070,31 @@ public abstract class ZCGame {
 			
 			//win
 			if (dataInt[0] == 1) {
-				playSoundEffect("sdkzc.round_over", null, 2F, 1.2F);
+				playSoundEffect("zc.round_over", null, 2F, 1.2F);
 				if (debug) System.out.println("runInfoCommand win");
 			} else {
-				playSoundEffect("sdkzc.round_over", null, 2F, 1.2F);
+				playSoundEffect("zc.round_over", null, 2F, 1.2F);
 				if (debug) System.out.println("runInfoCommand lose");
 			}
 		} else {
 			
 		}
 	}
+    
+    public int getPlayerCount() {
+    	List list = getPlayers();
+		int plCount = 1;
+		if (list != null) {
+			plCount = list.size();
+		}
+		
+		//temp debug
+		if (false) {
+			System.out.println("PLAYER COUNT OVERRIDE ON");
+			plCount = 3;
+		}
+		
+		return plCount;
+    }
 	
 }

@@ -31,10 +31,15 @@ public class GuiGameOverZC extends GuiScreen
         this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, StatCollector.translateToLocal("deathScreen.respawn")));
         this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, StatCollector.translateToLocal("deathScreen.titleScreen")));
 
+        ((GuiButton)this.controlList.get(0)).enabled = false;
+        ((GuiButton)this.controlList.get(1)).enabled = false;
+        ((GuiButton)this.controlList.get(2)).enabled = false;
+        
         if (/*ZCGame.instance().wMan.waveSpawnMax == ZCGame.instance().wMan.waveSpawnCount && */ZCGame.instance().gameActive)
         {
         	((GuiButton)this.controlList.get(1)).enabled = false;
         }
+        
         
 
         /*GuiButton var2;
@@ -55,6 +60,9 @@ public class GuiGameOverZC extends GuiScreen
      */
     protected void actionPerformed(GuiButton par1GuiButton)
     {
+    	
+    	ZCClientTicks.zcGame.waitingToSpawn = true;
+    	
         switch (par1GuiButton.id)
         {
         	case 0:
@@ -63,8 +71,10 @@ public class GuiGameOverZC extends GuiScreen
         		//this.mc.thePlayer.posY = 256; //wont work client side derp
         		//mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
         		this.mc.displayGuiScreen((GuiScreen)null);
-        		ZCClientTicks.zcGame.waitingToSpawn = true;
-        		ZCClientTicks.camMan.freeCam();
+        		
+        		ZCClientTicks.camMan.spectate(mc.thePlayer);
+        		ZCClientTicks.camMan.spectateNext();
+        		
                 break;
             case 1:
                 this.mc.thePlayer.respawnPlayer();
@@ -116,11 +126,22 @@ public class GuiGameOverZC extends GuiScreen
         ++this.cooldownTimer;
         GuiButton var2;
 
-        if (this.cooldownTimer >= 20 && (!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0))
+        if (this.cooldownTimer >= 40)
         {
-            for (Iterator var1 = this.controlList.iterator(); var1.hasNext(); var2.enabled = true)
+        	
+        	ZCClientTicks.zcGame.waitingToSpawn = true;
+        	
+            for (Iterator var1 = this.controlList.iterator(); var1.hasNext();)
             {
+            	
                 var2 = (GuiButton)var1.next();
+                if (var2.id == 1) {
+                	if (!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0) {
+                		var2.enabled = true;
+                	}
+            	} else {
+            		var2.enabled = true;
+            	}
             }
         }
     }

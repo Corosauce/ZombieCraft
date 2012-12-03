@@ -1,6 +1,6 @@
 package zombiecraft.Core.Items;
 
-import zombiecraft.Core.Entities.EntityGrenade;
+import zombiecraft.Core.Entities.Projectiles.EntityGrenade;
 import net.minecraft.src.*;
 
 public class ItemGrenade extends ItemGun
@@ -16,7 +16,7 @@ public class ItemGrenade extends ItemGun
     public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3)
     {
         --var1.stackSize;
-        var2.playSoundAtEntity(var3, "sdk.grunt", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
+        var2.playSoundAtEntity(var3, "zc.gun.grunt", 1.0F, 1.0F / (itemRand.nextFloat() * 0.1F + 0.95F));
 
         if (!var2.isRemote)
         {

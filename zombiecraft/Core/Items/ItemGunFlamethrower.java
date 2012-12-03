@@ -1,8 +1,8 @@
 package zombiecraft.Core.Items;
 
 import zombiecraft.Core.EnumAmmo;
-import zombiecraft.Core.Entities.EntityBullet;
-import zombiecraft.Core.Entities.EntityBulletFlame;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBulletFlame;
 import net.minecraft.src.*;
 
 public class ItemGunFlamethrower extends ItemGun
@@ -10,7 +10,7 @@ public class ItemGunFlamethrower extends ItemGun
     public ItemGunFlamethrower(int var1)
     {
         super(var1);
-        this.firingSound = "sdk.flamethrower";
+        this.firingSound = "zc.gun.flamethrower";
         //this.requiredBullet = mod_ZCSdkGuns.itemOil;
         this.numBullets = 1;
         this.damage = 5;

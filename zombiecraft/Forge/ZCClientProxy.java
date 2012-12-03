@@ -13,14 +13,19 @@ import zombiecraft.Client.Blocks.TileEntityPurchasePlateRenderer;
 import zombiecraft.Client.Entities.RenderBullet;
 import zombiecraft.Client.Entities.RenderBulletShot;
 import zombiecraft.Client.Entities.RenderEntityWorldHook;
+import zombiecraft.Client.Entities.RenderZCComrade;
+import zombiecraft.Client.Entities.RenderZCImp;
 import zombiecraft.Client.Entities.RenderZCZombie;
+import zombiecraft.Core.ZCBlocks;
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Entities.Comrade;
-import zombiecraft.Core.Entities.EntityBullet;
-import zombiecraft.Core.Entities.EntityBulletFlame;
 import zombiecraft.Core.Entities.EntityWorldHook;
+import zombiecraft.Core.Entities.Imp;
 import zombiecraft.Core.Entities.Zombie;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBulletFlame;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
@@ -49,14 +54,26 @@ public class ZCClientProxy extends ZCCommonProxy
     @Override
     public void init(ZombieCraftMod pMod)
     {
-    	pMod.itemPistolTexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunDeagle.png");
-    	pMod.itemAk47TexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunAk47.png");
-    	pMod.itemShotgunTexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunShotgun.png");
-    	pMod.itemM4TexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunM4.png");
-    	pMod.itemSniperTexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunSniper.png");
-    	pMod.itemFlamethrowerTexID = ModLoader.addOverride("/gui/items.png", "/sdk/itemGunFlamethrower.png");
+    	ZCItems.itemPistolTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunDeagle.png");
+    	ZCItems.itemAk47TexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunAk47.png");
+    	ZCItems.itemShotgunTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunShotgun.png");
+    	ZCItems.itemM4TexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunM4.png");
+    	ZCItems.itemSniperTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunSniper.png");
+    	ZCItems.itemFlamethrowerTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunFlamethrower.png");
     	
-    	pMod.barricadeTopTexIDs = new int[] { ModLoader.addOverride("/terrain.png", "/zc/blocks/barricade0.png"),
+    	ZCItems.itemM1911TexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunM1911.png");
+    	ZCItems.itemRifleTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunRifle.png");
+    	ZCItems.itemUziTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunUzi.png");
+    	ZCItems.itemRaygunTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunRaygun.png");
+    	ZCItems.itemRPGTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunRPG.png");
+    	ZCItems.itemChickenGunTexID = ModLoader.addOverride("/gui/items.png", "/zc/guns/itemGunChickenGun.png");
+    	
+    	ZCItems.itemPickupDoublePointsTexID = ModLoader.addOverride("/gui/items.png", "/zc/items/doublepoints.png");
+    	ZCItems.itemPickupInstaKillTexID = ModLoader.addOverride("/gui/items.png", "/zc/items/instakill.png");
+    	ZCItems.itemPickupMaxAmmoTexID = ModLoader.addOverride("/gui/items.png", "/zc/items/maxammo.png");
+    	ZCItems.itemPickupNukeTexID = ModLoader.addOverride("/gui/items.png", "/zc/items/nuke.png");
+    	
+    	ZCItems.barricadeTopTexIDs = new int[] { ModLoader.addOverride("/terrain.png", "/zc/blocks/barricade0.png"),
         		ModLoader.addOverride("/terrain.png", "/zc/blocks/barricade1.png"),
         		ModLoader.addOverride("/terrain.png", "/zc/blocks/barricade2.png"),
         		ModLoader.addOverride("/terrain.png", "/zc/blocks/barricade3.png"),
@@ -65,21 +82,30 @@ public class ZCClientProxy extends ZCCommonProxy
         		ModLoader.addOverride("/terrain.png", "/zc/blocks/barricadebottom.png")
         	};
     	
+    	ZCBlocks.bettyTexID = ModLoader.addOverride("/terrain.png", "/zc/blocks/betty.png");
+    	
         super.init(pMod);
         TickRegistry.registerTickHandler(new ZCClientTicks(), Side.CLIENT);
         
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawnerWave.class, new TileEntityMobSpawnerWaveRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPurchasePlate.class, new TileEntityPurchasePlateRenderer());
         
+        //Item render registers
+        MinecraftForgeClient.registerItemRenderer(ZCItems.itemAk47.shiftedIndex, new GunRenderer());
+        
         //RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, new RenderBullet());
         RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, new RenderBulletShot());
         RenderingRegistry.registerEntityRenderingHandler(EntityBulletFlame.class, new RenderBullet());
         RenderingRegistry.registerEntityRenderingHandler(Zombie.class, new RenderZCZombie());//new RenderBiped(new ModelZombie(), 0.5F));
-        RenderingRegistry.registerEntityRenderingHandler(Comrade.class, new RenderBiped(new ModelZombie(), 0.5F));
+        RenderingRegistry.registerEntityRenderingHandler(Imp.class, new RenderZCImp());//new RenderBiped(new ModelZombie(), 0.5F));
+        
+        RenderingRegistry.registerEntityRenderingHandler(Comrade.class, new RenderZCComrade());
         RenderingRegistry.registerEntityRenderingHandler(EntityWorldHook.class, new RenderEntityWorldHook());
         
         //MinecraftForge.EVENT_BUS.register(new EventHandler());
         KeyBindingRegistry.registerKeyBinding(new ZCKeybindHandler());
+        
+        RenderingRegistry.registerBlockHandler(new ZCBarricadePlaceableRenderer());
         
     }
 
@@ -102,4 +128,9 @@ public class ZCClientProxy extends ZCCommonProxy
     {
     	
     }
+    
+	@Override
+	public Entity getEntByID(int id) {
+		return FMLClientHandler.instance().getClient().theWorld.getEntityByID(id);
+	}
 }

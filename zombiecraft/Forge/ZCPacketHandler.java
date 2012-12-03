@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
+import CoroAI.entity.c_EnhAI;
+
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Blocks.*;
 
@@ -118,7 +120,27 @@ public class ZCPacketHandler implements IPacketHandler
 	        		ZCClientTicks.zcGame.handlePacket(entP, packetMLMP);
 	        	}
 	        	
-	        }
+	        } else if ("CoroAI_Inv".equals(packet.channel)) {
+				//DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packet.data));
+				try {
+					int entID = dis.readInt();
+					ItemStack is = Packet.readItemStack(dis);
+
+					Entity entity = ZombieCraftMod.proxy.getEntByID(entID);
+					if (entity instanceof c_EnhAI) {
+						((c_EnhAI) entity).inventory.mainInventory[0] = is;
+						((c_EnhAI) entity).setCurrentSlot(0);
+						//System.out.println("syncing item: " + is);
+					}
+					//TEST
+					//WeatherMod.weatherMan.wind.strength = 1.5F;
+
+					//WeatherMod.weatherMan.wind.strengthSmooth = val;
+					//System.out.println("packet: " + val + " - " + val2);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
         }
         catch (Exception ex)
         {

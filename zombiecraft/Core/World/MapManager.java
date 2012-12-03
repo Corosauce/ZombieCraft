@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import build.BuildServerTicks;
+import build.world.BuildJob;
 
 import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
@@ -24,7 +25,7 @@ public class MapManager {
 	public int levelBuildID = -1;
 	
 	public String curLevel = "";
-	public int curBuildPercent = -1;
+	public float curBuildPercent = -1;
 	/*public int levelStartX = 0;
 	public int levelStartY = 96;
 	public int levelStartZ = 0;*/
@@ -88,10 +89,10 @@ public class MapManager {
 	public void buildStart(EntityPlayer ent) {
 		if (!buildActive()) {
 			if (ent != null) {
-				//dont change dimension here, just make sure builder is set up right
 				zcLevel.buildData.dim = zcGame.activeZCDimension;
 				zcGame.setActiveDimension(ent.dimension);
 			}
+			zcGame.wMan.removeExtraEntities();
 			BuildServerTicks.buildMan.newBuild(zcLevel.buildData);
 		}
 	}
@@ -117,9 +118,9 @@ public class MapManager {
 	}
 	
 	public void saveLevel() {
-		checkFolder(zcGame.getMapFolder());
+		checkFolder(zcGame.getMapSaveFolderPath());
 		zcLevel.buildData.dim = zcGame.activeZCDimension;
-		zcLevel.buildData.file = zcGame.getMapFolder() + "/" + curLevel;
+		zcLevel.buildData.file = zcGame.getMapSaveFolderPath() + File.separator + curLevel;
 		zcLevel.writeNBT();
 	}
 	
@@ -136,11 +137,15 @@ public class MapManager {
 	}
 	
 	public void loadLevel() {
-		zcLevel.readNBT(zcGame.getMapFolder() + "/" + this.curLevel);
+		System.out.println("Loading Level: " + new File(zcGame.getMapSaveFolderPath() + this.curLevel).getAbsolutePath());
+		zcLevel.readNBT(zcGame.getMapSaveFolderPath() + this.curLevel);
 	}
 	
 	public boolean safeToStart() {
 		if (unsavedChanges) return false;
+		
+		if (this.editMode) return false;
+		
 		return true;
 	}
 	
@@ -166,11 +171,39 @@ public class MapManager {
 		
 		//System.out.println("player tele X: " + (zcLevel.player_spawnX + zcLevel.map_coord_minX));
 		if (zcLevel.player_spawnY != 999) {
-			this.zcGame.teleportPlayer(player, zcLevel.player_spawnX + zcLevel.buildData.map_coord_minX, zcLevel.player_spawnY+0.5F + zcLevel.buildData.map_coord_minY, zcLevel.player_spawnZ + zcLevel.buildData.map_coord_minZ);
+			int randRange = 2;
+			this.zcGame.teleportPlayer(player, zcLevel.player_spawnX + zcLevel.buildData.map_coord_minX - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange)
+					, zcLevel.player_spawnY+0.5F + zcLevel.buildData.map_coord_minY, zcLevel.player_spawnZ + zcLevel.buildData.map_coord_minZ - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange));
+		} else {
+			movePlayerToLobby(player);
 		}
 		
 	}
 	
+	public void buildLobbyIfMissing(World world) {
+		
+		int lobbyBuildID = -67;
+		
+		if (!BuildServerTicks.buildMan.isBuildActive(lobbyBuildID)) {
+			if (world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0) {
+				BuildJob bj = new BuildJob(lobbyBuildID, zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ, zcGame.getSaveFolderPath() + "Lobby");
+				bj.build.dim = ZCGame.ZCDimensionID;
+				BuildServerTicks.buildMan.addBuild(bj);
+				
+			}
+		}
+	}
+	
+	public void movePlayerToLobby(EntityPlayer player) {
+		
+		//if lobby not generated
+		buildLobbyIfMissing(player.worldObj);
+		
+		if (player.getDistance(zcLevel.lobby_coord_playerX, zcLevel.lobby_coord_playerY, zcLevel.lobby_coord_playerZ) > 8) {
+			int randRange = 2;
+			this.zcGame.teleportPlayer(player, zcLevel.lobby_coord_playerX - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange), zcLevel.lobby_coord_playerY, zcLevel.lobby_coord_playerZ - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange));
+		}
+	}
 	
 	public boolean removeForRebuild(TileEntity tEnt) {
 		if (shouldEntitiesReset) {

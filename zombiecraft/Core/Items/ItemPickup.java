@@ -1,44 +1,44 @@
 package zombiecraft.Core.Items;
 
+import CoroAI.entity.EnumJob;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
+import zombiecraft.Core.Entities.Comrade;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZombieCraftMod;
 import net.minecraft.src.*;
 
-public class ItemPerk extends Item {
+public class ItemPickup extends Item {
 	
-	public int potionID;
-	public int potionLength;
+	public int pickupID;
     
-	public ItemPerk(int par1, int parPotionID)
+	public ItemPickup(int par1, int parPotionID)
     {
-        this(par1, parPotionID, 30 * 20);
-    }
-	
-    public ItemPerk(int par1, int parPotionID, int length)
-    {
-        super(par1);
+		super(par1);
         this.maxStackSize = 1;
-        potionID = parPotionID;
-        potionLength = length;
+        pickupID = parPotionID;
     }
     
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
+    	
+    	System.out.println("Pickup used");
+    	
     	if (!par2World.isRemote) {
-    		if (potionID == 28) {
-    			
-    		} else if (potionID == 29) {
-    			System.out.println("spawn comrade");
-    		} else {
-    			par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
+    		if (pickupID == 0) {
+    			//nuke
+    		} else if (pickupID == 1) {
+    			//insta kill
+    		} else if (pickupID == 2) {
+    			//double points
+    		} else if (pickupID == 3) {
+    			//refil ammo
     		}
     	} else {
-    		if (potionID == 28) {
-    			ZCUtil.setData(par3EntityPlayer, DataTypes.hasCharge, 1);
+    		if (pickupID == 28) {
+    			//ZCUtil.setData(par3EntityPlayer, DataTypes.hasCharge, 1);
     		}
     	}
     	
@@ -56,6 +56,11 @@ public class ItemPerk extends Item {
     
     @Override
     public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
-    	
+    	//Automatic usage on first tick after pickup (assumed space in inventory)
+    	if (par3Entity instanceof EntityPlayer) {
+    		onItemRightClick(par1ItemStack, par2World, (EntityPlayer)par3Entity);
+    	} else {
+    		System.out.println("doesnt support non player use");
+    	}
     }
 }

@@ -166,7 +166,7 @@ public class ZCChunkProvider implements IChunkProvider
     }
 
 	@Override
-	public void func_82695_e(int var1, int var2) {
+	public void recreateStructures(int var1, int var2) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,7 +1,7 @@
 package zombiecraft.Core.Items;
 
 import zombiecraft.Core.EnumAmmo;
-import zombiecraft.Core.Entities.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import net.minecraft.src.*;
 
 public class ItemGunSniper extends ItemGun
@@ -9,7 +9,7 @@ public class ItemGunSniper extends ItemGun
     public ItemGunSniper(int var1)
     {
         super(var1);
-        this.firingSound = "sdk.sniper";
+        this.firingSound = "zc.gun.sniper";
         //this.requiredBullet = mod_ZCSdkGuns.itemBulletHeavy;
         this.numBullets = 1;
         this.damage = 30;
@@ -17,7 +17,7 @@ public class ItemGunSniper extends ItemGun
         this.spread = 0.0F;
         this.useDelay = 20;
         this.recoil = 8.0F;
-        ammoType = EnumAmmo.RIFLE;
+        ammoType = EnumAmmo.SNIPER;
         hitCount = 50;
         //this.soundRangeFactor = 8.0F;
     }

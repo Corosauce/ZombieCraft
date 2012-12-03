@@ -9,6 +9,7 @@ import cpw.mods.fml.common.Side;
 
 import CoroAI.entity.c_EnhAI;
 
+import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
@@ -47,6 +48,7 @@ public class WaveManager {
     public boolean showSwitchPower = false;
     public boolean doneWaveInit = false;
     public boolean newWave;
+    public EnumDifficulty difficulty = EnumDifficulty.MEDIUM;
 	
 	public long wave_StartDelay = 0;
 	public int wave_Stage = 0;
@@ -56,13 +58,15 @@ public class WaveManager {
 	public ArrayList<c_EnhAI> wave_Invaders = new ArrayList<c_EnhAI>();
 	public int wave_Invaders_Count = 0;
 	
-	public int killMaxBase = 3;
+	public int killMaxBase = 10;
+	public int killMaxMultiplier = 3;
 	
 	public float amp_KillMax = 0.5F;
 	public float amp_Exp = 0.1F;
-	public float amp_Health = 0.1F;
-	public float amp_Lunge = 0.03F;
-	public float amp_Lunge_Max = 1.45F;
+	public float amp_Health = 0.05F;
+	public float amp_Lunge = 0.005F;
+	public float amp_Lunge_Max = 1.25F;
+	public float amp_Speed_Max = 0.40F;
 	
 	@Deprecated
 	public float expToPointsFactor = 20F;
@@ -81,31 +85,37 @@ public class WaveManager {
 		
 	}
 	
-	public void startGameFromPlayer(EntityPlayer player) {
+	public boolean startGameFromPlayer(EntityPlayer player) {
 		if (zcGame.mapMan.safeToStart()) {
 			zcGame.zcLevel.newGameFrom(player, (int)player.posX, (int)player.posY, (int)player.posZ);
 			prepGame();
 		} else {
-			System.out.println("UNSAVED CHANGES, NOT STARTING");
+			System.out.println("Not safe to start!");
+			return false;
 		}
+		return true;
 	}
 	
-	public void startGameFromPlayerSpawn(EntityPlayer player) {
-		if (zcGame.mapMan.safeToStart()) {
+	public boolean startGameFromPlayerSpawn(EntityPlayer player) {
+		if (zcGame.mapMan.safeToStart() || ZCGame.autoload) {
 			zcGame.zcLevel.newGameFrom(player, this.zcGame.zcLevel.player_spawnX_world, this.zcGame.zcLevel.player_spawnY_world, this.zcGame.zcLevel.player_spawnZ_world);
 			prepGame();
 		} else {
-			System.out.println("UNSAVED CHANGES, NOT STARTING");
+			System.out.println("Not safe to start!");
+			return false;
 		}
+		return true;
 	}
 	
-	public void startGameFromLobby() {
+	public boolean startGameFromLobby() {
 		if (zcGame.mapMan.safeToStart()) {
 			zcGame.zcLevel.newGame();
 			prepGame();
 		} else {
-			System.out.println("UNSAVED CHANGES, NOT STARTING");
-		} 
+			System.out.println("Not safe to start!");
+			return false;
+		}
+		return true;
 	}
 	
 	public void prepGame() {
@@ -113,6 +123,9 @@ public class WaveManager {
 		killInvaders();
 		if (levelNeedsRegen) {
 			levelNeedsRegen = false;
+			
+			zcGame.movePlayersToLobby();
+			
 			if (ZCGame.autostart) {
 				waitingToStart = true;	
 			}
@@ -120,10 +133,11 @@ public class WaveManager {
 				
 				System.out.println("FIX ME I ONLY WORK FOR SCHEMATIC AUTOLOADING - aka not folders or zips?");
 				ZCGame.instance().mapMan.curLevel = ZCGame.curLevelOverride;
-				ZCGame.instance().mapMan.loadLevel();
-				ZCGame.instance().zcLevel.buildData.map_coord_minY = ZCGame.ZCWorldHeight;
-				ZCGame.instance().mapMan.buildStart(null);
+				
 			}
+			ZCGame.instance().mapMan.loadLevel();
+			ZCGame.instance().zcLevel.buildData.map_coord_minY = ZCGame.ZCWorldHeight;
+			ZCGame.instance().mapMan.buildStart(null);
 		} else {
 			
 			zcGame.gameActive = true;
@@ -138,12 +152,14 @@ public class WaveManager {
 		
 		ZCGame.autoload = false;
 		
+		
+		
 		if (waitingToStart) {
 			if (ZCGame.autostart) {
 				zcGame.zcLevel.playersInGame = zcGame.getPlayers(zcGame.activeZCDimension);//fix for new autostart
 				ZCGame.autostart = false;
 			}
-			removeExtraEntities();
+			
 			waitingToStart = false;
 			zcGame.gameActive = true;
 			zcGame.resetPlayers();
@@ -180,7 +196,7 @@ public class WaveManager {
 	}
 	
 	public void endWave() {
-		zcGame.playSoundEffect("sdkzc.round_over", null, 2F, 1.0F);
+		//zcGame.playSoundEffect("zc.round_over", null, 2F, 1.0F);
 		nextWave();
 		prepWaveStart();
 	}
@@ -215,9 +231,19 @@ public class WaveManager {
 	}
 	
 	public void killInvaders() {
+		killInvaders(true);
+	}
+	
+	public void killInvaders(boolean instaRemove) {
 		for (int i = 0; i < wave_Invaders.size(); i++) {
 			Entity ent = (Entity)wave_Invaders.get(i);
-			if (ent != null) ent.setDead();
+			if (ent != null) {
+				if (instaRemove) {
+					ent.setDead();
+				} else if (ent instanceof EntityLiving) {
+					((EntityLiving)ent).setEntityHealth(0);
+				}
+			}
 		}
 		wave_Invaders.clear();
 	}
@@ -227,19 +253,25 @@ public class WaveManager {
 		wave_StartDelay = 100;
 		wave_Kills = 0;
 		wave_Invaders.clear();
-		List list = zcGame.getPlayers();
-		int plCount = 1;
-		if (list != null) {
-			plCount = list.size();
+		
+		wave_StartDelay += 10 * wave_Stage;
+		if (wave_StartDelay > 250) wave_StartDelay = 250;
+		
+		int plCount = zcGame.getPlayerCount();
+		
+		//wave_MaxKills = (int)(killMaxBase + (killMaxBase * (1 + ((plCount-1) * 0.7)) * (amp_KillMax * wave_Stage)));//(int)(killMaxBase + (wave_Stage * amp_KillMax));
+		
+		//wave_MaxKills = (int)(killMaxBase + (killMaxMultiplier * 1.3 * plCount * wave_Stage));
+		
+		wave_MaxKills = (int)(killMaxBase + (killMaxMultiplier * wave_Stage));
+		
+		if (plCount > 1) {
+			wave_MaxKills *= plCount * 0.8F;
 		}
 		
-		//debug
-		//plCount = 5;
-		
-		wave_MaxKills = (int)(killMaxBase + (killMaxBase * (1 + ((plCount-1) * 0.7)) * (amp_KillMax * wave_Stage)));//(int)(killMaxBase + (wave_Stage * amp_KillMax));
 		zcGame.updateInfo(null, PacketTypes.INFO_WAVE, new int[] {wave_Stage, (int)wave_StartDelay, wave_MaxKills, 0});
 		
-		System.out.println("wave_Stage = " + wave_Stage + " | wave_MaxKills: " + wave_MaxKills);
+		System.out.println("wave_Stage = " + wave_Stage + " | wave_MaxKills: " + wave_MaxKills + " | plCount: " + plCount + " | wave_StartDelay: " + wave_StartDelay);
 	}
 	
 	public void stop() {

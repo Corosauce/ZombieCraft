@@ -1,7 +1,7 @@
 package zombiecraft.Core.Items;
 
 import zombiecraft.Core.EnumAmmo;
-import zombiecraft.Core.Entities.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import net.minecraft.src.*;
 
 public class ItemGunAk47 extends ItemGun
@@ -11,7 +11,7 @@ public class ItemGunAk47 extends ItemGun
 	public ItemGunAk47(int var1)
     {
         super(var1);
-        this.firingSound = "sdk.ak";
+        this.firingSound = "zc.gun.ak";
         //this.requiredBullet = ZombieCraftMod.itemBulletLight;
         this.numBullets = 1;
         this.damage = 5;

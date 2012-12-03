@@ -1,8 +1,11 @@
 package zombiecraft.Core.Dimension;
 
+import java.util.Random;
+
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 import net.minecraft.src.*;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
 
@@ -11,6 +14,7 @@ public class ZCWorldProvider extends WorldProvider
     /**
      * creates a new world chunk manager for WorldProvider
      */
+	@Override
     public void registerWorldChunkManager()
     {
         this.worldChunkMgr = new ZCWorldChunkManager(ZCBiomeGen.base, 0.5F, 0.0F);
@@ -21,7 +25,8 @@ public class ZCWorldProvider extends WorldProvider
     /**
      * Returns the chunk provider back for the world provider
      */
-    public IChunkProvider getChunkProvider()
+    @Override
+    public IChunkProvider createChunkGenerator()
     {
         return new ZCChunkProvider(this.worldObj, this.worldObj.getSeed(), false);
     }
@@ -33,27 +38,34 @@ public class ZCWorldProvider extends WorldProvider
     {
         return 0.0F;
     }*/
-
+    
     @SideOnly(Side.CLIENT)
 
     /**
      * Returns array with sunrise/sunset colors
      */
+    @Override
     public float[] calcSunriseSunsetColors(float par1, float par2)
     {
         return null;
     }
-
+    
     @SideOnly(Side.CLIENT)
 
     /**
      * Return Vec3D with biome specific fog color
      */
+    @Override
     public Vec3 getFogColor(float par1, float par2)
     {
         int var3 = 10518688;
+        
+        var3 = 0x000000;
+        
         float var4 = MathHelper.cos(par1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
 
+        
+        
         if (var4 < 0.0F)
         {
             var4 = 0.0F;
@@ -72,8 +84,35 @@ public class ZCWorldProvider extends WorldProvider
         var7 *= var4 * 0.0F + 0.15F;
         return Vec3.createVectorHelper((double)var5, (double)var6, (double)var7);
     }
-
+    
+    @Override
+    public double getVoidFogYFactor()
+    {
+    	
+    	//double adj = (/*FMLClientHandler.instance().getClient().thePlayer.getHealth()*/20 * 0.0005);
+    	
+    	//System.out.println(adj);
+    	
+    	//adj = 0.01D;
+    	
+    	
+    	
+        return 0D;//this.terrainType.voidFadeMagnitude();
+    }
+    
     @SideOnly(Side.CLIENT)
+
+    /**
+     * Returns true if the given X,Z coordinate should show environmental fog.
+     */
+    @Override
+    public boolean doesXZShowFog(int par1, int par2)
+    {
+        return false;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    @Override
     public boolean isSkyColored()
     {
         return true;
@@ -82,24 +121,39 @@ public class ZCWorldProvider extends WorldProvider
     /**
      * True if the player can respawn in this dimension (true = overworld, false = nether).
      */
+    @Override
     public boolean canRespawnHere()
     {
         return true;
+    }
+    
+    public ChunkCoordinates getSpawnPoint()
+    {
+    	ZCGame zcGame = ZCGame.instance();
+    	
+    	if (zcGame != null && zcGame.zcLevel != null) {
+    		//this code doesnt appear to return a very accurate result, so its not depended on, watchForPlayerRespawn still manages the final teleport
+    		return new ChunkCoordinates(zcGame.zcLevel.lobby_coord_playerX, zcGame.zcLevel.lobby_coord_playerY, zcGame.zcLevel.lobby_coord_playerZ);
+    	} else {
+    		return super.getSpawnPoint();
+    	}
+        
     }
 
     /**
      * Returns 'true' if in the "main surface world", but 'false' if in the Nether or End dimensions.
      */
+    @Override
     public boolean isSurfaceWorld()
     {
         return false;
     }
-
     @SideOnly(Side.CLIENT)
 
     /**
      * the y level at which clouds are rendered.
      */
+    @Override
     public float getCloudHeight()
     {
         return 256.0F;
@@ -108,6 +162,7 @@ public class ZCWorldProvider extends WorldProvider
     /**
      * Will check if the x, z position specified is alright to be set as the map spawn point
      */
+    @Override
     public boolean canCoordinateBeSpawn(int par1, int par2)
     {
         int var3 = this.worldObj.getFirstUncoveredBlock(par1, par2);
@@ -117,40 +172,29 @@ public class ZCWorldProvider extends WorldProvider
     /**
      * Gets the hard-coded portal location to use when entering this dimension.
      */
+    @Override
     public ChunkCoordinates getEntrancePortalLocation()
     {
-        return new ChunkCoordinates(0, ZCGame.ZCWorldHeight, 0);
+        return new ChunkCoordinates(-30, 100, 30);
     }
 
+    @Override
     public int getAverageGroundLevel()
     {
         return ZCGame.ZCWorldHeight;
     }
 
-    @SideOnly(Side.CLIENT)
-
-    /**
-     * Returns true if the given X,Z coordinate should show environmental fog.
-     */
-    public boolean doesXZShowFog(int par1, int par2)
-    {
-        return true;
-    }
-    
-    public boolean hasVoidParticles(boolean var1)
-    {
-    	return false;
-    }
-
     /**
      * Returns the dimension's name, e.g. "The End", "Nether", or "Overworld".
      */
+    @Override
     public String getDimensionName()
     {
         return "ZombieCraft Realm";
     }
     
     //fail
+    @Override
     public boolean canMineBlock(EntityPlayer player, int x, int y, int z)
     {
     	//return ZCUtil.areBlocksMineable;

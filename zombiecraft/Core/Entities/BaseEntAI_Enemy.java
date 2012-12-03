@@ -1,5 +1,6 @@
 package zombiecraft.Core.Entities;
 
+import zombiecraft.Core.ZCItems;
 import CoroAI.entity.*;
 import net.minecraft.src.*;
 
@@ -7,7 +8,9 @@ public class BaseEntAI_Enemy extends BaseEntAI
 {
 	
 	public int deathTimer = 0;
-	public int deathTimerMax = 12000;
+	public int deathTimerMax = 6000;
+	
+	public int pickupDropRarity = 30;
 	
 	public BaseEntAI_Enemy(World par1World, double x, double y, double z) {
 		this(par1World);
@@ -19,6 +22,37 @@ public class BaseEntAI_Enemy extends BaseEntAI
         super(par1World);
         this.dipl_team = EnumTeam.HOSTILES;
         
+    }
+    
+    @Override
+    public void dropItems() {
+    	pickupDropRarity = 40;
+    	
+    	int chance = worldObj.rand.nextInt(pickupDropRarity);
+    	
+    	//System.out.println("drop chance roll: " + chance);
+    	
+    	if (chance == 0) {
+    		this.dropItem(getDropItemId(), 1);
+    	}
+    }
+    
+    public void dropFewItems(boolean par1, int par2) {
+    	
+    	
+    }
+    
+    public int getDropItemId() {
+    	int id = worldObj.rand.nextInt(4);
+    	if (id == 0) {
+    		return ZCItems.itemPickupDoublePoints.shiftedIndex;
+    	} else if (id == 1) {
+    		return ZCItems.itemPickupInstaKill.shiftedIndex;
+    	} else if (id == 2) {
+    		return ZCItems.itemPickupMaxAmmo.shiftedIndex;
+    	} else {
+    		return ZCItems.itemPickupNuke.shiftedIndex;
+    	}
     }
     
     //@Override
@@ -86,7 +120,7 @@ public class BaseEntAI_Enemy extends BaseEntAI
     	if (!worldObj.isRemote) {
     		deathTimer++;
     		if (deathTimer > deathTimerMax) {
-    			//setDead();
+    			setDead();
     		}
     	}
     	
@@ -116,14 +150,6 @@ public class BaseEntAI_Enemy extends BaseEntAI
     protected String getDeathSound()
     {
         return "";
-    }
-
-    /**
-     * Returns the item ID for the item the mob drops on death.
-     */
-    protected int getDropItemId()
-    {
-        return 0;
     }
 
     /**

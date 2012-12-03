@@ -23,6 +23,8 @@ import org.lwjgl.opengl.GL11;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Server.ZCGameMP;
 
 import net.minecraft.client.Minecraft;
@@ -163,8 +165,8 @@ public class GuiSelectZCMap extends GuiScreen
     {
 		Minecraft mc = ModLoader.getMinecraftInstance();
         saveList.clear();
-		checkFolder(ZCGame.getMapFolder());
-		File zombieWorldDir = new File(mc.getMinecraftDir(),ZCGame.instance().getMapFolder());
+		checkFolder(ZCGame.getClientSidePath() + File.separator + ZCGame.getMapFolder() + File.separator);
+		File zombieWorldDir = new File(ZCGame.getClientSidePath() + File.separator + ZCGame.getMapFolder() + File.separator);
 		
 		if(zombieWorldDir.exists() && zombieWorldDir.isDirectory())
         {
@@ -274,7 +276,7 @@ public class GuiSelectZCMap extends GuiScreen
         //var5.func_82286_a(var4);
         //ZCUtil.setPrivateValueBoth(WorldInfo.class, var4, "commandsAllowed", "commandsAllowed", true);
         //
-        WorldSettings var66 = new WorldSettings((new Random()).nextLong(), edit ? EnumGameType.CREATIVE : EnumGameType.SURVIVAL, false, false, WorldType.FLAT);
+        WorldSettings var66 = new WorldSettings((new Random()).nextLong(), edit ? EnumGameType.CREATIVE : EnumGameType.SURVIVAL, false, false, WorldType.DEFAULT);
         var66.func_82750_a(var5.field_82290_a);
         var66.enableCommands();
         //this.mc.displayGuiScreen(var5);
@@ -289,6 +291,9 @@ public class GuiSelectZCMap extends GuiScreen
         } else {
         	ZCGame.autostart = false;
         }
+        
+        ZCServerTicks.zcGame.mapMan.editMode = edit;
+        if (ZCClientTicks.zcGame != null && ZCClientTicks.zcGame.mapMan != null) ZCClientTicks.zcGame.mapMan.editMode = edit;
         
         ZombieSaveRecord zsr = (ZombieSaveRecord)saveList.get(selectedWorld);
         if (zsr != null && zsr.worldFile.getName().length() >= 10) {

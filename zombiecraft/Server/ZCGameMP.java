@@ -10,6 +10,8 @@ import java.util.Map;
 import build.world.Build;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.asm.SideOnly;
 
 import CoroAI.entity.*;
 
@@ -17,6 +19,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.*;
 
 import zombiecraft.Core.AmmoDataLatcher;
+import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.EnumGameMode;
@@ -24,7 +27,9 @@ import zombiecraft.Core.MCInt;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.PacketMLMP;
+import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
 
@@ -35,9 +40,12 @@ public class ZCGameMP extends ZCGame {
 	public List<String> playersToWatchForSpawn = new LinkedList();
 	
 	public int lastPlayerCount = 0;
+	public int reinitWaitTime = 10;
 	
 	//more fun singleplayer convinience fixes
 	public static boolean adjustedPlayer = true;
+	
+	
 	
 	public ZCGameMP(boolean serverMode) {
 		super(serverMode);
@@ -127,8 +135,11 @@ public class ZCGameMP extends ZCGame {
 			
 			//System.out.println(zcLevel.buildData.curTick + " - " + zcLevel.buildData.maxTicks);
 			float percent = ((float)zcLevel.buildData.curTick + 1) / ((float)zcLevel.buildData.maxTicks) * 100F;
-			//System.out.println(percent);
+			//System.out.println("build percent: " + percent);
 			updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {(int)percent});
+			if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
+				//mapMan.curBuildPercent = (int) percent;
+			}
 		} else {
 			if (zcLevel.buildData.curTick != -1) {
 				zcLevel.buildData.curTick = -1; //mark that the build is done after observing a finished state
@@ -139,22 +150,42 @@ public class ZCGameMP extends ZCGame {
 		watchWorldHook();
 		watchForRespawn();
 		
+		World world2 = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0);
+		
+		/*GameRules gr = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0).getGameRules();
+		gr.addGameRule("doMobLoot", "true");
+		gr.addGameRule("doFireTick", "true");
+		gr.addGameRule("doTileDrops", "true");*/
+		
 		if (activeZCDimension == ZCDimensionID) {
 			if (this.getWorld() != null) {
-				GameRules gr = this.getWorld().getWorldInfo().func_82574_x();
+				World world = this.getWorld();
+				GameRules gr = this.getWorld().getWorldInfo().getGameRulesInstance();
 				
+				//dont use any till it works right, fire tick not needed since no items make fire now, keep till fixed
+				gr.addGameRule("doMobLoot", "true");
+				gr.addGameRule("doFireTick", "true");
+				gr.addGameRule("doTileDrops", "true");
+				
+				//temp fix, bugs out other dimensions, need real fix, same for explosions - does it REALLY bug them out? i bet it doesnt
 				if (gameActive) {
-					gr.func_82769_a("doFireTick", "false");
+					//gr.addGameRule("doFireTick", "false");
+					
 				} else {
-					gr.func_82769_a("doFireTick", "true");
+					//gr.addGameRule("doFireTick", "true");
+					//gr.addGameRule("doMobLoot", "true");
 				}
 				//uhh this isnt per dimension
-				//gr.func_82769_a("doFireTick", "true");
-				//gr.func_82769_a("mobGriefing", "true");
-		        //gr.func_82769_a("doMobLoot", "true");
-		        //gr.func_82769_a("doTileDrops", "true");
+				//gr.addGameRule("doFireTick", "true");
+				//gr.addGameRule("mobGriefing", "true");
+		        //gr.addGameRule("doMobLoot", "true");
+		        //gr.addGameRule("doTileDrops", "true");
 			}
+		} else {
+			
 		}
+		
+		
 		
 		super.tick();
 	}
@@ -168,26 +199,31 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	public void watchForRespawn() {
-		List<EntityPlayer> allPlayers = getPlayers();
-		for(int h = 0; h < playersToWatchForSpawn.size(); h++) {
-			for(int i = 0; i < allPlayers.size(); i++) {
-				EntityPlayer plEnt = allPlayers.get(i);
-	
-				if (!plEnt.isDead && plEnt.username.equals(playersToWatchForSpawn.get(h))) {
-					System.out.println("readding: " + plEnt.username);
-					zcLevel.playersInGame.add(plEnt);
-					zcLevel.playersInGame_Names.add(plEnt.username);
-					playersToWatchForSpawn.remove(h);
-					resetPlayer(plEnt);
-					
-					if (mapMan.zcLevel.player_spawnY != 999)  {
-						mapMan.movePlayerToSpawn(plEnt);
-						
+		
+			
+			List<EntityPlayer> allPlayers = getPlayers();
+			for(int h = 0; h < playersToWatchForSpawn.size(); h++) {
+				for(int i = 0; i < allPlayers.size(); i++) {
+					EntityPlayer plEnt = allPlayers.get(i);
+		
+					if (!plEnt.isDead && plEnt.username.equals(playersToWatchForSpawn.get(h))) {
+						if (reinitWaitTime > 0) {
+							reinitWaitTime--;
+							return; //return to prevent loop overticking cooldown, code needs to be here to make sure a player is waiting to be reinitilized (list match)
+						} else {
+							reinitWaitTime = 10;
+							System.out.println("readding: " + plEnt.username);
+							zcLevel.playersInGame.add(plEnt);
+							zcLevel.playersInGame_Names.add(plEnt.username);
+							playersToWatchForSpawn.remove(h);
+							//System.out.println("TEMP DISABLE in watchForRespawn()");
+							resetPlayer(plEnt, true, true);
+							return; //force it to rewait per player, incase someone just respawned while other player spawned
+						}
 					}
+					
 				}
-				
 			}
-		}
 		
 	}
 	
@@ -228,8 +264,66 @@ public class ZCGameMP extends ZCGame {
 				((c_EntityPlayerMPExt)player).setFoodLevel(20);
 			}
 		}
-		handleBarricadeProximity(player);
+	}
+	
+	@Override
+	public void handlePlayerAbilities(EntityPlayer player) {
+		super.handlePlayerAbilities(player);
 		
+		//juggernog logic
+		int juggTime = (Integer)getData(player, DataTypes.juggTime);
+		if (juggTime > 0) {
+			if (player.inventory.armorInventory[2] == null) {
+				player.inventory.armorInventory[2] = new ItemStack(Item.plateSteel);
+        	}
+			if (juggTime == 1) {
+				player.inventory.armorInventory[2] = null;
+			}
+			setData(player, DataTypes.juggTime, --juggTime);
+		}
+		
+		//exstatic logic
+		int exStaticTime = (Integer)getData(player, DataTypes.exStaticTime);
+		if (exStaticTime > 0) {
+			setData(player, DataTypes.exStaticTime, --exStaticTime);
+		}
+		
+		int exStaticCooldown = (Integer)getData(player, DataTypes.exStaticCooldown);
+		if (exStaticCooldown > 0) {
+			setData(player, DataTypes.exStaticCooldown, --exStaticCooldown);
+		}
+		
+		List var4 = player.worldObj.getEntitiesWithinAABB(c_EnhAI.class, player.boundingBox.expand(1.0D, 2.0D, 1.0D));
+        if (var4 != null && !var4.isEmpty())
+        {
+        	if (exStaticTime > 0) {
+	        	for (int i = 0; i < var4.size(); i++) {
+	        		c_EnhAI ent = (c_EnhAI)var4.get(i);
+	        		
+	        		if (ent.isEnemy(player)) {
+	        			ent.attackEntityFrom(DamageSource.causeMobDamage(player), 5);
+	        			ent.knockBack(player, 0, player.posX - ent.posX, player.posZ - ent.posZ);
+	        		}
+	        	}
+        	} else {
+        		if (exStaticCooldown == 0) {
+        			setData(player, DataTypes.exStaticCooldown, Buyables.perkCooldownExStatic);
+        			setData(player, DataTypes.exStaticTime, Buyables.perkLengthExStatic);
+        		}
+        	}
+        }
+        
+        //double points counter
+        int doublePointsTime = (Integer)getData(player, DataTypes.doublePointsTime);
+		if (doublePointsTime > 0) {
+			setData(player, DataTypes.doublePointsTime, --doublePointsTime);
+		}
+		
+		//insta kill counter
+        int instaKillTime = (Integer)getData(player, DataTypes.instaKillTime);
+		if (instaKillTime > 0) {
+			setData(player, DataTypes.instaKillTime, --instaKillTime);
+		}
 		
 	}
 	
@@ -404,7 +498,19 @@ public class ZCGameMP extends ZCGame {
 			if (tryBuy(player)) {
 				ZCServerTicks.sendPacket(player, PacketTypes.MENU_BUY_TIMEOUT, new int[] {0});
 			}
-		}
+		} else if (dataInt[0] == CommandTypes.RELOAD) {
+			ItemStack is = player.getCurrentEquippedItem();
+			if (is != null && is.getItem() instanceof ItemGun) {
+				ItemGun ig = (ItemGun)is.getItem();
+				
+				ig.setClipAmount(is, player.worldObj, player, ig.magSize);
+				ig.setReloadDelay(is, player.worldObj, player, ig.reloadTime);
+				//ig.clipAmount = ig.magSize;
+				//ig.reloadDelay = ig.reloadTime;
+				player.worldObj.playSoundAtEntity(player, "zc.gun.reload", 1.0F, 1.0F / (player.worldObj.rand.nextFloat() * 0.4F + 0.8F));
+			}
+		}  
+		
 		try {
 			
 			if (mc.worldServers == null) {
@@ -416,8 +522,6 @@ public class ZCGameMP extends ZCGame {
 				if (dataInt[0] == CommandTypes.SET_WAVE) {
 					handleWaveSet(player, dataInt, true);
 				} else if (dataInt[0] == CommandTypes.TOGGLE_EDIT) {
-					//disable server side hardness editing for now? - back on
-					//mapMan.editMode = !mapMan.editMode;
 					mapMan.toggleEditMode();
 					updateInfo(null, PacketTypes.EDITOR_EDITMODE, new int[] {(mapMan.editMode ? 1 : 0)});
 				} else if (dataInt[0] == CommandTypes.TOGGLE_DOORNOCLIP) {
@@ -426,14 +530,13 @@ public class ZCGameMP extends ZCGame {
 				} else if (dataInt[0] == CommandTypes.SET_LEVELSIZE) {
 					mapMan.zcLevel.buildData.recalculateLevelSize(dataInt[1], dataInt[2], dataInt[3], dataInt[4], dataInt[5], dataInt[6], true);
 					setActiveDimension(player.dimension);
-					//updateInfo(null, PacketTypes.EDITOR_SETLEVELCOORDS, new int[] {dataInt[1], dataInt[2], dataInt[3], dataInt[4], dataInt[5], dataInt[6]});
 				} else if (dataInt[0] == CommandTypes.SET_PLAYERSPAWN) {
 					mapMan.setPlayerSpawn(dataInt[1], dataInt[2], dataInt[3]);
 					updateInfo(null, PacketTypes.EDITOR_SETSPAWN, new int[] {dataInt[1], dataInt[2], dataInt[3]});
 				} else if (dataInt[0] == CommandTypes.REGENERATE) {
+					movePlayersToLobby();
 					ZCGame.instance().mapMan.loadLevel();
 		    		ZCGame.instance().mapMan.buildStart(player);
-					//updateInfo(null, PacketTypes.EDITOR_SETSPAWN, new int[] {data[1], data[2], data[3]});
 				} else if (dataInt[0] == CommandTypes.SET_LEVELNAME) {
 					this.setMapName(player, packet.dataString[0]);
 					updateInfo(null, PacketTypes.EDITOR_SETLEVELNAME, new int[0], packet.dataString);
@@ -471,13 +574,14 @@ public class ZCGameMP extends ZCGame {
 		
 		if (reset == 1) {
 			if (!gameActive) {
+				boolean startResult = false;
 				if (zcLevel.player_spawnY != 999) {
-					mapMan.movePlayerToSpawn(player); //since game starts with close players to spawn, make sure player starting it is at spawn 
-					wMan.startGameFromPlayerSpawn(player);
+					//mapMan.movePlayerToSpawn(player); 
+					startResult = wMan.startGameFromPlayerSpawn(player);
 				} else {
-					wMan.startGameFromPlayer(player);
+					startResult = wMan.startGameFromPlayer(player);
 				}
-				wMan.setWaveAndStart(wave);
+				if (startResult) wMan.setWaveAndStart(wave);
 			} else {
 				if (isOp) {
 					wMan.stopGame();
@@ -544,6 +648,7 @@ public class ZCGameMP extends ZCGame {
 		}
 	}
 	
+	//this has stopped being used since i lost the hook for a while, now its been accounted for in other ways....
 	@Override
 	public void playerJoined(EntityPlayer player) {
 		check(player);

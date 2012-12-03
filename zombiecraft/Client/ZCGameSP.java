@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+
 import build.render.Overlays;
 
 import CoroAI.c_IEnhPF;
@@ -20,6 +22,7 @@ import zombiecraft.Core.Buyables;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.MCInt;
 import zombiecraft.Core.PacketTypes;
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -123,7 +126,7 @@ public class ZCGameSP extends ZCGame {
 	@Override
 	public void handlePacket(EntityPlayer player, PacketMLMP packet) {
 		
-		if (player.worldObj.provider.dimensionId != ZCGame.ZCDimensionID) return;
+		if (mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID && !mapMan.editMode && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) return;
 		
 		try {
 			boolean dbg = false;
@@ -158,9 +161,11 @@ public class ZCGameSP extends ZCGame {
 	        		resetBuyState(mc.thePlayer, packet.dataInt[2]);
 	        	} else {
 	        		resetBuyState(mc.thePlayer);
-	        		if (ZombieCraftMod.itemPerkCharge.shiftedIndex == packet.dataInt[0]) {
+	        		if (ZCItems.itemPerkCharge.shiftedIndex == packet.dataInt[0]) {
 	        			//ZCClientTicks.iMan.hasCharge = true;
 	        			ZCUtil.setData(player, DataTypes.hasCharge, 1);
+	        		} else if (ZCItems.itemPerkSpeed.shiftedIndex == packet.dataInt[0]) {
+	        			ZCUtil.setData(player, DataTypes.speedTime, Buyables.perkLengthSpeed);
 	        		}
 	        	}
 	        	ZCClientTicks.zcGame.setData(mc.thePlayer, DataTypes.zcPoints, packet.dataInt[1]);
@@ -177,8 +182,10 @@ public class ZCGameSP extends ZCGame {
 	        	if (packet.dataInt[0] > wMan.wave_Stage && wMan.wave_Stage != 0) {
 	        		//playSoundEffect("sdkzc.round_over", player, 2F, 1.0F);
 	        		//player.worldObj.playSoundAtEntity(player, "sdkzc.round_over", 1.0F, 1.0F);
-	        		ZCClientTicks.mc.sndManager.playSoundFX("sdkzc.round_over", 1F, 1.0F);
+	        		ZCClientTicks.mc.sndManager.playSoundFX("zc.round_over", 1F, 1.0F);
 	        		//System.out.println("HYYYYYYYYYYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+	        	} else if (packet.dataInt[0] == 1 && packet.dataInt[0] > wMan.wave_Stage) {
+	        		ZCClientTicks.mc.sndManager.playSoundFX("zc.start", 1F, 1.0F);
 	        	}
 	        	wMan.wave_Stage = packet.dataInt[0];
 	        	wMan.wave_StartDelay = packet.dataInt[1];
@@ -269,30 +276,51 @@ public class ZCGameSP extends ZCGame {
 		
 		if (this.gameActive) {
 			player.getFoodStats().setFoodLevel(20);
-			
-			if (waitingToSpawn) {
-				if (/*ZCClientTicks.camMan.camState != EnumCameraState.OFF && */(!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0)) {
-		    		mc.thePlayer.respawnPlayer();
-		    		ZCClientTicks.camMan.disableCamera();
-		    	}
-			}
 		}
 		
+		if (waitingToSpawn) {
+			if (/*ZCClientTicks.camMan.camState != EnumCameraState.OFF && */(!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0)) {
+				waitingToSpawn = false;
+				//System.out.println("TEMP DISABLED AUTO RESPAWN playerTick");
+				ZCClientTicks.camMan.disableCamera();
+	    		mc.thePlayer.respawnPlayer();
+	    		this.mc.displayGuiScreen((GuiScreen)null);
+	    	}
+		}
+		
+		
+	}
+	
+	@Override
+	public void handlePlayerAbilities(EntityPlayer player) {
+		super.handlePlayerAbilities(player);
+		
 		if (ZCClientTicks.iMan != null) {
+			
+			//charge logic
 			if (ZCClientTicks.iMan.chargeCooldown > 0) {
 				ZCClientTicks.iMan.chargeCooldown--;
 			}
 			if (ZCClientTicks.iMan.chargeTick > 0) {
 				ZCClientTicks.iMan.chargeTick--;
 				
-				if (player.onGround) {
+				if (player.onGround && Math.sqrt(player.motionX * player.motionX + player.motionZ * player.motionZ) > 0.1F) {
 					player.motionX *= 1.5F;
 					player.motionZ *= 1.5F;
 				}
 			}
+
+			//speed cola logic
+			int speedTime = (Integer)getData(player, DataTypes.speedTime);
+			if (speedTime > 0) {
+				speedTime--;
+				setData(player, DataTypes.speedTime, speedTime);
+				if (player.onGround && Math.sqrt(player.motionX * player.motionX + player.motionZ * player.motionZ) > 0.1F) {
+					player.motionX *= 1.4F;
+		        	player.motionZ *= 1.4F;
+		        }
+			}
 		}
-		
-		
 	}
 	
 	public boolean triggerBuyMenu(Entity entity, int x, int y, int z, int itemIndex) {
@@ -311,8 +339,15 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public void resetBuyState(Entity entity, int cooldown) {
-		super.resetBuyState(entity, cooldown);
-		ZCClientTicks.iMan.reBuyDelay = cooldown;
+		
+		int adjustedCooldown = cooldown;
+		
+		if ((Integer)ZCUtil.getData((EntityPlayer)entity, DataTypes.speedTime) > 0) {
+			adjustedCooldown /= 2;
+		}
+		
+		super.resetBuyState(entity, adjustedCooldown);
+		ZCClientTicks.iMan.reBuyDelay = adjustedCooldown;
 		ZCClientTicks.iMan.buyMenuState = 0;
 		ZCClientTicks.iMan.buyID = 0;
 	}
@@ -566,6 +601,8 @@ public class ZCGameSP extends ZCGame {
 	public String getWorldSavePath() {
 		return "";//"saves/" + this.getWorld().getWorldInfo().getWorldName() + "/";
 	}
+	
+	
 	
 	@Override
 	public boolean canEdit(EntityPlayer player) {

@@ -15,6 +15,7 @@ import net.minecraft.src.GuiOptions;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.GuiStats;
 import net.minecraft.src.GuiTextField;
+import net.minecraft.src.GuiTexturePacks;
 import net.minecraft.src.MathHelper;
 import net.minecraft.src.StatCollector;
 import net.minecraft.src.StatList;
@@ -47,6 +48,7 @@ public class GuiEditorCP extends GuiScreen
     private static int G_TOOLMODE_LINK = 11;
     private static int G_TOOLMODE_SPAWN = 12;
     
+    private static int G_TEXTUREPACK = 13;
     
     //container additions \\
     
@@ -110,6 +112,8 @@ public class GuiEditorCP extends GuiScreen
         this.controlList.add(new GuiButton(G_TOGGLEGAME, startX, startY + div*1 + var1, 90, 20, (!ZCGame.instance().gameActive ? "Start Game" : "\u00A72Stop Game")));
         this.controlList.add(new GuiButton(G_PREVSTAGE, startX, startY + div*2 + var1, 90, 20, "Prev Stage"));
         this.controlList.add(new GuiButton(G_NEXTSTAGE, startX, startY + div*3 + var1, 90, 20, "Next Stage"));
+        
+        this.controlList.add(new GuiButton(G_TEXTUREPACK, startX, startY + div*5 + var1, 90, 20, "Texture Pack"));
         
         
         this.controlList.add(new GuiButton(G_CLOSE, startX, startY + div*6 + var1, 90, 20, "Close"));
@@ -181,9 +185,14 @@ public class GuiEditorCP extends GuiScreen
     	
         if (var1.id == G_TOGGLEGAME)
         {
-            ZCClientTicks.iMan.setStage(1, 1);
+        	if (!ZCGame.instance().mapMan.editMode || ZCGame.instance().gameActive) {
+        		ZCClientTicks.iMan.setStage(1, 1);
+        	}
         }
-        
+        if (var1.id == G_TEXTUREPACK)
+        {
+        	this.mc.displayGuiScreen(new GuiTexturePacks(this));
+        }
         if (var1.id == G_EDITMODE)
         {
             ZCClientTicks.iMan.toggleEditMode();

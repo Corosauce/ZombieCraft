@@ -7,6 +7,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
@@ -15,11 +16,15 @@ import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Camera.CameraManager;
 import zombiecraft.Core.Camera.EnumCameraState;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Client.*;
+import zombiecraft.Forge.RenderPlayerZC;
 import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZCKeybindHandler;
+import zombiecraft.Forge.ZCServerTicks;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.*;
@@ -49,6 +54,7 @@ public abstract class InterfaceManager {
 	
 	public String modeMessage = "";
 	
+	//old code?
 	public static final String difficulties[] = {
         "Peaceful", "Easy", "Normal", "Hard"
     };
@@ -64,6 +70,10 @@ public abstract class InterfaceManager {
 	public int chargeLengthCooldown = 20 * 30;
 	public int chargeCooldown = 0;
 	public int chargeTick = 0;
+	
+	public Render origPlayerRender;
+
+    public float zoomState = 0;
 	
 	public InterfaceManager(Minecraft mc, ZCGame game) {
 		this.mc = mc;
@@ -83,12 +93,37 @@ public abstract class InterfaceManager {
 	public int consoleOpenDelay = 0;
 	public void keyEvent(KeyBinding key, boolean keyUp) {
 		
+		if (mc.currentScreen != null && !key.keyDescription.equals("ZC_Menu")) return;
+		
 		if (key.keyDescription.equals("ZC_Use")) {
     		
     		holdingUse = true;
     		if (keyUp) holdingUse = false;
     		
-    	}
+    	} else if (key.keyDescription.equals("ZC_Reload")) {
+    		if (keyUp) {
+	    		ItemStack is = mc.thePlayer.getCurrentEquippedItem();
+	    		if (is != null && is.getItem() instanceof ItemGun) {
+	    			ItemGun ig = (ItemGun)is.getItem();
+	    			
+	    			if (ig.reloadDelayClient <= 0 && ig.clipAmountClient != ig.magSize) {
+	    				ig.setClipAmount(is, mc.thePlayer.worldObj, mc.thePlayer, ig.magSize);
+	    				ig.setReloadDelay(is, mc.thePlayer.worldObj, mc.thePlayer, ig.reloadTime);
+		    			//ig.clipAmountClient = ig.magSize;
+		    			//ig.reloadDelayClient = ig.reloadTime;
+		    			zcGame.sendPacket(mc.thePlayer, PacketTypes.COMMAND, new int[] {CommandTypes.RELOAD}, null);
+	    			}
+	    		}
+    		}
+    	} else if (key.keyDescription.equals("ZC_Zoom")) {
+	    	if (!keyUp) {
+		    	zoomState+=0.5F;
+		    	System.out.println("zoomState: " + zoomState);
+				if (zoomState > 2.5) {
+					zoomState = 0;
+				}
+	    	}
+	    }
 		
 		if (keyUp) return;
 		
@@ -109,18 +144,26 @@ public abstract class InterfaceManager {
 				
 			}
 	    } else if (key.keyDescription.equals("ZC_Reload")) {
-	    	if (ZCClientTicks.camMan.camState != EnumCameraState.OFF && (!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0)) {
-	    		mc.thePlayer.respawnPlayer();
-	    		ZCClientTicks.camMan.disableCamera();
+	    	if (ZCClientTicks.camMan.camState != EnumCameraState.OFF) {
+	    		if ((!ZCGame.instance().gameActive || ZCGame.instance().wMan.wave_StartDelay > 0)) {
+		    		mc.thePlayer.respawnPlayer();
+		    		ZCClientTicks.camMan.disableCamera();
+	                this.mc.displayGuiScreen((GuiScreen)null);
+	    		}
 	    	}
 	    } else if (key.keyDescription.equals("ZC_Charge")) {
 	    	if ((Integer)zcGame.getData(mc.thePlayer, DataTypes.hasCharge) == 1) {
 	    		if (chargeCooldown == 0) {
 	    			chargeCooldown = chargeLengthCooldown;
 	    			chargeTick = chargeLengthTicks;
+	    		} else {
+	    			mc.thePlayer.setSprinting(true);
 	    		}
+			} else {
+				mc.thePlayer.setSprinting(true);
 			}
 	    }
+		
 		
 	}
 	
@@ -128,7 +171,35 @@ public abstract class InterfaceManager {
 		
 		if (mc.thePlayer == null) return;
 		
-		if (mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID) return;
+		//Game tick based stuff
+		if (lastWorldTime != ZCClientTicks.worldRef.getWorldTime()) {
+			lastWorldTime = ZCClientTicks.worldRef.getWorldTime();
+			
+			if (reBuyDelay > 0) reBuyDelay--;
+			if (toolModeTimeout > 0) toolModeTimeout--;
+			if (consoleOpenDelay > 0) consoleOpenDelay--;
+			
+			//System.out.println(reBuyDelay);
+		}
+		
+		//this kinda needs to be done for other players too
+		if (mc.thePlayer.worldObj.provider.dimensionId == ZCGame.ZCDimensionID) {
+			if (!(RenderManager.instance.entityRenderMap.get(EntityOtherPlayerMP.class) instanceof RenderPlayerZC)) {
+				origPlayerRender = (Render)RenderManager.instance.entityRenderMap.get(EntityPlayer.class);
+				Render render = new RenderPlayerZC();
+				render.setRenderManager(RenderManager.instance);
+				RenderManager.instance.entityRenderMap.put(EntityOtherPlayerMP.class, render);
+			}
+		} else {
+			if ((RenderManager.instance.entityRenderMap.get(EntityOtherPlayerMP.class) instanceof RenderPlayerZC)) {
+				RenderManager.instance.entityRenderMap.put(EntityOtherPlayerMP.class, origPlayerRender);
+			}
+			
+		}
+		
+		if (mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID && !zcGame.mapMan.editMode/* && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()*/) return;
+		
+		
 		
 		/*if (!mc.isMultiplayerWorld()) {
 			zcGame.tick();
@@ -139,6 +210,7 @@ public abstract class InterfaceManager {
 		}*/
 		
 		if (mc.currentScreen instanceof GuiGameOver) {
+			
 			mc.currentScreen = new GuiGameOverZC();
 			//mc.currentScreen.guiParticles = new GuiParticle(mc);
 			
@@ -157,7 +229,14 @@ public abstract class InterfaceManager {
             }
 		}
 		
-		if (!ZCClientTicks.ingui) {
+		//Fix for weird double gui game over display
+		if (mc.currentScreen instanceof GuiGameOverZC) {
+			if (mc.thePlayer != null && mc.thePlayer.getHealth() > 1) {
+				mc.currentScreen = null;
+			}
+		}
+		
+		if (mc.currentScreen == null) {
 			showEditOverlays();
 			if (toolModeTimeout > 0) showEditToolMode();
 			if (showZCOverlay) {
@@ -168,16 +247,7 @@ public abstract class InterfaceManager {
 				//zcGame.renderLevelSize();
 			}
 		}
-		//Game tick based stuff
-		if (lastWorldTime != ZCClientTicks.worldRef.getWorldTime()) {
-			lastWorldTime = ZCClientTicks.worldRef.getWorldTime();
-			
-			if (reBuyDelay > 0) reBuyDelay--;
-			if (toolModeTimeout > 0) toolModeTimeout--;
-			if (consoleOpenDelay > 0) consoleOpenDelay--;
-			
-			//System.out.println(reBuyDelay);
-		}
+		
 		
 		
 		
@@ -206,7 +276,7 @@ public abstract class InterfaceManager {
 			
 		}
 		
-		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) || Keyboard.isKeyDown(ZCKeybindHandler.consoleKey.keyCode)) {
 			if (mc.currentScreen instanceof GuiEditorCP) {
 				if (consoleOpenDelay == 0) {
 					consoleOpenDelay = 5;
@@ -301,24 +371,45 @@ public abstract class InterfaceManager {
         		int totalAmmo = ZCUtil.getAmmoData(mc.thePlayer, ig.ammoType.ordinal());
         		
         		int clips = totalAmmo / ig.magSize;
-        		int roundsInClip = totalAmmo - (clips * ig.magSize);
+        		int roundsInClip = ig.clipAmountClient;//totalAmmo - (clips * ig.magSize);
+        		
+        		if (totalAmmo < roundsInClip) roundsInClip = totalAmmo;
+        		
+        		if (roundsInClip == -1) {
+        			if (totalAmmo > 0) {
+        				roundsInClip = ig.magSize;
+        			} else {
+        				roundsInClip = 0;
+        			}
+        		}
         		
         		if (roundsInClip == 0 && clips > 1) {
         			clips -= 1;
         			roundsInClip = ig.magSize;
         		}
         		
+        		if (roundsInClip == ig.magSize) clips--;
+        		
         		ammoVal = String.valueOf(roundsInClip + " | " + clips);
         		ammo = "Ammo";
         	}
         }
         
-        int per = zcGame.mapMan.curBuildPercent;
+        float per = zcGame.mapMan.curBuildPercent;
         
-        if (per != -1) {
-        	String str = "Level Build in Progress: " + per + "%";
+        if (per != -1 || (FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer())) {
         	
-        	drawString(str, (width/2) - (fr.getStringWidth(str) / 2), 80, color);
+        	if ((FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) && ZCServerTicks.zcGame.zcLevel != null && ZCServerTicks.zcGame.zcLevel.buildData != null) {
+        		per = ((float)ZCServerTicks.zcGame.zcLevel.buildData.curTick + 1) / ((float)ZCServerTicks.zcGame.zcLevel.buildData.maxTicks) * 100F;
+        		per = (float)Math.floor(per * 100) / 100;
+        		
+        	}
+        	
+        	if (per > 0) {
+	        	String str = "Level Build in Progress: " + per + "%";
+	        	
+	        	drawString(str, (width/2) - (fr.getStringWidth(str) / 2), 80, color);
+        	}
         }
         
         
@@ -329,6 +420,27 @@ public abstract class InterfaceManager {
 		drawString(mobs, width/2 - fr.getStringWidth(mobs+String.valueOf(zcGame.wMan.wave_Invaders_Count))/2 + 20, yPos+(yOffset*1), color);
 		drawString(String.valueOf(zcGame.wMan.wave_Invaders_Count), width/2 - (fr.getStringWidth(mobs)/2) + 45, yPos+(yOffset*1), 0xFFFFFF);
 		
+		if (zcGame.waitingToSpawn || ZCClientTicks.camMan.camState != EnumCameraState.OFF) {
+			String mode = "";
+			if (ZCClientTicks.camMan.camState == EnumCameraState.FOLLOW) {
+				if (ZCClientTicks.camMan.spectateTarget != null) {
+					mode = "Following: " + ((EntityPlayer)ZCClientTicks.camMan.spectateTarget).username;
+				}
+				
+			} else if (ZCClientTicks.camMan.camState == EnumCameraState.FREE) {
+				mode = "Free Cam";
+			}
+			String msg1 = "Waiting to respawn";
+			String msg2 = Keyboard.getKeyName(ZCKeybindHandler.cameraKey.keyCode) + ": Cycle Mode";
+			String msg3 = Keyboard.getKeyName(ZCKeybindHandler.chargeKey.keyCode) + ": Cycle Player";
+			if (zcGame.waitingToSpawn) {
+				drawString(msg1, width/2 - fr.getStringWidth(msg1) / 2, height-70, color);
+			}
+			drawString(mode, width/2 - fr.getStringWidth(mode) / 2, yPos+(yOffset*4), color);
+			
+			drawString(msg2, 3, yPos+(yOffset*0), color);
+			drawString(msg3, 3, yPos+(yOffset*1), color);
+		}
 		
 		drawString(points, width/2 - 125, height-20, 0xFFFFFF);
 		drawString(pointsVal, width/2 - 125 + (fr.getStringWidth(points) / 2) - (fr.getStringWidth(pointsVal) / 2), height-10, 0xFFFFFF);

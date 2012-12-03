@@ -1,5 +1,6 @@
 package zombiecraft.Forge;
 
+import zombiecraft.Core.ZCItems;
 import net.minecraft.src.*;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
@@ -18,6 +19,6 @@ final class CreativeTabZC extends CreativeTabs
      */
     public int getTabIconItemIndex()
     {
-        return ZombieCraftMod.itemAk47.shiftedIndex;
+        return ZCItems.itemAk47.shiftedIndex;
     }
 }

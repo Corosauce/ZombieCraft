@@ -5,13 +5,13 @@ import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import zombiecraft.Core.Entities.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 
 public class RenderBulletShot extends Render
 {
     public void renderArrow(EntityBullet var1, double var2, double var4, double var6, float var8, float var9)
     {
-        this.loadTexture("/sdk/itemShot.png");
+        this.loadTexture("/zc/entities/projectiles/itemShot.png");
         GL11.glPushMatrix();
         GL11.glTranslatef((float)var2, (float)var4, (float)var6);
         GL11.glRotatef(var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var9 - 90.0F, 0.0F, 1.0F, 0.0F);

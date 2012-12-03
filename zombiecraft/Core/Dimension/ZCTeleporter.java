@@ -8,20 +8,29 @@ import net.minecraft.src.*;
 
 public class ZCTeleporter extends Teleporter
 {
-    /** A private Random() function in Teleporter */
+	
+	WorldServer world;
+	
+    public ZCTeleporter(WorldServer worldServer) {
+		super(worldServer);
+		world = worldServer;
+		// TODO Auto-generated constructor stub
+	}
+
+	/** A private Random() function in Teleporter */
     private Random random = new Random();
 
     /**
      * Place an entity in a nearby portal, creating one if necessary.
      */
     @Override
-    public void placeInPortal(World par1World, Entity par2Entity, double par3, double par5, double par7, float par9)
+    public void placeInPortal(Entity par2Entity, double par3, double par5, double par7, float par9)
     {
-    	par2Entity.posY = par1World.getHeightValue((int)par2Entity.posX, (int)par2Entity.posZ);
+    	par2Entity.posY = world.getHeightValue((int)par2Entity.posX, (int)par2Entity.posZ);
     	
     	if (par2Entity.dimension == ZCGame.ZCDimensionID) {
-    		par2Entity.posX = par1World.rand.nextInt(50) - 25;
-    		par2Entity.posZ = par1World.rand.nextInt(50) - 25;
+    		par2Entity.posX = world.rand.nextInt(50) - 25;
+    		par2Entity.posZ = world.rand.nextInt(50) - 25;
     	}
     	
     	System.out.println("zc tele! " + par2Entity.dimension);
@@ -33,7 +42,7 @@ public class ZCTeleporter extends Teleporter
      * Place an entity in a nearby portal which already exists.
      */
     @Override
-    public boolean placeInExistingPortal(World par1World, Entity par2Entity, double par3, double par5, double par7, float par9)
+    public boolean placeInExistingPortal(Entity par2Entity, double par3, double par5, double par7, float par9)
     {
         short var10 = 128;
         double var11 = -1.0D;
@@ -53,11 +62,11 @@ public class ZCTeleporter extends Teleporter
             {
                 double var22 = (double)var21 + 0.5D - par2Entity.posZ;
 
-                for (int var24 = par1World.getActualHeight() - 1; var24 >= 0; --var24)
+                for (int var24 = world.getActualHeight() - 1; var24 >= 0; --var24)
                 {
-                    if (par1World.getBlockId(var18, var24, var21) == Block.portal.blockID)
+                    if (world.getBlockId(var18, var24, var21) == Block.portal.blockID)
                     {
-                        while (par1World.getBlockId(var18, var24 - 1, var21) == Block.portal.blockID)
+                        while (world.getBlockId(var18, var24 - 1, var21) == Block.portal.blockID)
                         {
                             --var24;
                         }
@@ -88,22 +97,22 @@ public class ZCTeleporter extends Teleporter
             var25 = (double)var15 + 0.5D;
             int var47 = -1;
 
-            if (par1World.getBlockId(var13 - 1, var14, var15) == Block.portal.blockID)
+            if (world.getBlockId(var13 - 1, var14, var15) == Block.portal.blockID)
             {
                 var47 = 2;
             }
 
-            if (par1World.getBlockId(var13 + 1, var14, var15) == Block.portal.blockID)
+            if (world.getBlockId(var13 + 1, var14, var15) == Block.portal.blockID)
             {
                 var47 = 0;
             }
 
-            if (par1World.getBlockId(var13, var14, var15 - 1) == Block.portal.blockID)
+            if (world.getBlockId(var13, var14, var15 - 1) == Block.portal.blockID)
             {
                 var47 = 3;
             }
 
-            if (par1World.getBlockId(var13, var14, var15 + 1) == Block.portal.blockID)
+            if (world.getBlockId(var13, var14, var15 + 1) == Block.portal.blockID)
             {
                 var47 = 1;
             }
@@ -117,8 +126,8 @@ public class ZCTeleporter extends Teleporter
                 int var31 = Direction.offsetZ[var47];
                 int var32 = Direction.offsetX[var29];
                 int var33 = Direction.offsetZ[var29];
-                boolean var34 = !par1World.isAirBlock(var13 + var30 + var32, var14, var15 + var31 + var33) || !par1World.isAirBlock(var13 + var30 + var32, var14 + 1, var15 + var31 + var33);
-                boolean var35 = !par1World.isAirBlock(var13 + var30, var14, var15 + var31) || !par1World.isAirBlock(var13 + var30, var14 + 1, var15 + var31);
+                boolean var34 = !world.isAirBlock(var13 + var30 + var32, var14, var15 + var31 + var33) || !world.isAirBlock(var13 + var30 + var32, var14 + 1, var15 + var31 + var33);
+                boolean var35 = !world.isAirBlock(var13 + var30, var14, var15 + var31) || !world.isAirBlock(var13 + var30, var14 + 1, var15 + var31);
 
                 if (var34 && var35)
                 {
@@ -132,8 +141,8 @@ public class ZCTeleporter extends Teleporter
                     var46 -= (double)var32;
                     int var20 = var15 - var33;
                     var25 -= (double)var33;
-                    var34 = !par1World.isAirBlock(var18 + var30 + var32, var14, var20 + var31 + var33) || !par1World.isAirBlock(var18 + var30 + var32, var14 + 1, var20 + var31 + var33);
-                    var35 = !par1World.isAirBlock(var18 + var30, var14, var20 + var31) || !par1World.isAirBlock(var18 + var30, var14 + 1, var20 + var31);
+                    var34 = !world.isAirBlock(var18 + var30 + var32, var14, var20 + var31 + var33) || !world.isAirBlock(var18 + var30 + var32, var14 + 1, var20 + var31 + var33);
+                    var35 = !world.isAirBlock(var18 + var30, var14, var20 + var31) || !world.isAirBlock(var18 + var30, var14 + 1, var20 + var31);
                 }
 
                 float var36 = 0.5F;
@@ -200,7 +209,7 @@ public class ZCTeleporter extends Teleporter
      * Create a new portal near an entity.
      */
     @Override
-    public boolean createPortal(World par1World, Entity par2Entity)
+    public boolean func_85188_a(Entity par2Entity)
     {
         byte var3 = 16;
         double var4 = -1.0D;
@@ -237,11 +246,11 @@ public class ZCTeleporter extends Teleporter
                 var18 = (double)var17 + 0.5D - par2Entity.posZ;
                 label274:
 
-                for (var20 = par1World.getActualHeight() - 1; var20 >= 0; --var20)
+                for (var20 = world.getActualHeight() - 1; var20 >= 0; --var20)
                 {
-                    if (par1World.isAirBlock(var14, var20, var17))
+                    if (world.isAirBlock(var14, var20, var17))
                     {
-                        while (var20 > 0 && par1World.isAirBlock(var14, var20 - 1, var17))
+                        while (var20 > 0 && world.isAirBlock(var14, var20 - 1, var17))
                         {
                             --var20;
                         }
@@ -267,7 +276,7 @@ public class ZCTeleporter extends Teleporter
                                         var28 = var20 + var26;
                                         int var29 = var17 + (var25 - 1) * var23 - var24 * var22;
 
-                                        if (var26 < 0 && !par1World.getBlockMaterial(var27, var28, var29).isSolid() || var26 >= 0 && !par1World.isAirBlock(var27, var28, var29))
+                                        if (var26 < 0 && !world.getBlockMaterial(var27, var28, var29).isSolid() || var26 >= 0 && !world.isAirBlock(var27, var28, var29))
                                         {
                                             continue label274;
                                         }
@@ -303,11 +312,11 @@ public class ZCTeleporter extends Teleporter
                     var18 = (double)var17 + 0.5D - par2Entity.posZ;
                     label222:
 
-                    for (var20 = par1World.getActualHeight() - 1; var20 >= 0; --var20)
+                    for (var20 = world.getActualHeight() - 1; var20 >= 0; --var20)
                     {
-                        if (par1World.isAirBlock(var14, var20, var17))
+                        if (world.isAirBlock(var14, var20, var17))
                         {
-                            while (var20 > 0 && par1World.isAirBlock(var14, var20 - 1, var17))
+                            while (var20 > 0 && world.isAirBlock(var14, var20 - 1, var17))
                             {
                                 --var20;
                             }
@@ -325,7 +334,7 @@ public class ZCTeleporter extends Teleporter
                                         var27 = var20 + var25;
                                         var28 = var17 + (var24 - 1) * var23;
 
-                                        if (var25 < 0 && !par1World.getBlockMaterial(var26, var27, var28).isSolid() || var25 >= 0 && !par1World.isAirBlock(var26, var27, var28))
+                                        if (var25 < 0 && !world.getBlockMaterial(var26, var27, var28).isSolid() || var25 >= 0 && !world.isAirBlock(var26, var27, var28))
                                         {
                                             continue label222;
                                         }
@@ -371,9 +380,9 @@ public class ZCTeleporter extends Teleporter
                 var10 = 70;
             }
 
-            if (var10 > par1World.getActualHeight() - 10)
+            if (var10 > world.getActualHeight() - 10)
             {
-                var10 = par1World.getActualHeight() - 10;
+                var10 = world.getActualHeight() - 10;
             }
 
             var16 = var10;
@@ -388,7 +397,7 @@ public class ZCTeleporter extends Teleporter
                         var24 = var16 + var22;
                         var25 = var17 + (var21 - 1) * var19 - var20 * var31;
                         var33 = var22 < 0;
-                        par1World.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : 0);
+                        world.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : 0);
                     }
                 }
             }
@@ -396,7 +405,7 @@ public class ZCTeleporter extends Teleporter
 
         for (var20 = 0; var20 < 4; ++var20)
         {
-            par1World.editingBlocks = true;
+            world.editingBlocks = true;
 
             for (var21 = 0; var21 < 4; ++var21)
             {
@@ -406,11 +415,11 @@ public class ZCTeleporter extends Teleporter
                     var24 = var16 + var22;
                     var25 = var17 + (var21 - 1) * var19;
                     var33 = var21 == 0 || var21 == 3 || var22 == -1 || var22 == 3;
-                    par1World.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : Block.portal.blockID);
+                    world.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : Block.portal.blockID);
                 }
             }
 
-            par1World.editingBlocks = false;
+            world.editingBlocks = false;
 
             for (var21 = 0; var21 < 4; ++var21)
             {
@@ -419,7 +428,7 @@ public class ZCTeleporter extends Teleporter
                     var23 = var30 + (var21 - 1) * var31;
                     var24 = var16 + var22;
                     var25 = var17 + (var21 - 1) * var19;
-                    par1World.notifyBlocksOfNeighborChange(var23, var24, var25, par1World.getBlockId(var23, var24, var25));
+                    world.notifyBlocksOfNeighborChange(var23, var24, var25, world.getBlockId(var23, var24, var25));
                 }
             }
         }

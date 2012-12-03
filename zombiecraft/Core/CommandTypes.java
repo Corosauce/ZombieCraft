@@ -5,6 +5,8 @@ public class CommandTypes {
 	
 	public static int USE = i++;
 	
+	public static int RELOAD = i++;
+	
 	public static int SET_WAVE = i++;
 	public static int TOGGLE_EDIT = i++;
 	public static int TOGGLE_DOORNOCLIP = i++;
