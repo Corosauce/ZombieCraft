@@ -1,8 +1,14 @@
 package zombiecraft.Core.Entities;
 
-import CoroAI.entity.EnumTeam;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.world.World;
+
+import CoroAI.entity.EnumDiploType;
 import CoroAI.entity.c_EnhAI;
-import net.minecraft.src.*;
 
 public class BaseEntAI_Ally extends BaseEntAI
 {
@@ -15,7 +21,7 @@ public class BaseEntAI_Ally extends BaseEntAI
     public BaseEntAI_Ally(World par1World)
     {
         super(par1World);
-        this.dipl_team = EnumTeam.COMRADE;
+        this.dipl_team = EnumDiploType.COMRADE;
         //team = 1;
         
         maxReach_Ranged = 32F;

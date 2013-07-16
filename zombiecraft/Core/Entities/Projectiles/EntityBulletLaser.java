@@ -1,13 +1,23 @@
 package zombiecraft.Core.Entities.Projectiles;
 
-import java.util.List;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
-import net.minecraft.src.*;
+import java.util.List;
 
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;
-import zombiecraft.Forge.ZombieCraftMod;
 
 public class EntityBulletLaser extends EntityBullet
 {

@@ -1,8 +1,11 @@
 package zombiecraft.Core.Items;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.EnumAmmo;
-import zombiecraft.Core.Entities.Projectiles.*;
-import net.minecraft.src.*;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
+import zombiecraft.Core.Entities.Projectiles.EntityBulletMissle;
 
 public class ItemGunRPG extends ItemGun
 {

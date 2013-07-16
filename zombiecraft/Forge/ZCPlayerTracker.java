@@ -1,14 +1,14 @@
 package zombiecraft.Forge;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.EntityPlayer;
 import cpw.mods.fml.common.IPlayerTracker;
 
 public class ZCPlayerTracker implements IPlayerTracker {
 
 	@Override
 	public void onPlayerLogin(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 		if (player.dimension == ZCGame.ZCDimensionID) {
 			if (!player.capabilities.isCreativeMode) {
@@ -19,13 +19,11 @@ public class ZCPlayerTracker implements IPlayerTracker {
 
 	@Override
 	public void onPlayerLogout(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onPlayerChangedDimension(EntityPlayer player) {
-		// TODO Auto-generated method stub
 
 		if (player.dimension == ZCGame.ZCDimensionID) {
 			(ZCGame.instance()).mapMan.movePlayerToLobby(player);
@@ -34,9 +32,8 @@ public class ZCPlayerTracker implements IPlayerTracker {
 
 	@Override
 	public void onPlayerRespawn(EntityPlayer player) {
-		// TODO Auto-generated method stub
 		
-		System.out.println("RESPAWN EVENT, remote: " + player.worldObj.isRemote + ", DIM: " + player.dimension);
+		//System.out.println("RESPAWN EVENT, remote: " + player.worldObj.isRemote + ", DIM: " + player.dimension);
 		
 		//so it looks like this code doesnt work, its too soon after respawn for this to take effect, or at least doesnt work on smp well
 		if (player.dimension == ZCGame.ZCDimensionID) {

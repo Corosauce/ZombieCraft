@@ -1,12 +1,14 @@
 package zombiecraft.Client;
 
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.storage.SaveFormatComparator;
+
 import java.util.Date;
 
-import zombiecraft.Core.ZCUtil;
-
-import net.minecraft.src.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiMapSlot extends GuiSlotZC

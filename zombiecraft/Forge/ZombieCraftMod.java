@@ -1,58 +1,36 @@
 package zombiecraft.Forge;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.*;
+import net.minecraft.server.management.ServerConfigurationManager;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import java.util.logging.Level;
 
-import build.BuildEventHandler;
-
-import cpw.mods.fml.client.TextureFXManager;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.PostInit;
-import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
-
-import paulscode.sound.SoundSystem;
-import zombiecraft.Core.PacketTypes;
+import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.Init;
+import cpw.mods.fml.common.Mod.PostInit;
+import cpw.mods.fml.common.Mod.PreInit;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 
-@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input", "CoroAI_Inv" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
+@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
 @Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "v3.0")
 
 
@@ -86,6 +64,8 @@ public class ZombieCraftMod
         	ZCItems.itemIndexID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemIndexIDStart", 22701).getInt();
         	ZCItems.abilityIndexID = preInitConfig.get("Potion", "potionIndexIDStart", 25).getInt();
         	
+        	ZCBlocks.z_BlockIDStart = preInitConfig.get(Configuration.CATEGORY_BLOCK, "blockIDStart_CHANGING_BREAKS_ZC_MAPS", 190).getInt();
+        	
         	/*itemSwordID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSwordID", itemIndexID++).getInt();
         	itemAk47ID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemAk47ID", itemIndexID++).getInt();
         	itemPistolID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPistolID", itemIndexID++).getInt();
@@ -115,6 +95,8 @@ public class ZombieCraftMod
         {
             preInitConfig.save();
         }
+        
+        proxy.loadSounds();
     }
     
     @Init
@@ -147,7 +129,10 @@ public class ZombieCraftMod
     @PostInit
     public void modsLoaded(FMLPostInitializationEvent event)
     {
-        
+    	
+    	
+    	
+    	
     }
     
     public static void teleportPlayerToggle(EntityPlayerMP player)

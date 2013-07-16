@@ -1,19 +1,34 @@
 package zombiecraft.Core.Blocks;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
-import net.minecraft.src.*;
 
 public class BlockBarrier extends BlockFence
 {
-    public BlockBarrier(int par1, int par2)
+    public BlockBarrier(int par1)
     {
-        super(par1, par2, Material.wood);
+        super(par1, "barrier", Material.wood);
     }
 
-    public BlockBarrier(int par1, int par2, Material par3Material)
+    public BlockBarrier(int par1, Material par3Material)
     {
-        super(par1, par2, par3Material);
+        super(par1, "barrier", par3Material);
+    }
+    
+    @Override
+    public Icon getIcon(int par1, int par2)
+    {
+        return Block.stone.getIcon(par1, par2);
     }
 
     /**
@@ -110,7 +125,7 @@ public class BlockBarrier extends BlockFence
     				if (!(xx == 0 && yy == 0 && zz == 0)) {
 	    				if (world.getBlockId(i+xx,j+yy,k+zz) == blockID)
 	    				{
-	    					world.setBlockWithNotify(i+xx,j+yy,k+zz,0);
+	    					world.setBlock(i+xx,j+yy,k+zz,0);
 	    					//System.out.println(":O");
 	    				}
     				}

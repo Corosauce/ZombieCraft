@@ -1,9 +1,11 @@
 package zombiecraft.Forge;
 
-import net.minecraft.src.*;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Render;
-import net.minecraft.src.RenderManager;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 
 public class GunRenderer implements IItemRenderer {

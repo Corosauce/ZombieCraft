@@ -1,15 +1,15 @@
 package zombiecraft.Forge;
 
+import net.minecraft.client.settings.KeyBinding;
+
 import java.util.EnumSet;
 
 import org.lwjgl.input.Keyboard;
 
-import net.minecraft.src.*;
 import cpw.mods.fml.client.registry.KeyBindingRegistry.KeyHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ZCKeybindHandler extends KeyHandler {

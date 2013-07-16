@@ -1,37 +1,41 @@
 package zombiecraft.Client;
 
-import java.awt.Color;
-import java.util.ArrayList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.texturepacks.ITexturePack;
+import net.minecraft.client.texturepacks.TexturePackDefault;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.src.ModLoader;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovementInputFromOptions;
+import net.minecraft.world.World;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-
-import build.render.Overlays;
-
-import CoroAI.c_IEnhPF;
-import CoroAI.entity.c_EnhAI;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
 
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.DataTypes;
-import zombiecraft.Core.MCInt;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Core.Blocks.*;
-import zombiecraft.Core.Camera.EnumCameraState;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
-import zombiecraft.Forge.ZCCommonProxy;
-import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.c_IEnhPF;
+import CoroAI.entity.c_EnhAI;
+import build.render.Overlays;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ZCGameSP extends ZCGame {
 	
@@ -161,10 +165,10 @@ public class ZCGameSP extends ZCGame {
 	        		resetBuyState(mc.thePlayer, packet.dataInt[2]);
 	        	} else {
 	        		resetBuyState(mc.thePlayer);
-	        		if (ZCItems.itemPerkCharge.shiftedIndex == packet.dataInt[0]) {
+	        		if (ZCItems.itemPerkCharge.itemID == packet.dataInt[0]) {
 	        			//ZCClientTicks.iMan.hasCharge = true;
 	        			ZCUtil.setData(player, DataTypes.hasCharge, 1);
-	        		} else if (ZCItems.itemPerkSpeed.shiftedIndex == packet.dataInt[0]) {
+	        		} else if (ZCItems.itemPerkSpeed.itemID == packet.dataInt[0]) {
 	        			ZCUtil.setData(player, DataTypes.speedTime, Buyables.perkLengthSpeed);
 	        		}
 	        	}

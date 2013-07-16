@@ -1,9 +1,12 @@
 package zombiecraft.Core.Items;
 
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.Entities.EntityChickenDropless;
-import zombiecraft.Core.Entities.Projectiles.EntityBullet;
-import net.minecraft.src.*;
 
 public class ItemGunChickenGun extends ItemGun
 {

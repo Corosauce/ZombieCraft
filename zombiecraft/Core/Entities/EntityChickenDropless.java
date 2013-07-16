@@ -1,7 +1,7 @@
 package zombiecraft.Core.Entities;
 
-import net.minecraft.src.EntityChicken;
-import net.minecraft.src.World;
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.world.World;
 
 public class EntityChickenDropless extends EntityChicken {
 

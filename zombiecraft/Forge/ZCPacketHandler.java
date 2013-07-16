@@ -1,20 +1,23 @@
 package zombiecraft.Forge;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.tileentity.TileEntity;
+
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 
-import CoroAI.entity.c_EnhAI;
-
+import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Core.Blocks.*;
-
-import net.minecraft.src.*;
+import CoroAI.entity.c_EnhAI;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
 
 public class ZCPacketHandler implements IPacketHandler
 {
@@ -120,27 +123,7 @@ public class ZCPacketHandler implements IPacketHandler
 	        		ZCClientTicks.zcGame.handlePacket(entP, packetMLMP);
 	        	}
 	        	
-	        } else if ("CoroAI_Inv".equals(packet.channel)) {
-				//DataInputStream dis = new DataInputStream(new ByteArrayInputStream(packet.data));
-				try {
-					int entID = dis.readInt();
-					ItemStack is = Packet.readItemStack(dis);
-
-					Entity entity = ZombieCraftMod.proxy.getEntByID(entID);
-					if (entity instanceof c_EnhAI) {
-						((c_EnhAI) entity).inventory.mainInventory[0] = is;
-						((c_EnhAI) entity).setCurrentSlot(0);
-						//System.out.println("syncing item: " + is);
-					}
-					//TEST
-					//WeatherMod.weatherMan.wind.strength = 1.5F;
-
-					//WeatherMod.weatherMan.wind.strengthSmooth = val;
-					//System.out.println("packet: " + val + " - " + val2);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
+	        }
         }
         catch (Exception ex)
         {

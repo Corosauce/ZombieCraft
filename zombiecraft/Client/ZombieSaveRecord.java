@@ -3,10 +3,13 @@ package zombiecraft.Client;
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) braces deadcode 
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.zip.ZipFile;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 class ZombieSaveRecord
     implements Serializable, Comparable

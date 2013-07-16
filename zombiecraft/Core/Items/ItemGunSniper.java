@@ -1,8 +1,6 @@
 package zombiecraft.Core.Items;
 
 import zombiecraft.Core.EnumAmmo;
-import zombiecraft.Core.Entities.Projectiles.EntityBullet;
-import net.minecraft.src.*;
 
 public class ItemGunSniper extends ItemGun
 {

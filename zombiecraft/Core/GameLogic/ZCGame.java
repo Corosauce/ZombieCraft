@@ -1,55 +1,61 @@
 package zombiecraft.Core.GameLogic;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import build.BuildServerTicks;
-import build.world.Build;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-
-import CoroAI.Persister;
-import CoroAI.entity.EnumJob;
-import CoroAI.entity.JobBase;
-import CoroAI.entity.JobProtect;
-import CoroAI.entity.c_EnhAI;
-
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.*;
 
 import zombiecraft.Core.AmmoDataLatcher;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataLatcher;
 import zombiecraft.Core.DataTypes;
-import zombiecraft.Core.EnumGameMode;
-import zombiecraft.Core.MCInt;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Blocks.BlockBarricade;
+import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Entities.EntityWorldHook;
-import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Core.Items.ItemAbility;
+import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Core.World.Level;
 import zombiecraft.Core.World.MapManager;
-import zombiecraft.Core.Blocks.*;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
-import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.Persister;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.entity.EnumJob;
+import CoroAI.entity.JobBase;
+import CoroAI.entity.JobProtect;
+import CoroAI.entity.c_EnhAI;
+import build.world.Build;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ZCGame {
 	
@@ -288,6 +294,7 @@ public abstract class ZCGame {
 	}
 	
 	public void refillAmmo(EntityPlayer player) {
+		ZCGame.instance().check(player.username);
 		HashMap ammoMap = ((AmmoDataLatcher)this.getData(player, DataTypes.ammoAmounts)).values;
 		
 		Iterator it = ammoMap.entrySet().iterator();
@@ -757,7 +764,7 @@ public abstract class ZCGame {
 			this.setData(player, DataTypes.zcPoints, points);
 			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {-1, points});
 			
-			player.worldObj.setBlockWithNotify(x, y, z, 0);
+			player.worldObj.setBlock(x, y, z, 0, 0, 2);
 			
 			this.playSound("zc.barrierbreak", x, y, z, 1, 1);
 		}

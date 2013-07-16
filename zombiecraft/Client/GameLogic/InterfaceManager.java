@@ -1,33 +1,40 @@
 package zombiecraft.Client.GameLogic;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiGameOver;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-
+import zombiecraft.Client.GuiEditorCP;
+import zombiecraft.Client.GuiGameOverZC;
+import zombiecraft.Client.GuiLeaderboard;
+import zombiecraft.Client.ZCGameSP;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.PacketTypes;
-import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Camera.CameraManager;
 import zombiecraft.Core.Camera.EnumCameraState;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
-import zombiecraft.Client.*;
 import zombiecraft.Forge.RenderPlayerZC;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCKeybindHandler;
 import zombiecraft.Forge.ZCServerTicks;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public abstract class InterfaceManager {
 	
@@ -194,7 +201,14 @@ public abstract class InterfaceManager {
 			if ((RenderManager.instance.entityRenderMap.get(EntityOtherPlayerMP.class) instanceof RenderPlayerZC)) {
 				RenderManager.instance.entityRenderMap.put(EntityOtherPlayerMP.class, origPlayerRender);
 			}
-			
+		}
+		
+		//Dynamic gun using control rebinds
+		handleGunBinds();
+		if (mc.currentScreen == null) {
+			if (showZCOverlay) {
+				showMainOverlay((mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID && !zcGame.mapMan.editMode));
+			}
 		}
 		
 		if (mc.thePlayer.worldObj.provider.dimensionId != ZCGame.ZCDimensionID && !zcGame.mapMan.editMode/* && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()*/) return;
@@ -227,6 +241,13 @@ public abstract class InterfaceManager {
             {
                 mc.setIngameFocus();
             }
+		} else if (mc.currentScreen == null && this.mc.gameSettings.keyBindPlayerList.pressed) {
+			mc.displayGuiScreen(new GuiLeaderboard());
+			
+			if (mc.currentScreen != null)
+            {
+                mc.setIngameNotInFocus();
+            }
 		}
 		
 		//Fix for weird double gui game over display
@@ -239,9 +260,9 @@ public abstract class InterfaceManager {
 		if (mc.currentScreen == null) {
 			showEditOverlays();
 			if (toolModeTimeout > 0) showEditToolMode();
-			if (showZCOverlay) {
+			/*if (showZCOverlay) {
 				showMainOverlay();
-			}
+			}*/
 			
 			if (zcGame.mapMan.editMode) {
 				//zcGame.renderLevelSize();
@@ -286,8 +307,7 @@ public abstract class InterfaceManager {
 			}
 		}
 		
-		//Dynamic gun using control rebinds
-		handleGunBinds();
+		
 		//handleBarricadeProximity();
 		
 		if (holdingUse) {
@@ -334,7 +354,7 @@ public abstract class InterfaceManager {
 		}
 	}
 	
-	public void showMainOverlay() {
+	public void showMainOverlay(boolean justAmmo) {
 		int color = 0xE52626;
 		//String intMode = "";
 		//if (isRemote) intMode = "SMP";
@@ -413,17 +433,18 @@ public abstract class InterfaceManager {
         }
         
         
-        
-		drawString(title, width/2 - fr.getStringWidth(title)/2, yPos+(yOffset*0), color);
-		drawString(waveLeft, width/2 - fr.getStringWidth(waveAll)/2 - 20, yPos+(yOffset*1), color);
-		drawString(waveRight, width/2 + fr.getStringWidth(waveLeft)/2 - 24, yPos+(yOffset*1), 0xFFFFFF);
-		drawString(mobs, width/2 - fr.getStringWidth(mobs+String.valueOf(zcGame.wMan.wave_Invaders_Count))/2 + 20, yPos+(yOffset*1), color);
-		drawString(String.valueOf(zcGame.wMan.wave_Invaders_Count), width/2 - (fr.getStringWidth(mobs)/2) + 45, yPos+(yOffset*1), 0xFFFFFF);
+        if (!justAmmo) {
+			drawString(title, width/2 - fr.getStringWidth(title)/2, yPos+(yOffset*0), color);
+			drawString(waveLeft, width/2 - fr.getStringWidth(waveAll)/2 - 20, yPos+(yOffset*1), color);
+			drawString(waveRight, width/2 + fr.getStringWidth(waveLeft)/2 - 24, yPos+(yOffset*1), 0xFFFFFF);
+			drawString(mobs, width/2 - fr.getStringWidth(mobs+String.valueOf(zcGame.wMan.wave_Invaders_Count))/2 + 20, yPos+(yOffset*1), color);
+			drawString(String.valueOf(zcGame.wMan.wave_Invaders_Count), width/2 - (fr.getStringWidth(mobs)/2) + 45, yPos+(yOffset*1), 0xFFFFFF);
+        }
 		
 		if (zcGame.waitingToSpawn || ZCClientTicks.camMan.camState != EnumCameraState.OFF) {
 			String mode = "";
 			if (ZCClientTicks.camMan.camState == EnumCameraState.FOLLOW) {
-				if (ZCClientTicks.camMan.spectateTarget != null) {
+				if (ZCClientTicks.camMan.spectateTarget != null && ZCClientTicks.camMan.spectateTarget instanceof EntityPlayer) {
 					mode = "Following: " + ((EntityPlayer)ZCClientTicks.camMan.spectateTarget).username;
 				}
 				
@@ -442,8 +463,10 @@ public abstract class InterfaceManager {
 			drawString(msg3, 3, yPos+(yOffset*1), color);
 		}
 		
-		drawString(points, width/2 - 125, height-20, 0xFFFFFF);
-		drawString(pointsVal, width/2 - 125 + (fr.getStringWidth(points) / 2) - (fr.getStringWidth(pointsVal) / 2), height-10, 0xFFFFFF);
+		if (!justAmmo) {
+			drawString(points, width/2 - 125, height-20, 0xFFFFFF);
+			drawString(pointsVal, width/2 - 125 + (fr.getStringWidth(points) / 2) - (fr.getStringWidth(pointsVal) / 2), height-10, 0xFFFFFF);
+		}
 		
 		drawString(ammo, width/2 + 95, height-20, 0xFFFFFF);
 		drawString(ammoVal, width/2 + 95 + (fr.getStringWidth(ammo) / 2) - (fr.getStringWidth(ammoVal) / 2), height-10, 0xFFFFFF);
@@ -510,13 +533,16 @@ public abstract class InterfaceManager {
 	}
 	
 	public void showBuyOverlay() {
+		
+		String prefix = "Press <" + Keyboard.getKeyName(ZCKeybindHandler.useKey.keyCode) + "> to ";
+		
 		//this also has a display timeout
 		if (buyID >= 0) {
-			ZCClientTicks.displayMessage("Purchase " + Buyables.getBuyItem(buyID).getItem().getItemDisplayName(Buyables.getBuyItem(buyID)) + " for " + Buyables.getBuyItemCost(buyID) + " points");
+			ZCClientTicks.displayMessage(prefix + "purchase " + Buyables.getBuyItem(buyID).getItem().getItemDisplayName(Buyables.getBuyItem(buyID)) + " for " + Buyables.getBuyItemCost(buyID) + " points");
 		} else if (buyID == -1) {
-			ZCClientTicks.displayMessage("Break barrier for " + Buyables.barrierCost + " points");
+			ZCClientTicks.displayMessage(prefix + "break barrier for " + Buyables.barrierCost + " points");
 		} else if (buyID == -2) {
-			ZCClientTicks.displayMessage("Fix barricade");
+			ZCClientTicks.displayMessage(prefix + "fix barricade");
 		} else {
 			
 		}

@@ -1,39 +1,24 @@
 package zombiecraft.Core.Items;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
-import CoroAI.entity.c_EnhAI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Entities.Projectiles.*;
-import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Forge.ZCClientTicks;
-import zombiecraft.Forge.ZCKeybindHandler;
-
+import CoroAI.c_CoroAIUtil;
+import CoroAI.entity.c_EnhAI;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityClientPlayerMP;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityRenderer;
-import net.minecraft.src.EnumOptions;
-import net.minecraft.src.Frustrum;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemRenderer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.NBTTagByte;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.Packet250CustomPayload;
-import net.minecraft.src.World;
-import net.minecraft.src.c_CoroAIUtil;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemGun extends Item
 {
@@ -324,10 +309,10 @@ public class ItemGun extends Item
 		        }*/
 	        	
 	        	/*if (curReloadDelay == 0) */
-	        	var2.func_85173_a(var3, firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	        	var2.playSoundToNearExcept(var3, firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        	//var2.func_85173_a(var3, firingSound, (double)var3.posX, (double)var3.posY, (double)var3.posZ, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        } else {
-	        	var2.playSound(var3.posX, var3.posY, var3.posZ, firingSound, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	        	var2.playSound(var3.posX, var3.posY, var3.posZ, firingSound, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F), false);
 	        	recoil();
 	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
 	        }

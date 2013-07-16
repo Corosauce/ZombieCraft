@@ -1,12 +1,16 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.MovingObjectPosition;
+
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
-import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.entity.*;
-import net.minecraft.src.*;
+import CoroAI.entity.EnumJobState;
+import CoroAI.entity.JobManager;
+import CoroAI.entity.JobProtect;
 
 public class JobZCProtect extends JobProtect {
 	

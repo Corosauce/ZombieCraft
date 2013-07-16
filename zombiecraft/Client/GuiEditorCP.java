@@ -1,25 +1,20 @@
 package zombiecraft.Client;
 
-import java.util.Iterator;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.texturepacks.GuiTexturePacks;
+import net.minecraftforge.common.Property;
 
-import org.lwjgl.input.Keyboard;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
-
-import net.minecraft.src.GuiAchievements;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiMainMenu;
-import net.minecraft.src.GuiOptions;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.GuiStats;
-import net.minecraft.src.GuiTextField;
-import net.minecraft.src.GuiTexturePacks;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.StatCollector;
-import net.minecraft.src.StatList;
-import net.minecraft.src.World;
+import zombiecraft.Forge.ZombieCraftMod;
 
 public class GuiEditorCP extends GuiScreen
 {
@@ -59,9 +54,9 @@ public class GuiEditorCP extends GuiScreen
     	
     	//inventoryRows = 5;
     	
-        int var4 = this.mc.renderEngine.getTexture("/zc/menus/editorCP.png");
+        //int var4 = this.mc.renderEngine.getTexture("/mods/ZombieCraft/textures/textures/menus/editorCP.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderEngine.bindTexture(var4);
+        this.mc.renderEngine.bindTexture("/mods/ZombieCraft/textures/menus/editorCP.png");
         int var5 = (this.width - this.xSize) / 2;
         int var6 = (this.height - this.ySize) / 2 + 50;
         
@@ -83,13 +78,12 @@ public class GuiEditorCP extends GuiScreen
 
     public void initGui()
     {
-    	
     	xSize = 176;
     	ySize = 200;
     	xOffset = (int)(this.width / 4 * 1.92);
     	
         this.updateCounter2 = 0;
-        this.controlList.clear();
+        this.buttonList.clear();
         byte var1 = -16;
         
         //System.out.println(width);
@@ -108,15 +102,15 @@ public class GuiEditorCP extends GuiScreen
         	
         }*/
         
-        this.controlList.add(new GuiButton(G_EDITMODE, startX, startY + 0 + var1, 90, 20, (ZCGame.instance().mapMan.editMode ? "\u00A7" + '4' : "") + "Edit Mode"));
-        this.controlList.add(new GuiButton(G_TOGGLEGAME, startX, startY + div*1 + var1, 90, 20, (!ZCGame.instance().gameActive ? "Start Game" : "\u00A72Stop Game")));
-        this.controlList.add(new GuiButton(G_PREVSTAGE, startX, startY + div*2 + var1, 90, 20, "Prev Stage"));
-        this.controlList.add(new GuiButton(G_NEXTSTAGE, startX, startY + div*3 + var1, 90, 20, "Next Stage"));
+        this.buttonList.add(new GuiButton(G_EDITMODE, startX, startY + 0 + var1, 90, 20, (ZCGame.instance().mapMan.editMode ? "\u00A7" + '4' : "") + "Edit Mode"));
+        this.buttonList.add(new GuiButton(G_TOGGLEGAME, startX, startY + div*1 + var1, 90, 20, (!ZCGame.instance().gameActive ? "Start Game" : "\u00A72Stop Game")));
+        this.buttonList.add(new GuiButton(G_PREVSTAGE, startX, startY + div*2 + var1, 90, 20, "Prev Stage"));
+        this.buttonList.add(new GuiButton(G_NEXTSTAGE, startX, startY + div*3 + var1, 90, 20, "Next Stage"));
         
-        this.controlList.add(new GuiButton(G_TEXTUREPACK, startX, startY + div*5 + var1, 90, 20, "Texture Pack"));
+        this.buttonList.add(new GuiButton(G_TEXTUREPACK, startX, startY + div*5 + var1, 90, 20, "Texture Pack"));
         
         
-        this.controlList.add(new GuiButton(G_CLOSE, startX, startY + div*6 + var1, 90, 20, "Close"));
+        this.buttonList.add(new GuiButton(G_CLOSE, startX, startY + div*6 + var1, 90, 20, "Close"));
         
         
         
@@ -129,25 +123,61 @@ public class GuiEditorCP extends GuiScreen
 	        
 	    if (ZCGame.instance().mapMan.editMode) {
 	        
-	        this.controlList.add(new GuiButton(G_SAVE, startX2, startY + div*1 + var1, 90, 20, "Save Level"));
-	        this.controlList.add(new GuiButton(G_LOAD, startX2, startY + div*2 + var1, 90, 20, "Load Level"));
-	        this.controlList.add(new GuiButton(99, startX2, startY + div*3 + var1, 90, 20, "Generate Level"));
+	        this.buttonList.add(new GuiButton(G_SAVE, startX2, startY + div*1 + var1, 90, 20, "Save Level"));
+	        this.buttonList.add(new GuiButton(G_LOAD, startX2, startY + div*2 + var1, 90, 20, "Load Level"));
+	        this.buttonList.add(new GuiButton(99, startX2, startY + div*3 + var1, 90, 20, "Generate Level"));
 	        
-	        this.controlList.add(new GuiButtonZC(G_TOOLMODE_LEVEL, startX2, startY + div*4 + var1, 20, 20, 1));
-	        this.controlList.add(new GuiButtonZC(G_TOOLMODE_LINK, startX2 + 23, startY + div*4 + var1, 20, 20, 2));
-	        this.controlList.add(new GuiButtonZC(G_TOOLMODE_SPAWN, startX2 + 46, startY + div*4 + var1, 20, 20, 3));
-	        //this.controlList.add(new GuiButton(G_TOOLMODE_SPAWN, startX2 + 70, startY + div*4 + var1, 20, 20, "S"));
+	        this.buttonList.add(new GuiButtonZC(G_TOOLMODE_LEVEL, startX2, startY + div*4 + var1, 20, 20, 1));
+	        this.buttonList.add(new GuiButtonZC(G_TOOLMODE_LINK, startX2 + 23, startY + div*4 + var1, 20, 20, 2));
+	        this.buttonList.add(new GuiButtonZC(G_TOOLMODE_SPAWN, startX2 + 46, startY + div*4 + var1, 20, 20, 3));
+	        //this.buttonList.add(new GuiButton(G_TOOLMODE_SPAWN, startX2 + 70, startY + div*4 + var1, 20, 20, "S"));
 	        
-	        //this.controlList.add(new GuiButton(G_TOOLMODE, startX2, startY + div*5 + var1, 90, 20, "Tool Mode: " + ZCGame.instance().mapMan.editToolMode));
+	        //this.buttonList.add(new GuiButton(G_TOOLMODE, startX2, startY + div*5 + var1, 90, 20, "Tool Mode: " + ZCGame.instance().mapMan.editToolMode));
 	        
-	        this.controlList.add(new GuiButton(G_DOORNOCLIP, startX2, startY + div*6 + var1, 90, 20, (ZCGame.instance().mapMan.doorNoClip ? "\u00A74" : "") + "Door No-Clip"));
+	        this.buttonList.add(new GuiButton(G_DOORNOCLIP, startX2, startY + div*6 + var1, 90, 20, (ZCGame.instance().mapMan.doorNoClip ? "\u00A74" : "") + "Door No-Clip"));
         }
+	    
+	    if (false) {
+		    System.out.println("DEBUG CONFIG DUMP");
+	    	
+		    try {
+		    	Iterator it = ZombieCraftMod.instance.preInitConfig.getCategoryNames().iterator();
+			    while (it.hasNext()) {
+			        Map.Entry pairs = (Map.Entry)it.next();
+			        Object obj = pairs.getValue();
+			        Property prop = null;
+			        
+			        if (obj instanceof TreeMap) {
+			        	
+			        	Iterator it2 = ((TreeMap)obj).entrySet().iterator();
+					    while (it.hasNext()) {
+					        Map.Entry pairs2 = (Map.Entry)it.next();
+					        Object obj2 = pairs.getValue();
+					        int what = 0;
+					    }
+			        	
+			        	prop = (Property)obj;
+			        	
+			        	System.out.println(prop.comment);
+			        }
+			        
+			        if (obj instanceof Property) {
+				        //Object val = pairs.getValue();
+				        
+			        } else {
+			        	
+			        }
+			    }
+		    } catch (Exception ex) {
+		    	ex.printStackTrace();
+		    }
+	    }
         
     }
     
     protected void keyTyped(char par1, int par2)
     {
-    	
+    	super.keyTyped(par1, par2);
     	if (!ZCGame.instance().mapMan.editMode) return;
     	
         if (this.textboxWorldName.isFocused())
@@ -160,12 +190,13 @@ public class GuiEditorCP extends GuiScreen
         if (par1 == 13)
         {
         	//save on enter?, nah lets not
-            //this.actionPerformed((GuiButton)this.controlList.get(7));
+            //this.actionPerformed((GuiButton)this.buttonList.get(7));
         }
 
         //lock save button if no name
-        ((GuiButton)this.controlList.get(7)).enabled = this.textboxWorldName.getText().length() > 0;
+        ((GuiButton)this.buttonList.get(7)).enabled = this.textboxWorldName.getText().length() > 0;
         //this.makeUseableName();
+        
     }
     
     protected void mouseClicked(int par1, int par2, int par3)
@@ -191,7 +222,7 @@ public class GuiEditorCP extends GuiScreen
         }
         if (var1.id == G_TEXTUREPACK)
         {
-        	this.mc.displayGuiScreen(new GuiTexturePacks(this));
+        	this.mc.displayGuiScreen(new GuiTexturePacks(this, mc.gameSettings));
         }
         if (var1.id == G_EDITMODE)
         {
@@ -255,7 +286,7 @@ public class GuiEditorCP extends GuiScreen
     		this.textboxWorldName.setText(ZCGame.instance().mapMan.curLevel);
     	}
 
-        for (Iterator var1 = this.controlList.iterator(); var1.hasNext();)
+        for (Iterator var1 = this.buttonList.iterator(); var1.hasNext();)
         {
             var2 = (GuiButton)var1.next();
             if (var2 instanceof GuiButtonZC) {
@@ -297,7 +328,7 @@ public class GuiEditorCP extends GuiScreen
     	
     	if (ZCGame.instance().mapMan.editMode) this.textboxWorldName.drawTextBox();
     	
-    	ZCClientTicks.iMan.showMainOverlay();
+    	ZCClientTicks.iMan.showMainOverlay(false);
         //mod_Weather.weatherDbg();
         
         super.drawScreen(var1, var2, var3);

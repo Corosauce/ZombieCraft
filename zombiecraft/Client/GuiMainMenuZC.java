@@ -1,28 +1,14 @@
 package zombiecraft.Client;
 
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.StringTranslate;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
-import cpw.mods.fml.client.GuiModList;
-import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiMainMenuZC extends GuiMainMenu
@@ -41,7 +27,8 @@ public class GuiMainMenuZC extends GuiMainMenu
         StringTranslate var2 = StringTranslate.getInstance();
         int var4 = this.height / 4 + 24;
         
-        this.controlList.add(new GuiButton(66, this.width / 2 - 100, var4, 80, 20, var2.translateKey("ZombieCraft")));
+        this.buttonList.add(new GuiButton(66, this.width / 2 - 100, var4, 80, 20, var2.translateKey("ZombieCraft")));
+        
         
     }
 
@@ -55,6 +42,31 @@ public class GuiMainMenuZC extends GuiMainMenu
         if (par1GuiButton.id == 66)
         {
             this.mc.displayGuiScreen(new GuiSelectZCMap(this));
+        }
+    }
+    
+    @Override
+    public void drawScreen(int par1, int par2, float par3) {
+    	super.drawScreen(par1, par2, par3);
+    	
+    	Minecraft mc = FMLClientHandler.instance().getClient();
+
+        GameSettings options = mc.gameSettings;
+        
+        boolean conflict = false;
+        for (int first = 0; first < options.keyBindings.length && !conflict; first++) {
+	        for (int second = 0; second < options.keyBindings.length; second++) {
+	            if (second != first && (options.keyBindings[second].keyDescription.contains("ZC_") || options.keyBindings[first].keyDescription.contains("ZC_")) && options.keyBindings[second].keyCode == options.keyBindings[first].keyCode)
+	            {
+	                conflict = true;
+	                break;
+	            }
+	        }
+        }
+        
+        if (conflict) {
+        	String fix = "KEY CONFLICT DETECTED! CHECK CONTROLS!";
+        	mc.fontRenderer.drawStringWithShadow(fix, this.width / 2 - mc.fontRenderer.getStringWidth(fix) / 2, this.height - 60, 0xFF0000);
         }
     }
 

@@ -1,8 +1,18 @@
 package zombiecraft.Core.Entities.Projectiles;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Forge.ZombieCraftMod;
-import net.minecraft.src.*;
 
 public class EntityGrenade extends EntityItem
 {
@@ -26,7 +36,7 @@ public class EntityGrenade extends EntityItem
         this.exploded = false;
         this.fuse = 50;
         this.yOffset = 0.0F;
-        this.item = new ItemStack(ZCItems.itemGrenade, 1, 0);
+        //this.item = new ItemStack(ZCItems.itemGrenade, 1, 0);
     }
 
     public EntityGrenade(World var1, double var2, double var4, double var6)

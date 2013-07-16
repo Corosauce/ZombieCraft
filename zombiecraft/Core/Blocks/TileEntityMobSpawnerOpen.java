@@ -1,13 +1,19 @@
 package zombiecraft.Core.Blocks;
 
-import java.util.List;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.INetworkManager;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 
-import build.SchematicData;
-import build.world.Build;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
 import CoroAI.entity.c_EnhAI;
-import net.minecraft.src.*;
+import build.SchematicData;
+import build.world.Build;
 
 
 
@@ -110,7 +116,7 @@ public class TileEntityMobSpawnerOpen extends TileEntity implements SchematicDat
     		//ServerTickHandler.sendPacketToAll(this.getDescriptionPacket());
 	    	if (ZCGame.instance().mapMan.removeForRebuild(this)) {
 	    		worldObj.removeBlockTileEntity(xCoord, yCoord, zCoord);		
-	    		worldObj.setBlockAndMetadata(xCoord, yCoord, zCoord, 0, 0);
+	    		worldObj.setBlock(xCoord, yCoord, zCoord, 0);
 	    	}
         }
     	

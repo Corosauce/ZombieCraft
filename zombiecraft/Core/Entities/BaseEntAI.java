@@ -1,24 +1,39 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockHalfSlab;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.EntityReddustFX;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import java.util.Random;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-import build.render.Overlays;
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Items.*;
 import zombiecraft.Core.Blocks.BlockBarrier;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.*;
-import CoroAI.entity.*;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.*;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.c_IEnhAI;
+import CoroAI.entity.EnumDiploType;
+import CoroAI.entity.JobBase;
+import CoroAI.entity.JobProtect;
+import CoroAI.entity.c_EnhAI;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BaseEntAI extends c_EnhAI
 {
@@ -77,7 +92,7 @@ public class BaseEntAI extends c_EnhAI
     @Override
 	public boolean attackEntityFrom(DamageSource damagesource, int i) {
     	
-    	if (dipl_team == EnumTeam.COMRADE) {
+    	if (dipl_team == EnumDiploType.COMRADE) {
 	    	if (damagesource.getEntity() instanceof EntityPlayer && fakePlayer != null) {
 	    		EntityPlayer entP = (EntityPlayer)damagesource.getEntity();
 	    		ItemStack is = entP.getCurrentEquippedItem();
@@ -233,16 +248,26 @@ public class BaseEntAI extends c_EnhAI
         updateAI();
         
         //float oldSpeed = getAIMoveSpeed();
-        //something to help aiming while pathfinding
-        double pposX = Double.valueOf(ZCUtil.getPrivateValueBoth(EntityMoveHelper.class, this.getMoveHelper(), "b", "posX").toString());
-        double pposY = Double.valueOf(ZCUtil.getPrivateValueBoth(EntityMoveHelper.class, this.getMoveHelper(), "c", "posY").toString());
-        double pposZ = Double.valueOf(ZCUtil.getPrivateValueBoth(EntityMoveHelper.class, this.getMoveHelper(), "d", "posZ").toString());
+        
         
         if (!this.getNavigator().noPath()) {
-        	for (int i = 0; i < 6; i++) {
-        		this.getMoveHelper().onUpdateMoveHelper();
-    	        this.getMoveHelper().setMoveTo(pposX, pposY, pposZ, getMoveHelper().getSpeed());
+        	
+        	//something to help aiming while pathfinding
+        	try {
+	            double pposX = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75646_b", "posX").toString());
+	            double pposY = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75647_c", "posY").toString());
+	            double pposZ = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75644_d", "posZ").toString());
+	            
+	            for (int i = 0; i < 6; i++) {
+	        		this.getMoveHelper().onUpdateMoveHelper();
+	    	        this.getMoveHelper().setMoveTo(pposX, pposY, pposZ, getMoveHelper().getSpeed());
+	        	}
+        	} catch (Exception ex) {
+        		System.out.println("REFLECTION FAIL");
+        		ex.printStackTrace();
         	}
+        	
+        	
         }
         
         this.getMoveHelper().onUpdateMoveHelper();
@@ -362,8 +387,8 @@ public class BaseEntAI extends c_EnhAI
         	var21.motionZ += ((rand.nextFloat() * range) - (0.5F * range));
         	
         		
-        	ZCUtil.setPrivateValueBoth(EntityFX.class, var21, "g", "particleGravity", 2F);
-        	FMLClientHandler.instance().getClient().effectRenderer.addEffect((EntityFX)var21, null);
+        	ZCUtil.setPrivateValueBoth(EntityFX.class, var21, ZCUtil.field_obf_particleGravity, ZCUtil.field_mcp_particleGravity, 2F);
+        	FMLClientHandler.instance().getClient().effectRenderer.addEffect((EntityFX)var21);
 		}
     }
 
@@ -494,7 +519,7 @@ public class BaseEntAI extends c_EnhAI
     	c_EnhAI entAI = (c_EnhAI)ent;
     	
 		if (id == ZCBlocks.barricadePlaceable.blockID) {
-			if (entAI.dipl_team == EnumTeam.COMRADE) {
+			if (entAI.dipl_team == EnumDiploType.COMRADE) {
 				return -2;
 			}
 			if (entAI.worldObj.rand.nextInt(10) != 0) {

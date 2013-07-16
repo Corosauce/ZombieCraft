@@ -2,11 +2,10 @@ package zombiecraft.Client.Entities;
 
 
 
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.Entity;
+
 import org.lwjgl.opengl.GL11;
-
-import zombiecraft.Core.GameLogic.ZCGame;
-
-import net.minecraft.src.*;
 
 public class RenderEntityWorldHook extends Render {
 

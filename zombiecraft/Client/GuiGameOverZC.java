@@ -1,13 +1,19 @@
 package zombiecraft.Client;
 
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.util.StatCollector;
+
 import java.util.Iterator;
+
 import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
-import net.minecraft.src.*;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiGameOverZC extends GuiScreen
@@ -25,26 +31,26 @@ public class GuiGameOverZC extends GuiScreen
     	
     	
     	
-        this.controlList.clear();
+        this.buttonList.clear();
 
-        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 48, StatCollector.translateToLocal("deathScreen.spectate")));
-        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, StatCollector.translateToLocal("deathScreen.respawn")));
-        this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, StatCollector.translateToLocal("deathScreen.titleScreen")));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 48, StatCollector.translateToLocal("deathScreen.spectate")));
+        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, StatCollector.translateToLocal("deathScreen.respawn")));
+        this.buttonList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, StatCollector.translateToLocal("deathScreen.titleScreen")));
 
-        ((GuiButton)this.controlList.get(0)).enabled = false;
-        ((GuiButton)this.controlList.get(1)).enabled = false;
-        ((GuiButton)this.controlList.get(2)).enabled = false;
+        ((GuiButton)this.buttonList.get(0)).enabled = false;
+        ((GuiButton)this.buttonList.get(1)).enabled = false;
+        ((GuiButton)this.buttonList.get(2)).enabled = false;
         
         if (/*ZCGame.instance().wMan.waveSpawnMax == ZCGame.instance().wMan.waveSpawnCount && */ZCGame.instance().gameActive)
         {
-        	((GuiButton)this.controlList.get(1)).enabled = false;
+        	((GuiButton)this.buttonList.get(1)).enabled = false;
         }
         
         
 
         /*GuiButton var2;
 
-        for (Iterator var1 = this.controlList.iterator(); var1.hasNext(); var2.enabled = false)
+        for (Iterator var1 = this.buttonList.iterator(); var1.hasNext(); var2.enabled = false)
         {
             var2 = (GuiButton)var1.next();
         }*/
@@ -131,7 +137,7 @@ public class GuiGameOverZC extends GuiScreen
         	
         	ZCClientTicks.zcGame.waitingToSpawn = true;
         	
-            for (Iterator var1 = this.controlList.iterator(); var1.hasNext();)
+            for (Iterator var1 = this.buttonList.iterator(); var1.hasNext();)
             {
             	
                 var2 = (GuiButton)var1.next();

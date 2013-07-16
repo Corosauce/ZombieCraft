@@ -1,10 +1,16 @@
 package zombiecraft.Core.Items;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZombieCraftMod;
-import net.minecraft.src.*;
 
 public class ItemEditTool extends Item {
     
@@ -35,6 +41,10 @@ public class ItemEditTool extends Item {
 		yCoord = 0;
 		zCoord = 0;
 		tmp = true;
+    }
+    
+    public Icon getIconFromDamage(int par1) {
+    	return Item.fishingRod.getIconFromDamage(0);
     }
     
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)

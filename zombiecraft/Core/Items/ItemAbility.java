@@ -1,19 +1,20 @@
 package zombiecraft.Core.Items;
 
-import CoroAI.entity.EnumJob;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.PacketTypes;
-import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
-import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Comrade;
-import zombiecraft.Core.Entities.Imp;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZombieCraftMod;
-import net.minecraft.src.*;
+import CoroAI.entity.EnumJob;
 
 public class ItemAbility extends Item {
 	
@@ -33,6 +34,10 @@ public class ItemAbility extends Item {
         abilityID = parPotionID;
         useOnPickup = parUseOnPickup;
         //potionLength = length;
+    }
+    
+    public Icon getIconFromDamage(int par1) {
+    	return useOnPickup ? this.itemIcon : Item.potion.getIconFromDamage(0);
     }
     
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)

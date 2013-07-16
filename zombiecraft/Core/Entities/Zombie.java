@@ -1,8 +1,10 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import CoroAI.entity.EnumJob;
-import CoroAI.entity.JobFindFood;
-import net.minecraft.src.*;
 
 public class Zombie extends BaseEntAI_Enemy
 {
@@ -17,7 +19,7 @@ public class Zombie extends BaseEntAI_Enemy
     public Zombie(World par1World)
     {
         super(par1World);
-        this.texture = "/zc/entities/zombie.png";
+        this.texture = "/mods/ZombieCraft/textures/entities/zombie.png";
         //this.moveSpeed = 0.23F;
         this.getNavigator().setBreakDoors(true);
         

@@ -1,8 +1,9 @@
 package zombiecraft.Core.Camera;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import build.SchematicData;
 import build.world.Build;
-import net.minecraft.src.NBTTagCompound;
 
 public class CameraPoint implements SchematicData {
 

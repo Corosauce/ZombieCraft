@@ -1,13 +1,9 @@
 package zombiecraft.Core;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import java.util.HashMap;
-
-import net.minecraft.src.*;
-
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Iterator;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DataLatcher {

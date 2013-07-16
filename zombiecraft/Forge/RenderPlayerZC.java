@@ -1,8 +1,13 @@
 package zombiecraft.Forge;
 
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+
 import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Items.*;
-import net.minecraft.src.*;
+import zombiecraft.Core.Items.ItemGun;
 
 public class RenderPlayerZC extends RenderPlayer {
 

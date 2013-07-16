@@ -1,11 +1,17 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.util.DamageSource;
+
 import java.util.List;
 
-import CoroAI.*;
-import CoroAI.entity.*;
-
-import net.minecraft.src.*;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.entity.EnumActState;
+import CoroAI.entity.EnumInfo;
+import CoroAI.entity.EnumJobState;
+import CoroAI.entity.JobBase;
+import CoroAI.entity.JobManager;
 
 public class JobSurvivor extends JobBase {
 	
@@ -34,6 +40,7 @@ public class JobSurvivor extends JobBase {
 
 	@Override
 	public void onLowHealth() {
+		super.onLowHealth();
 		//if (this.name.equals("Makani")) {
 		
 		//}

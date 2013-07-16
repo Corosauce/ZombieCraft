@@ -1,18 +1,11 @@
 package zombiecraft.Client.Entities;
 
-import java.util.Random;
+import net.minecraft.client.model.ModelZombie;
+import net.minecraft.entity.Entity;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
-
-import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.BaseEntAI;
-
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityFX;
-import net.minecraft.src.EntityReddustFX;
-import net.minecraft.src.ModelZombie;
 
 public class ModelZombieZC extends ModelZombie {
 	

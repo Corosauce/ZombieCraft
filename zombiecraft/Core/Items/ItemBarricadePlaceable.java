@@ -1,7 +1,14 @@
 package zombiecraft.Core.Items;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.ZCBlocks;
-import net.minecraft.src.*;
 
 public class ItemBarricadePlaceable extends Item
 {
@@ -105,10 +112,10 @@ public class ItemBarricadePlaceable extends Item
             var12 = true;
         }
 
-        par0World.editingBlocks = true;
-        par0World.setBlockAndMetadataWithNotify(par1, par2, par3, par5Block.blockID, 5);
-        //par0World.setBlockAndMetadataWithNotify(par1, par2 + 1, par3, par5Block.blockID, 8 | (var12 ? 1 : 0));
-        par0World.editingBlocks = false;
+        
+        par0World.setBlock(par1, par2, par3, par5Block.blockID, 5, 2);
+        //par0World.setBlock(par1, par2 + 1, par3, par5Block.blockID, 8 | (var12 ? 1 : 0));
+        
         par0World.notifyBlocksOfNeighborChange(par1, par2, par3, par5Block.blockID);
         //par0World.notifyBlocksOfNeighborChange(par1, par2 + 1, par3, par5Block.blockID);
     }

@@ -1,14 +1,10 @@
 package zombiecraft.Core.Items;
 
-import CoroAI.entity.EnumJob;
-import zombiecraft.Core.DataTypes;
-import zombiecraft.Core.ZCBlocks;
-import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
-import zombiecraft.Core.Entities.Comrade;
-import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZombieCraftMod;
-import net.minecraft.src.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ItemPickup extends Item {
 	

@@ -1,7 +1,14 @@
 package zombiecraft.Client;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSmallButton;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.src.ModLoader;
+import net.minecraft.util.StringTranslate;
+
 import zombiecraft.Forge.ZCClientTicks;
-import net.minecraft.src.*;
 
 public class GuiControlsPages extends GuiScreen
 {
@@ -77,14 +84,14 @@ public class GuiControlsPages extends GuiScreen
         for (int var3 = elementStart; var3 < elementEnd; ++var3)
         {
         	System.out.println(this.options.getOptionDisplayString(var3));
-            this.controlList.add(new GuiSmallButton(var3, var2 + counter % 2 * 160, this.height / 6 + 24 * (counter >> 1), 70, 20, this.options.getOptionDisplayString(var3)));
+            this.buttonList.add(new GuiSmallButton(var3, var2 + counter % 2 * 160, this.height / 6 + 24 * (counter >> 1), 70, 20, this.options.getOptionDisplayString(var3)));
             counter++;
         }
 
-        this.controlList.add(new GuiButton(201, this.width / 2 - 35 - 50 - 70, this.height / 6 + 168, 70, 20, page > 0 ? "Prev Page" : "\u00a77Prev Page"));
-        this.controlList.add(new GuiButton(202, this.width / 2 + 35 + 50, this.height / 6 + 168, 70, 20, !hitEnd ? "Next Page" : "\u00a77Next Page"));
+        this.buttonList.add(new GuiButton(201, this.width / 2 - 35 - 50 - 70, this.height / 6 + 168, 70, 20, page > 0 ? "Prev Page" : "\u00a77Prev Page"));
+        this.buttonList.add(new GuiButton(202, this.width / 2 + 35 + 50, this.height / 6 + 168, 70, 20, !hitEnd ? "Next Page" : "\u00a77Next Page"));
         
-        this.controlList.add(new GuiButton(200, this.width / 2 - 35, this.height / 6 + 168, 70, 20, var1.translateKey("gui.done")));
+        this.buttonList.add(new GuiButton(200, this.width / 2 - 35, this.height / 6 + 168, 70, 20, var1.translateKey("gui.done")));
         //this.screenTitle = var1.translateKey("controls.title");
     }
 
@@ -95,7 +102,7 @@ public class GuiControlsPages extends GuiScreen
     {
         for (int var2 = 0; var2 < elementsThisPage; ++var2)
         {
-            ((GuiButton)this.controlList.get(var2)).displayString = this.options.getOptionDisplayString((page*elementsPerPage)+var2);
+            ((GuiButton)this.buttonList.get(var2)).displayString = this.options.getOptionDisplayString((page*elementsPerPage)+var2);
         }
         
         
@@ -132,7 +139,7 @@ public class GuiControlsPages extends GuiScreen
         if (this.buttonId >= 0)
         {
             this.options.setKeyBinding(this.buttonId, -100 + par3);
-            ((GuiButton)this.controlList.get(this.buttonIndex)).displayString = this.options.getOptionDisplayString(this.buttonId);
+            ((GuiButton)this.buttonList.get(this.buttonIndex)).displayString = this.options.getOptionDisplayString(this.buttonId);
             this.buttonId = -1;
             KeyBinding.resetKeyBindingArrayAndHash();
         }
@@ -150,7 +157,7 @@ public class GuiControlsPages extends GuiScreen
         if (this.buttonId >= 0)
         {
             this.options.setKeyBinding(this.buttonId, par2);
-            ((GuiButton)this.controlList.get(this.buttonIndex)).displayString = this.options.getOptionDisplayString(this.buttonId);
+            ((GuiButton)this.buttonList.get(this.buttonIndex)).displayString = this.options.getOptionDisplayString(this.buttonId);
             this.buttonId = -1;
             KeyBinding.resetKeyBindingArrayAndHash();
         }
@@ -185,16 +192,16 @@ public class GuiControlsPages extends GuiScreen
 
             if (this.buttonId == var5)
             {
-                ((GuiButton)this.controlList.get(counter)).displayString = "\u00a7f> \u00a7e??? \u00a7f<";
+                ((GuiButton)this.buttonList.get(counter)).displayString = "\u00a7f> \u00a7e??? \u00a7f<";
             }
             else if (var6)
             {
-                ((GuiButton)this.controlList.get(counter)).displayString = "\u00a7c" + this.options.getOptionDisplayString(var5);
+                ((GuiButton)this.buttonList.get(counter)).displayString = "\u00a7c" + this.options.getOptionDisplayString(var5);
             }
             else
             {
             	try {
-            		((GuiButton)this.controlList.get(counter)).displayString = this.options.getOptionDisplayString(var5);
+            		((GuiButton)this.buttonList.get(counter)).displayString = this.options.getOptionDisplayString(var5);
             	} catch (Exception ex) {
             		ex.printStackTrace();
             	}

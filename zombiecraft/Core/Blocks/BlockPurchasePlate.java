@@ -1,22 +1,32 @@
 package zombiecraft.Core.Blocks;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.EnumMobType;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
 import java.util.List;
 import java.util.Random;
 
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
 
-import net.minecraft.src.*;
-//import zombiecraft.Core.GameLogic.*;
-
 public class BlockPurchasePlate extends BlockContainer
 {
     /** The mob type that can trigger this pressure plate. */
     private EnumMobType triggerMobType;
 
-    public BlockPurchasePlate(int par1, int par2, EnumMobType par3EnumMobType, Material par4Material)
+    public BlockPurchasePlate(int par1, EnumMobType par3EnumMobType, Material par4Material)
     {
-        super(par1, par2, par4Material);
+        super(par1, par4Material);
         this.triggerMobType = par3EnumMobType;
         this.setTickRandomly(true);
         float var5 = 0.0625F;
@@ -25,12 +35,17 @@ public class BlockPurchasePlate extends BlockContainer
         setHardness(0.1F);
         setStepSound(Block.soundWoodFootstep);
     }
+    
+    public Icon getIcon(int par1, int par2)
+    {
+        return Block.mobSpawner.getIcon(par1, par2);
+    }
 
     /**
      * How many world ticks before ticking
      */
     @Override
-    public int tickRate()
+    public int tickRate(World world)
     {
         return 20;
     }
@@ -95,7 +110,7 @@ public class BlockPurchasePlate extends BlockContainer
         if (var6)
         {
             this.dropBlockAsItem(par1World, par2, par3, par4, par1World.getBlockMetadata(par2, par3, par4), 0);
-            par1World.setBlockWithNotify(par2, par3, par4, 0);
+            par1World.setBlock(par2, par3, par4, 0);
         }
     }
     
@@ -213,7 +228,7 @@ public class BlockPurchasePlate extends BlockContainer
 
         if (var6 && !var5)
         {
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, 1);
+            par1World.setBlockMetadataWithNotify(par2, par3, par4, 1, 3);
             par1World.notifyBlocksOfNeighborChange(par2, par3, par4, this.blockID);
             par1World.notifyBlocksOfNeighborChange(par2, par3 - 1, par4, this.blockID);
             par1World.markBlockRangeForRenderUpdate(par2, par3, par4, par2, par3, par4);
@@ -222,7 +237,7 @@ public class BlockPurchasePlate extends BlockContainer
 
         if (!var6 && var5)
         {
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, 0);
+            par1World.setBlockMetadataWithNotify(par2, par3, par4, 0, 3);
             par1World.notifyBlocksOfNeighborChange(par2, par3, par4, this.blockID);
             par1World.notifyBlocksOfNeighborChange(par2, par3 - 1, par4, this.blockID);
             par1World.markBlockRangeForRenderUpdate(par2, par3, par4, par2, par3, par4);
@@ -231,7 +246,7 @@ public class BlockPurchasePlate extends BlockContainer
 
         if (var6)
         {
-            par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate());
+            par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate(par1World));
         }
     }
 
@@ -275,18 +290,18 @@ public class BlockPurchasePlate extends BlockContainer
      * Is this block powering the block on the specified side
      */
     @Override
-    public boolean isProvidingStrongPower(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+    public int isProvidingStrongPower(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
     {
-        return par1IBlockAccess.getBlockMetadata(par2, par3, par4) > 0;
+        return par1IBlockAccess.getBlockMetadata(par2, par3, par4) > 0 ? 15 : 0;
     }
 
     /**
      * Is this block indirectly powering the block on the specified side
      */
     @Override
-    public boolean isProvidingWeakPower(IBlockAccess par1World, int par2, int par3, int par4, int par5)
+    public int isProvidingWeakPower(IBlockAccess par1World, int par2, int par3, int par4, int par5)
     {
-        return par1World.getBlockMetadata(par2, par3, par4) == 0 ? false : par5 == 1;
+        return par1World.getBlockMetadata(par2, par3, par4) == 0 ? 0 : /*par5 == 1*/15;
     }
 
     /**

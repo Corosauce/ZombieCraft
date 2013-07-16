@@ -2,14 +2,25 @@ package zombiecraft.Core.Blocks;
 
 import java.util.Iterator;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.packet.Packet60Explosion;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
+import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.Entities.BaseEntAI_Enemy;
-
-import net.minecraft.src.*;
 
 public class BlockBetty extends Block {
 	
-	public BlockBetty(int par1, int par2, Material par3Material) {
-		super(par1, par2, par3Material);
+	public BlockBetty(int par1, Material par3Material) {
+		super(par1, par3Material);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -38,7 +49,7 @@ public class BlockBetty extends Block {
 		{
             return true;
 		} else {
-			world.setBlockWithNotify(i, j, k, 0);
+			world.setBlock(i, j, k, 0);
 			return false;
 		}
 	}
@@ -52,9 +63,9 @@ public class BlockBetty extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int i, int j, int k3, Entity entity2)
     {
-		if (!world.isRemote && entity2 instanceof BaseEntAI_Enemy) {
+		if (!world.isRemote && (entity2 instanceof BaseEntAI_Enemy || (entity2 instanceof EntityLiving && !(entity2 instanceof EntityChicken || entity2 instanceof BaseEntAI_Ally || entity2 instanceof EntityPlayer)))) {
 			explode(world, i, j, k3);
-			world.setBlockWithNotify(i, j, k3, 0);
+			world.setBlock(i, j, k3, 0);
 		}
     }
 	

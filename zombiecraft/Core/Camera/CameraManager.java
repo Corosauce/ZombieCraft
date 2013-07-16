@@ -4,13 +4,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 
 import org.lwjgl.input.Keyboard;
 
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCKeybindHandler;
-
+import CoroAI.componentAI.ICoroAI;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class CameraManager {
@@ -128,7 +132,7 @@ public class CameraManager {
 			isPressed = false;
 		}
 		
-		checkCamera();
+		checkCamera(false);
 		
 		if (camState == EnumCameraState.OFF) {
 			//Handle recoil
@@ -158,7 +162,7 @@ public class CameraManager {
 					
 					float yOffset = 0F;
 					
-					if (spectateTarget instanceof EntityOtherPlayerMP) {
+					if (spectateTarget instanceof EntityOtherPlayerMP || !(spectateTarget instanceof EntityPlayer)) {
 						yOffset = 1F;
 					}
 					
@@ -305,15 +309,20 @@ public class CameraManager {
 		}
 	}
 	
-	public void checkCamera() {
+	public void checkCamera(Boolean forcePosUpdate) {
 		if (activeCamera == null && mc.thePlayer != null) {
 			EntityCamera cam = newCamera(mc.thePlayer);
 			cam.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.2F, mc.thePlayer.posZ);
 			cam.setAngles(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
 			mc.thePlayer.worldObj.spawnEntityInWorld(cam);
+			mc.thePlayer.worldObj.playerEntities.remove(cam);
 			activeCamera = cam;			
 		} else {
 			//System.out.println("Didnt make camera");
+		}
+		if (forcePosUpdate && activeCamera != null) {
+			activeCamera.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.2F, mc.thePlayer.posZ);
+			activeCamera.setAngles(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
 		}
 	}
 	
@@ -327,7 +336,7 @@ public class CameraManager {
 	}
 	
 	public void spectate(EntityLiving entity) {
-		checkCamera();
+		checkCamera(true);
 		
 		spectateTarget = entity;
 		activeCamera.setPosition(entity.posX, entity.posY, entity.posZ);
@@ -343,23 +352,41 @@ public class CameraManager {
 		
 		System.out.println("mc.theWorld.playerEntities.size(): " + mc.theWorld.playerEntities.size());
 		
-		if (mc.theWorld.playerEntities.size() > 1) {
-			if (spectateTargetIndex > mc.theWorld.playerEntities.size()) spectateTargetIndex = 0;
+		try {
 			
-			for (int i = spectateTargetIndex + 1; i != spectateTargetIndex; i++) {
-				if (safetyBreak++ > 100) return;
-				if (i >= mc.theWorld.playerEntities.size()) i = 0;
-				EntityPlayer entP = (EntityPlayer)mc.theWorld.playerEntities.get(i);
-				System.out.println("what: " + i + " - " + entP + " - h: " + entP.getHealth());
-				if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.getHealth() > 1) {
-					System.out.println("Spectating: " + entP.username);
-					spectate(entP);
+			//TEMP!!!!!!!!! - remove the import too
+			for (int i = 0; i < mc.theWorld.loadedEntityList.size(); i++) {
+				Entity ent = (Entity)mc.theWorld.loadedEntityList.get(i);
+				if (ent instanceof ICoroAI && ((EntityLiving)ent).getMaxHealth() == 50 && ent.worldObj.rand.nextInt(10) == 0) {
+					spectate((EntityLiving)ent);
 					spectateTargetIndex = i;
 					return;
 				}
-				
-				
 			}
+			
+			if (mc.theWorld.playerEntities.size() > 1) {
+				if (spectateTargetIndex > mc.theWorld.playerEntities.size()) spectateTargetIndex = 0;
+				
+				for (int i = spectateTargetIndex + 1; i != spectateTargetIndex; i++) {
+					if (safetyBreak++ > 100) return;
+					if (i >= mc.theWorld.playerEntities.size()) i = 0;
+					EntityPlayer entP = (EntityPlayer)mc.theWorld.playerEntities.get(i);
+					System.out.println("what: " + i + " - " + entP + " - h: " + entP.getHealth());
+					if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.getHealth() > 1) {
+						System.out.println("Spectating: " + entP.username);
+						spectate(entP);
+						spectateTargetIndex = i;
+						return;
+					}
+					
+					
+				}
+			}
+			
+			
+			
+		} catch (Exception ex) { 
+			//ex.printStackTrace();
 		}
 		
 		spectateTargetIndex = -1;
@@ -367,7 +394,7 @@ public class CameraManager {
 	}
 	
 	public void freeCam() {
-		checkCamera();
+		checkCamera(true);
 		
 		lockYaw = mc.thePlayer.rotationYaw;
 		lockPitch = mc.thePlayer.rotationPitch;
@@ -389,7 +416,7 @@ public class CameraManager {
 	
 	public void recoilTick() {
 		
-		if (mc.thePlayer == null) return;
+		if (mc.thePlayer == null/* || mc.renderViewEntity instanceof EntityCamera*/) return;
 		
 		recoilResist = 1F;
 		

@@ -1,17 +1,17 @@
 package zombiecraft.Forge;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.src.ModLoader;
+import net.minecraft.world.World;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.EnumSet;
-import java.util.Random;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import build.world.Build;
 
 import zombiecraft.Client.GuiMainMenuZC;
 import zombiecraft.Client.ZCGameSP;
@@ -19,14 +19,9 @@ import zombiecraft.Client.ZCSoundManager;
 import zombiecraft.Client.GameLogic.InterfaceManager;
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
 import zombiecraft.Core.Camera.CameraManager;
-import zombiecraft.Core.GameLogic.*;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
-
+import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 
 public class ZCClientTicks implements ITickHandler

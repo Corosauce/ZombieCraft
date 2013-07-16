@@ -1,12 +1,9 @@
 package zombiecraft.Core;
 
+import net.minecraft.item.ItemStack;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import zombiecraft.Forge.ZombieCraftMod;
-
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
 
 public class Buyables {
 

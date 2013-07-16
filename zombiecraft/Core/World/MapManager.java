@@ -1,21 +1,16 @@
 package zombiecraft.Core.World;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-
-import build.BuildServerTicks;
-import build.world.BuildJob;
-
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
 
 import zombiecraft.Core.EnumGameMode;
-import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
+import build.BuildServerTicks;
+import build.world.BuildJob;
 
 public class MapManager {
 	

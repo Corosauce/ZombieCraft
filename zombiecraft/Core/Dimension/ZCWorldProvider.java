@@ -1,13 +1,16 @@
 package zombiecraft.Core.Dimension;
 
-import java.util.Random;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.chunk.IChunkProvider;
 
-import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.*;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ZCWorldProvider extends WorldProvider
 {

@@ -1,11 +1,24 @@
 package zombiecraft.Core.Entities.Projectiles;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.src.ModLoader;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+
 import java.util.List;
-
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-
-import CoroAI.entity.*;
 
 import zombiecraft.Client.Entities.RenderZCZombie;
 import zombiecraft.Core.DataTypes;
@@ -14,8 +27,10 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
-
-import net.minecraft.src.*;
+import CoroAI.entity.EnumDiploType;
+import CoroAI.entity.c_EnhAI;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityBullet extends Entity
 {
@@ -298,7 +313,7 @@ public class EntityBullet extends Entity
 		        {
 		            Entity var10 = (Entity)var5.get(var9);
 		
-		            if (var10.canBeCollidedWith() && !(var10 instanceof EntityPlayer) && (!(var10 instanceof c_EnhAI && ((c_EnhAI)var10).dipl_team == EnumTeam.COMRADE) && var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
+		            if (var10.canBeCollidedWith() && !(var10 instanceof EntityPlayer) && (!(var10 instanceof c_EnhAI && ((c_EnhAI)var10).dipl_team == EnumDiploType.COMRADE) && var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
 		            {
 		                var11 = 0.3F;
 		                AxisAlignedBB var12 = var10.boundingBox.expand((double)var11, (double)var11, (double)var11);
@@ -484,8 +499,8 @@ public class EntityBullet extends Entity
                         }
 
                         //ZCSdkTools.minecraft.effectRenderer.addBlockDestroyEffects(this.xTile, this.yTile, this.zTile, var19.blockID & 255, Block.glass.blockID >> 8 & 255);
-                        this.worldObj.playSound((float)this.xTile + 0.5F, (float)this.yTile + 0.5F, (float)this.zTile + 0.5F, var19.stepSound.getBreakSound(), (var19.stepSound.getVolume() + 1.0F) / 2.0F, var19.stepSound.getPitch() * 0.8F);
-                        this.worldObj.setBlockWithNotify(this.xTile, this.yTile, this.zTile, 0);
+                        this.worldObj.playSound((float)this.xTile + 0.5F, (float)this.yTile + 0.5F, (float)this.zTile + 0.5F, var19.stepSound.getBreakSound(), (var19.stepSound.getVolume() + 1.0F) / 2.0F, var19.stepSound.getPitch() * 0.8F, false);
+                        this.worldObj.setBlock(this.xTile, this.yTile, this.zTile, 0, 0, 2);
                         var19.onBlockDestroyedByPlayer(this.worldObj, this.xTile, this.yTile, this.zTile, this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile));
                     }
                 }

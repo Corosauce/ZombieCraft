@@ -1,9 +1,11 @@
 package zombiecraft.Core.Camera;
 
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.MovementInput;
+
 import zombiecraft.Forge.ZCClientTicks;
-import net.minecraft.src.*;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class MovementInputProxy extends MovementInput

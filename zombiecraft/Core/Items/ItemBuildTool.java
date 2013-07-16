@@ -1,9 +1,12 @@
 package zombiecraft.Core.Items;
 
-import zombiecraft.Core.ZCBlocks;
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.*;
 
 public class ItemBuildTool extends Item {
     

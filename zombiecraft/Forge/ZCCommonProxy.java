@@ -1,10 +1,14 @@
 package zombiecraft.Forge;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.src.ModLoader;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
-import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Entities.Comrade;
 import zombiecraft.Core.Entities.EntityChickenDropless;
 import zombiecraft.Core.Entities.EntityWorldHook;
@@ -12,33 +16,11 @@ import zombiecraft.Core.Entities.Imp;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.Entities.Projectiles.EntityBulletFlame;
-import zombiecraft.Core.Items.ItemGrenade;
-import zombiecraft.Core.Items.ItemGrenadeStun;
-import zombiecraft.Core.Items.ItemGunAk47;
-import zombiecraft.Core.Items.ItemGunDEagle;
-import zombiecraft.Core.Items.ItemGunFlamethrower;
-import zombiecraft.Core.Items.ItemGunM4;
-import zombiecraft.Core.Items.ItemGunShotgun;
-import zombiecraft.Core.Items.ItemGunSniper;
-import zombiecraft.Core.Items.ItemAbility;
-import zombiecraft.Core.Items.ItemSwordZC;
 import zombiecraft.Server.ZCGameMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.Entity;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EnumToolMaterial;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemSword;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.ServerCommandManager;
-import net.minecraft.src.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class ZCCommonProxy implements IGuiHandler
 {
@@ -110,5 +92,9 @@ public class ZCCommonProxy implements IGuiHandler
 		//return FMLClientHandler.instance().().theWorld.getEntityByID(id);
 		//return FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(0).getEntityByID(id) // bad, need world ref
 		return null;
+	}
+
+	public void loadSounds() {
+		
 	}
 }

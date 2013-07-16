@@ -1,11 +1,14 @@
 package zombiecraft.Core.Entities.Projectiles;
 
-import net.minecraft.src.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
 import zombiecraft.Core.ZCItems;
-import zombiecraft.Forge.ZombieCraftMod;
 
 public class EntityGrenadeStun extends EntityGrenade
 {
@@ -21,19 +24,19 @@ public class EntityGrenadeStun extends EntityGrenade
     public EntityGrenadeStun(World var1)
     {
         super(var1);
-        this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
+        //this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
     }
 
     public EntityGrenadeStun(World var1, double var2, double var4, double var6)
     {
         super(var1, var2, var4, var6);
-        this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
+        //this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
     }
 
     public EntityGrenadeStun(World var1, EntityLiving var2)
     {
         super(var1, var2);
-        this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
+        //this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
     }
 
     protected void explode()

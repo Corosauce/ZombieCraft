@@ -1,9 +1,17 @@
 package zombiecraft.Core.Dimension;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.util.IProgressUpdate;
+import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.structure.MapGenVillage;
+
 import java.util.List;
 import java.util.Random;
-
-import net.minecraft.src.*;
 
 public class ZCChunkProvider implements IChunkProvider
 {
@@ -122,6 +130,7 @@ public class ZCChunkProvider implements IChunkProvider
      * Unloads the 100 oldest chunks from memory, due to a bug with chunkSet.add() never being called it thinks the list
      * is always empty and will not remove any chunks.
      */
+    
     public boolean unload100OldestChunks()
     {
         return false;
@@ -170,4 +179,19 @@ public class ZCChunkProvider implements IChunkProvider
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean unloadQueuedChunks() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public void func_104112_b()
+    {
+        /*if (this.currentChunkLoader != null)
+        {
+            this.currentChunkLoader.saveExtraData();
+        }*/
+    }
 }

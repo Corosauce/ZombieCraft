@@ -1,37 +1,46 @@
 package zombiecraft.Server;
 
-import java.util.ArrayList;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemInWorldManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet53BlockChange;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.src.ModLoader;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.EnumGameType;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import build.world.Build;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
-
-import CoroAI.entity.*;
-
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.*;
-
 import zombiecraft.Core.AmmoDataLatcher;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.EnumGameMode;
-import zombiecraft.Core.MCInt;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.PacketMLMP;
-import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.entity.c_EnhAI;
+import CoroAI.entity.c_EntityPlayerMPExt;
+import build.world.Build;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ZCGameMP extends ZCGame {
 	
@@ -83,7 +92,7 @@ public class ZCGameMP extends ZCGame {
 				for(int i = 0; i < players.size(); i++) {
 					EntityPlayerMP plEnt = (EntityPlayerMP)players.get(i);
 					
-					plEnt.sendGameTypeToPlayer(ZCGame.autostart ? EnumGameType.SURVIVAL : EnumGameType.CREATIVE);
+					plEnt.setGameType(ZCGame.autostart ? EnumGameType.SURVIVAL : EnumGameType.CREATIVE);
 					adjustedPlayer = true;
 				}
 			}
@@ -274,7 +283,7 @@ public class ZCGameMP extends ZCGame {
 		int juggTime = (Integer)getData(player, DataTypes.juggTime);
 		if (juggTime > 0) {
 			if (player.inventory.armorInventory[2] == null) {
-				player.inventory.armorInventory[2] = new ItemStack(Item.plateSteel);
+				player.inventory.armorInventory[2] = new ItemStack(Item.plateIron);
         	}
 			if (juggTime == 1) {
 				player.inventory.armorInventory[2] = null;
@@ -537,6 +546,7 @@ public class ZCGameMP extends ZCGame {
 					movePlayersToLobby();
 					ZCGame.instance().mapMan.loadLevel();
 		    		ZCGame.instance().mapMan.buildStart(player);
+		    		ZCGame.instance().trySetTexturePack(ZCGame.instance().zcLevel.texturePack);
 				} else if (dataInt[0] == CommandTypes.SET_LEVELNAME) {
 					this.setMapName(player, packet.dataString[0]);
 					updateInfo(null, PacketTypes.EDITOR_SETLEVELNAME, new int[0], packet.dataString);

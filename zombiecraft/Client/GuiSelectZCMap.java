@@ -1,8 +1,21 @@
 package zombiecraft.Client;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiCreateWorld;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiYesNo;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.src.ModLoader;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.StringTranslate;
+import net.minecraft.world.EnumGameType;
+import net.minecraft.world.WorldSettings;
+import net.minecraft.world.WorldType;
+import net.minecraft.world.storage.ISaveFormat;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraft.world.storage.WorldInfo;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -20,15 +33,14 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 
-import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Server.ZCGameMP;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.*;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiSelectZCMap extends GuiScreen
@@ -103,7 +115,7 @@ public class GuiSelectZCMap extends GuiScreen
         this.loadList();
         this.worldSlotContainer = new GuiMapSlot(this);
         //this.worldSlotContainer.func_77207_a(40, 80, 30, 180);
-        this.worldSlotContainer.registerScrollButtons(this.controlList, 4, 5);
+        this.worldSlotContainer.registerScrollButtons(this.buttonList, 4, 5);
         this.initButtons();
     }
 
@@ -112,10 +124,15 @@ public class GuiSelectZCMap extends GuiScreen
      */
     private void loadSaves()
     {
-        ISaveFormat var1 = this.mc.getSaveLoader();
-        this.saveList = var1.getSaveList();
-        Collections.sort(this.saveList);
-        this.selectedWorld = -1;
+    	try {
+	        ISaveFormat var1 = this.mc.getSaveLoader();
+	        this.saveList = var1.getSaveList();
+	        Collections.sort(this.saveList);
+	        
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	this.selectedWorld = -1;
     }
 
     /**
@@ -148,13 +165,13 @@ public class GuiSelectZCMap extends GuiScreen
     public void initButtons()
     {
         StringTranslate var1 = StringTranslate.getInstance();
-        this.controlList.add(this.buttonSelect = new GuiButton(1, this.width / 2 - 154 - 42, this.height - 28, 72, 20, var1.translateKey("Play Map")));
-        this.controlList.add(this.buttonSelect = new GuiButton(6, this.width / 2 - 154 + 42, this.height - 28, 72, 20, var1.translateKey("Edit Map")));
-        //this.controlList.add(new GuiButton(3, this.width / 2 + 4, this.height - 52, 150, 20, var1.translateKey("selectWorld.create")));
-        //this.controlList.add(this.buttonDelete = new GuiButton(6, this.width / 2 - 154, this.height - 28, 72, 20, var1.translateKey("selectWorld.rename")));
-        //this.controlList.add(this.buttonRename = new GuiButton(2, this.width / 2 - 76, this.height - 28, 72, 20, var1.translateKey("selectWorld.delete")));
-        //this.controlList.add(this.field_82316_w = new GuiButton(7, this.width / 2 + 4, this.height - 28, 72, 20, var1.translateKey("selectWorld.recreate")));
-        this.controlList.add(new GuiButton(0, this.width / 2 + 82 - 36 - 56, this.height - 28, 72, 20, var1.translateKey("gui.cancel")));
+        this.buttonList.add(this.buttonSelect = new GuiButton(1, this.width / 2 - 154 - 42, this.height - 28, 72, 20, var1.translateKey("Play Map")));
+        this.buttonList.add(this.buttonSelect = new GuiButton(6, this.width / 2 - 154 + 42, this.height - 28, 72, 20, var1.translateKey("Edit Map")));
+        //this.buttonList.add(new GuiButton(3, this.width / 2 + 4, this.height - 52, 150, 20, var1.translateKey("selectWorld.create")));
+        //this.buttonList.add(this.buttonDelete = new GuiButton(6, this.width / 2 - 154, this.height - 28, 72, 20, var1.translateKey("selectWorld.rename")));
+        //this.buttonList.add(this.buttonRename = new GuiButton(2, this.width / 2 - 76, this.height - 28, 72, 20, var1.translateKey("selectWorld.delete")));
+        //this.buttonList.add(this.field_82316_w = new GuiButton(7, this.width / 2 + 4, this.height - 28, 72, 20, var1.translateKey("selectWorld.recreate")));
+        this.buttonList.add(new GuiButton(0, this.width / 2 + 82 - 36 - 56, this.height - 28, 72, 20, var1.translateKey("gui.cancel")));
         //this.buttonSelect.enabled = false;
         //this.buttonRename.enabled = false;
         //this.buttonDelete.enabled = false;
@@ -277,7 +294,7 @@ public class GuiSelectZCMap extends GuiScreen
         //ZCUtil.setPrivateValueBoth(WorldInfo.class, var4, "commandsAllowed", "commandsAllowed", true);
         //
         WorldSettings var66 = new WorldSettings((new Random()).nextLong(), edit ? EnumGameType.CREATIVE : EnumGameType.SURVIVAL, false, false, WorldType.DEFAULT);
-        var66.func_82750_a(var5.field_82290_a);
+        var66.func_82750_a(var5.generatorOptionsToUse);
         var66.enableCommands();
         //this.mc.displayGuiScreen(var5);
         

@@ -1,21 +1,15 @@
 package zombiecraft.Core.World;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import build.SchematicData;
-import build.world.Build;
-
-import net.minecraft.src.*;
-
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Camera.CameraPoint;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZCClientTicks;
-import zombiecraft.Forge.ZCServerTicks;
+import build.world.Build;
 
 public class Level {
 	
@@ -173,11 +167,11 @@ public class Level {
     		
     		if (texPack.length() > 0) {
     			//System.out.println("try load tex pac: " + texPack);
-    			if (zcGame.trySetTexturePack(texPack)) {
+    			//if (zcGame.trySetTexturePack(texPack)) {
     				texturePack = texPack;
-    			} else {
-    				System.out.println("failed to load texturepack");
-    			}
+    			//} else {
+    				//System.out.println("failed to load texturepack");
+    			//}
     		}
 			
 		} else {

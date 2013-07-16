@@ -1,10 +1,15 @@
 package zombiecraft.Core.Dimension;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.Teleporter;
+import net.minecraft.world.WorldServer;
+
 import java.util.Random;
 
 import zombiecraft.Core.GameLogic.ZCGame;
-
-import net.minecraft.src.*;
 
 public class ZCTeleporter extends Teleporter
 {
@@ -117,11 +122,11 @@ public class ZCTeleporter extends Teleporter
                 var47 = 1;
             }
 
-            int var28 = par2Entity.func_82148_at();
+            int var28 = par2Entity.getTeleportDirection();
 
             if (var47 > -1)
             {
-                int var29 = Direction.field_71578_g[var47];
+                int var29 = Direction.rotateLeft[var47];
                 int var30 = Direction.offsetX[var47];
                 int var31 = Direction.offsetZ[var47];
                 int var32 = Direction.offsetX[var29];
@@ -131,8 +136,8 @@ public class ZCTeleporter extends Teleporter
 
                 if (var34 && var35)
                 {
-                    var47 = Direction.footInvisibleFaceRemap[var47];
-                    var29 = Direction.footInvisibleFaceRemap[var29];
+                    var47 = Direction.rotateOpposite[var47];
+                    var29 = Direction.rotateOpposite[var29];
                     var30 = Direction.offsetX[var47];
                     var31 = Direction.offsetZ[var47];
                     var32 = Direction.offsetX[var29];
@@ -173,12 +178,12 @@ public class ZCTeleporter extends Teleporter
                     var38 = 1.0F;
                     var39 = 1.0F;
                 }
-                else if (var47 == Direction.footInvisibleFaceRemap[var28])
+                else if (var47 == Direction.rotateOpposite[var28])
                 {
                     var38 = -1.0F;
                     var39 = -1.0F;
                 }
-                else if (var47 == Direction.enderEyeMetaToDirection[var28])
+                else if (var47 == Direction.rotateRight[var28])
                 {
                     var40 = 1.0F;
                     var41 = -1.0F;
@@ -209,7 +214,7 @@ public class ZCTeleporter extends Teleporter
      * Create a new portal near an entity.
      */
     @Override
-    public boolean func_85188_a(Entity par2Entity)
+    public boolean makePortal(Entity par2Entity)
     {
         byte var3 = 16;
         double var4 = -1.0D;
@@ -397,7 +402,7 @@ public class ZCTeleporter extends Teleporter
                         var24 = var16 + var22;
                         var25 = var17 + (var21 - 1) * var19 - var20 * var31;
                         var33 = var22 < 0;
-                        world.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : 0);
+                        world.setBlock(var23, var24, var25, var33 ? Block.obsidian.blockID : 0);
                     }
                 }
             }
@@ -405,7 +410,7 @@ public class ZCTeleporter extends Teleporter
 
         for (var20 = 0; var20 < 4; ++var20)
         {
-            world.editingBlocks = true;
+            //world.editingBlocks = true;
 
             for (var21 = 0; var21 < 4; ++var21)
             {
@@ -415,11 +420,11 @@ public class ZCTeleporter extends Teleporter
                     var24 = var16 + var22;
                     var25 = var17 + (var21 - 1) * var19;
                     var33 = var21 == 0 || var21 == 3 || var22 == -1 || var22 == 3;
-                    world.setBlockWithNotify(var23, var24, var25, var33 ? Block.obsidian.blockID : Block.portal.blockID);
+                    world.setBlock(var23, var24, var25, var33 ? Block.obsidian.blockID : Block.portal.blockID, 0, 2);
                 }
             }
 
-            world.editingBlocks = false;
+            //world.editingBlocks = false;
 
             for (var21 = 0; var21 < 4; ++var21)
             {

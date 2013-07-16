@@ -1,20 +1,22 @@
 package zombiecraft.Core.GameLogic;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.world.World;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Side;
-
-import CoroAI.entity.c_EnhAI;
 
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
-
-import net.minecraft.src.*;
+import CoroAI.entity.c_EnhAI;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 public class WaveManager {
 	

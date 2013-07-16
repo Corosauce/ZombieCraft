@@ -1,16 +1,24 @@
 package zombiecraft.Core.Blocks;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
 import java.util.Random;
 
 import zombiecraft.Core.GameLogic.ZCGame;
 
-import net.minecraft.src.*;
-
 public class BlockMobSpawnerWave extends BlockContainer
 {
-    public BlockMobSpawnerWave(int par1, int par2)
+    public BlockMobSpawnerWave(int par1)
     {
-        super(par1, par2, Material.circuits);
+        super(par1, Material.circuits);
         
         setHardness(0.1F);
         setStepSound(Block.soundMetalFootstep);
@@ -18,6 +26,11 @@ public class BlockMobSpawnerWave extends BlockContainer
         float var5 = 0.0625F;
         this.setBlockBounds(var5, 0.0F, var5, 1.0F - var5, 0.03125F, 1.0F - var5);
         
+    }
+    
+    public Icon getIcon(int par1, int par2)
+    {
+        return Block.mobSpawner.getIcon(par1, par2);
     }
 
     /**

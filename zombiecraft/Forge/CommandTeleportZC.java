@@ -1,10 +1,11 @@
 package zombiecraft.Forge;
 
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.CommandBase;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.ICommandSender;
 
 public class CommandTeleportZC extends CommandBase {
 

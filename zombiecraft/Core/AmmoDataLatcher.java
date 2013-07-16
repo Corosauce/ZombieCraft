@@ -1,14 +1,11 @@
 package zombiecraft.Core;
 
-import java.util.HashMap;
-
-import net.minecraft.src.*;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class AmmoDataLatcher {

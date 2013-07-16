@@ -1,10 +1,10 @@
 package zombiecraft.Core;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
+import net.minecraft.block.EnumMobType;
+import net.minecraft.block.material.Material;
+import net.minecraft.src.ModLoader;
+import net.minecraft.util.Icon;
 
 import zombiecraft.Core.Blocks.BlockBarricade;
 import zombiecraft.Core.Blocks.BlockBarricadePlaceable;
@@ -15,8 +15,7 @@ import zombiecraft.Core.Blocks.BlockPurchasePlate;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Forge.ZombieCraftMod;
-
-import net.minecraft.src.*;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ZCBlocks {
 	
@@ -38,7 +37,9 @@ public class ZCBlocks {
 	public static Block barricadePlaceable;
 	
 	public static Block betty;
-	public static int bettyTexID = 0;
+	//public static int bettyTexID = 0;
+	
+	public static Icon barricadeTopTexIDs[] = new Icon[7];// = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 	
 	public ZCBlocks() {
 		
@@ -46,22 +47,22 @@ public class ZCBlocks {
 	
 	//ALWAYS ADD IDS TO END!!!! THINK OF THE SCHEMATICS!
 	public static void load(ZombieCraftMod pMod) {
-		b_mobSpawnerWave  = (new BlockMobSpawnerWave(z_BlockIDStart++, 65)).setBlockName("z_spawnblock").setCreativeTab(ZombieCraftMod.tabBlock);
-    	b_buyBlock = (new BlockPurchasePlate(z_BlockIDStart++, 65, EnumMobType.players, Material.circuits)).setBlockName("z_purchaseBlock").setCreativeTab(ZombieCraftMod.tabBlock);
+		b_mobSpawnerWave  = (new BlockMobSpawnerWave(z_BlockIDStart++)).setUnlocalizedName("z_spawnblock").setCreativeTab(ZombieCraftMod.tabBlock);
+    	b_buyBlock = (new BlockPurchasePlate(z_BlockIDStart++, EnumMobType.players, Material.circuits)).setUnlocalizedName("z_purchaseBlock").setCreativeTab(ZombieCraftMod.tabBlock);
     	
     	int stateToBlockID[] = {z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++,z_BlockIDStart++};
-    	barricadeS0 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 0)).setBlockName("barricadeBroken");
-		barricadeS1 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 1)).setBlockName("barricadeS1");
-		barricadeS2 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 2)).setBlockName("barricadeS2");
-		barricadeS3 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 3)).setBlockName("barricadeS3");
-		barricadeS4 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 4)).setBlockName("barricadeS4");
-		barricadeS5 = (new BlockBarricade(stateToBlockID, ZCItems.barricadeTopTexIDs, Material.circuits, 5)).setBlockName("barricade");
+    	barricadeS0 = (new BlockBarricade(stateToBlockID, Material.circuits, 0)).setUnlocalizedName("barricadeBroken");
+		barricadeS1 = (new BlockBarricade(stateToBlockID, Material.circuits, 1)).setUnlocalizedName("barricadeS1");
+		barricadeS2 = (new BlockBarricade(stateToBlockID, Material.circuits, 2)).setUnlocalizedName("barricadeS2");
+		barricadeS3 = (new BlockBarricade(stateToBlockID, Material.circuits, 3)).setUnlocalizedName("barricadeS3");
+		barricadeS4 = (new BlockBarricade(stateToBlockID, Material.circuits, 4)).setUnlocalizedName("barricadeS4");
+		barricadeS5 = (new BlockBarricade(stateToBlockID, Material.circuits, 5)).setUnlocalizedName("barricade");
 		//barricadeS5 = Block.doorWood;//(new BlockDoor(121, Material.wood, 5)).setHardness(3F).setStepSound(Block.soundWoodFootstep).setBlockName("doorWood");
-		barrier = (new BlockBarrier(z_BlockIDStart++, 1)).setBlockName("barrier").setCreativeTab(ZombieCraftMod.tabBlock);
+		barrier = (new BlockBarrier(z_BlockIDStart++)).setUnlocalizedName("barrier").setCreativeTab(ZombieCraftMod.tabBlock);
 		
-		barricadePlaceable = (new BlockBarricadePlaceable(z_BlockIDStart++, ZCItems.barricadeTopTexIDs)).setHardness(2.0F).setResistance(5.0F).setBlockName("barricadePlacable");
+		barricadePlaceable = (new BlockBarricadePlaceable(z_BlockIDStart++)).setHardness(2.0F).setResistance(5.0F).setUnlocalizedName("barricadePlacable");
 		
-		betty = (new BlockBetty(z_BlockIDStart++, bettyTexID, Material.plants)).setHardness(2.0F).setResistance(5.0F).setBlockName("betty").setCreativeTab(ZombieCraftMod.tabBlock);
+		betty = (new BlockBetty(z_BlockIDStart++, Material.plants)).setHardness(2.0F).setResistance(5.0F).setUnlocalizedName("ZombieCraft:betty").setCreativeTab(ZombieCraftMod.tabBlock);
 		
     	ModLoader.registerBlock(b_mobSpawnerWave);
     	ModLoader.registerBlock(b_buyBlock);
@@ -79,7 +80,7 @@ public class ZCBlocks {
         
     	//ModLoader.addName(ZCItems.buildTool,"ZC Build Tool");
     	ModLoader.addName(ZCBlocks.barrier,"ZC Barrier");
-    	ModLoader.addName(ZCBlocks.barricadePlaceable,"Placable Barricade");
+    	ModLoader.addName(ZCBlocks.barricadePlaceable,"Placeable Barricade");
     	ModLoader.addName(ZCBlocks.betty,"Bouncing Betty");
 	}
 	

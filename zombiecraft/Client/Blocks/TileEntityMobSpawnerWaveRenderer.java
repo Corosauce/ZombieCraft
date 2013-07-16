@@ -1,16 +1,22 @@
 package zombiecraft.Client.Blocks;
 
-import net.minecraft.src.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.lwjgl.opengl.GL11;
 
-import build.render.Overlays;
+import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Client.*;
+import build.render.Overlays;
 
 public class TileEntityMobSpawnerWaveRenderer extends TileEntitySpecialRenderer
 {

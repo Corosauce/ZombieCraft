@@ -1,8 +1,10 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import CoroAI.entity.EnumJob;
-import CoroAI.entity.JobProtect;
-import net.minecraft.src.*;
 
 public class Comrade extends BaseEntAI_Ally
 {
@@ -18,7 +20,7 @@ public class Comrade extends BaseEntAI_Ally
     {
         super(par1World);
         
-        this.texture = "/zc/entities/comrade/skin10.png";
+        this.texture = "/mods/ZombieCraft/textures/entities/comrade/skin10.png";
         //this.moveSpeed = 0.35F;
         setMoveSpeed(0.33F);
         this.getNavigator().setBreakDoors(true);

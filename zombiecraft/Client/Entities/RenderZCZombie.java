@@ -1,17 +1,22 @@
 package zombiecraft.Client.Entities;
 
-import CoroAI.PFQueue;
-import build.render.Overlays;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.*;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
+import build.render.Overlays;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderZCZombie extends RenderBiped

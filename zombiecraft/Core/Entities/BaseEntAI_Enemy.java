@@ -1,8 +1,15 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.ZCItems;
-import CoroAI.entity.*;
-import net.minecraft.src.*;
+import CoroAI.entity.EnumDiploType;
+import CoroAI.entity.c_EnhAI;
 
 public class BaseEntAI_Enemy extends BaseEntAI
 {
@@ -20,7 +27,7 @@ public class BaseEntAI_Enemy extends BaseEntAI
     public BaseEntAI_Enemy(World par1World)
     {
         super(par1World);
-        this.dipl_team = EnumTeam.HOSTILES;
+        this.dipl_team = EnumDiploType.HOSTILES;
         
     }
     
@@ -45,13 +52,13 @@ public class BaseEntAI_Enemy extends BaseEntAI
     public int getDropItemId() {
     	int id = worldObj.rand.nextInt(4);
     	if (id == 0) {
-    		return ZCItems.itemPickupDoublePoints.shiftedIndex;
+    		return ZCItems.itemPickupDoublePoints.itemID;
     	} else if (id == 1) {
-    		return ZCItems.itemPickupInstaKill.shiftedIndex;
+    		return ZCItems.itemPickupInstaKill.itemID;
     	} else if (id == 2) {
-    		return ZCItems.itemPickupMaxAmmo.shiftedIndex;
+    		return ZCItems.itemPickupMaxAmmo.itemID;
     	} else {
-    		return ZCItems.itemPickupNuke.shiftedIndex;
+    		return ZCItems.itemPickupNuke.itemID;
     	}
     }
     

@@ -1,10 +1,24 @@
 package zombiecraft.Core.Blocks;
 
-import net.minecraft.src.*;
-
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.Entities.BaseEntAI;
@@ -19,32 +33,54 @@ public class BlockBarricade extends BlockDoor
 	
 	//public int stateToBlockID[] = {mod_ZombieCraft.barricadeS0.blockID,mod_ZombieCraft.barricadeS1.blockID,mod_ZombieCraft.barricadeS2.blockID,mod_ZombieCraft.barricadeS3.blockID,mod_ZombieCraft.barricadeS4.blockID,mod_ZombieCraft.barricadeS5.blockID};
 	public int stateToBlockID[];
-	public int barricadeTopTexIDs[];
+	//public int barricadeTopTexIDs[];
+	
+	//@SideOnly(Side.CLIENT)
+	//public Icon[] barricadeTopTexIDs = ZCBlocks.barricadeTopTexIDs;
+	
+	//@SideOnly(Side.CLIENT)
+	//public Icon blockIndexInTexture;
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+		ZCBlocks.barricadeTopTexIDs = new Icon[7];
+
+        for (int i = 0; i < ZCBlocks.barricadeTopTexIDs.length - 1; ++i)
+        {
+        	ZCBlocks.barricadeTopTexIDs[i] = par1IconRegister.registerIcon("ZombieCraft:barricade" + i);
+        }
+        ZCBlocks.barricadeTopTexIDs[6] = par1IconRegister.registerIcon("ZombieCraft:barricadebottom");
+        
+        this.blockIcon = Item.doorWood.getIconFromDamage(0);
+        
+    }
 	
     public BlockBarricade(int i, Material material)
     {
         super(i, material);
         //blockIndexInTexture = 97;
-        updateTexture();
-        if(material == Material.iron)
+        //updateTexture();
+        /*if(material == Material.iron)
         {
             blockIndexInTexture++;
-        }
+        }*/
         float f = 0.5F;
         float f1 = 1.0F;
         setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, f1, 0.5F + f);
         
     }
     
-    public BlockBarricade(int parStateToBlockID[], int parBarricadeTopTexIDs[], Material material, int stateTemp)
+    public BlockBarricade(int parStateToBlockID[], Material material, int stateTemp)
     {
         super(parStateToBlockID[stateTemp], material);
         stateToBlockID = parStateToBlockID;
-        barricadeTopTexIDs = parBarricadeTopTexIDs;
+        //barricadeTopTexIDs = parBarricadeTopTexIDs;
         state = stateTemp;
         //blockIndexInTexture = 97;
         //updateTexture();
-        blockIndexInTexture = barricadeTopTexIDs[6];
+        //blockIndexInTexture = barricadeTopTexIDs[6];
         this.setHardness(3F);
         
         float f = 0.5F;
@@ -55,70 +91,38 @@ public class BlockBarricade extends BlockDoor
     }
     
     
-    public void updateTexture() {
+    /*public void updateTexture() {
     	
-    	blockIndexInTexture = barricadeTopTexIDs[state];
-    	
-    	if (true) return;
-    	
-    	if(state == 5)
-		{
-			blockIndexInTexture = 97;
-		}
-		else if(state == 4)
-		{
-			blockIndexInTexture = 98;
-		}
-		else if(state == 3)
-		{
-			blockIndexInTexture = 150;				
-		}
-		else if(state == 2)
-		{
-			blockIndexInTexture = 151;
-		}
-		else if(state == 1)
-		{
-			blockIndexInTexture = 152;
-		}
-		else if(state == 0)
-		{
-			blockIndexInTexture = 153;
-		}
-    }
+    	blockIndexInTexture = ZCBlocks.barricadeTopTexIDs[state];
+    }*/
 
     /*@Override not on server side*/
-    public int getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+    public Icon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
     {
-    	return this.getBlockTextureFromSideAndMetadata(par4, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
+    	return this.getIcon(par4, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
     }
     
     @Override
-    public int getBlockTextureFromSideAndMetadata(int i, int j)
+    public Icon getIcon(int i, int j)
     {
     	//System.out.println("side = " + i + " meta = " + j);
     	if ((j & 8) != 0) {
     		//System.out.println("state: " + state);
-    		return barricadeTopTexIDs[state];
+    		return ZCBlocks.barricadeTopTexIDs[state];
     	}
         if(i == 0 || i == 1)
         {
-            return blockIndexInTexture;
+            return ZCBlocks.barricadeTopTexIDs[6];
         }
         int k = func_312_c(j);
         if((k == 0 || k == 2) ^ (i <= 3))
         {
-            return blockIndexInTexture;
+            return ZCBlocks.barricadeTopTexIDs[6];
         }
         int l = k / 2 + (i & 1 ^ k);
         l += (j & 4) / 4;
-        int i1 = blockIndexInTexture/* - (j & 8) * 2*/;
-        if((l & 1) != 0)
-        {
-            //i1 = -i1;
-        }
-        //System.out.println("texid = " + i1);
-        return i1;
+        
+        return ZCBlocks.barricadeTopTexIDs[6];
     }
 
     @Override
@@ -149,6 +153,17 @@ public class BlockBarricade extends BlockDoor
         return AxisAlignedBB.getBoundingBox((double)par2 + this.minX, (double)par3 + this.minY, (double)par4 + this.minZ, (double)par2 + this.maxX, (double)par3 + this.maxY, (double)par4 + this.maxZ);
         //return super.getSelectedBoundingBoxFromPool(world, i, j, k);
     }
+    
+    //better way to do this:
+    /*[22:37:56]->>| OvermindDL1 | 		override def addCollisionBoxesToList(world: World, x: Int, y: Int, z: Int, aabb: AxisAlignedBB, list: java.util.List[_], entity: Entity) = {
+    		[22:37:59]->>| OvermindDL1 | 			val data = world.getBlockMetadata(x, y, z)
+    		[22:38:02]->>| OvermindDL1 | 			if (entity == null || entity.motionY >= -0.041 || !filters(data).get.doesPassthrough(entity)) {
+    		[22:38:02]<<-| Corosus | woot babies works
+    		[22:38:05]->>| OvermindDL1 | 				// STUPID IDIOTS OF MOJANG! Why the *HELL* are items still trying to push themselves out of a block when there is no collision?!
+    		[22:38:07]<<-| Corosus | fell through
+    		[22:38:08]->>| OvermindDL1 | 				val axisalignedbb1 = AxisAlignedBB.getAABBPool().getAABB(x + this.minX, y + this.minY, z + this.minZ, x + this.maxX, y + this.maxY, z + this.maxZ);
+    		[22:38:11]->>| OvermindDL1 | 				if (axisalignedbb1 != null && aabb.intersectsWith(axisalignedbb1)) {
+    		[22:38:14]->>| OvermindDL1 | 					list.asInstanceOf[java.util.List[AxisAlignedBB]].add(axisalignedbb1);*/
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int i, int j, int k)
@@ -210,7 +225,7 @@ public class BlockBarricade extends BlockDoor
     		//System.out.print("updating: ");
     		//System.out.println(state-1);
     		if (state > 0) {
-    			world.setBlock(i, j + 1, k, stateToBlockID[state-1]);
+    			world.setBlock(i, j + 1, k, stateToBlockID[state-1], 0, 2);
     		} else {
     			//world.setBlock(i, j + 1, k, stateToBlockID[5]);
 				// dont repair when broken
@@ -218,7 +233,7 @@ public class BlockBarricade extends BlockDoor
             //world.setBlockMetadataWithNotify(i, j + 1, k, (meta ^ 4) + 8);
         }
     	if (state > 0) {
-			world.setBlock(i, j, k, stateToBlockID[state-1]);
+			world.setBlock(i, j, k, stateToBlockID[state-1], 0, 2);
 			return true;
 		} else {
 			//world.setBlock(i, j, k, stateToBlockID[5]);
@@ -236,12 +251,12 @@ public class BlockBarricade extends BlockDoor
     		//System.out.print("updating: ");
     		//System.out.println(state+1);
     		if (state < 5) {
-    			world.setBlock(i, j + 1, k, stateToBlockID[state+1]);
+    			world.setBlock(i, j + 1, k, stateToBlockID[state+1], 0, 0);
     		}
             //world.setBlockMetadataWithNotify(i, j + 1, k, (meta ^ 4) + 8);
         }
     	if (state < 5) {
-			world.setBlock(i, j, k, stateToBlockID[state+1]);
+			world.setBlock(i, j, k, stateToBlockID[state+1], 0, 0);
 			return true;
 		} else {
 			return false;
@@ -315,9 +330,9 @@ public class BlockBarricade extends BlockDoor
     	//int l = world.getBlockMetadata(i, j, k);
     	if(isBarricade(world, i, j + 1, k))
         {
-            world.setBlockMetadata(i, j + 1, k, (l) + 8);
+            world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8, 0);
         }
-        world.setBlockMetadata(i, j, k, (l));
+        world.setBlockMetadataWithNotify(i, j, k, (l), 0);
         //world.markBlocksDirty(i, j - 1, k, i, j, k);
     }
     
@@ -366,9 +381,9 @@ public class BlockBarricade extends BlockDoor
 		
 		if(isBarricade(world, i, j + 1, k))
 	    {
-	        world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8);
+	        world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8, 3);
 	    }
-	    world.setBlockMetadataWithNotify(i, j, k, (l));
+	    world.setBlockMetadataWithNotify(i, j, k, (l), 3);
 	    world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
 		
 	    /*System.out.print("Setting meta: ");
@@ -545,9 +560,9 @@ public class BlockBarricade extends BlockDoor
     	
     	if(isBarricade(world, i, j + 1, k))
         {
-            world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8);
+            world.setBlockMetadataWithNotify(i, j + 1, k, (l) + 8, 0);
         }
-        world.setBlockMetadataWithNotify(i, j, k, (l));
+        world.setBlockMetadataWithNotify(i, j, k, (l), 3);
         world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
     	
         /*System.out.print("Setting meta: ");
@@ -607,9 +622,9 @@ public class BlockBarricade extends BlockDoor
         }
         if(world.getBlockId(i, j + 1, k) == blockID)
         {
-            world.setBlockMetadataWithNotify(i, j + 1, k, (l ^ 4) + 8);
+            world.setBlockMetadataWithNotify(i, j + 1, k, (l ^ 4) + 8, 3);
         }
-        world.setBlockMetadataWithNotify(i, j, k, l ^ 4);
+        world.setBlockMetadataWithNotify(i, j, k, l ^ 4, 3);
         world.markBlockRangeForRenderUpdate(i, j - 1, k, i, j, k);
         if(Math.random() < 0.5D)
         {
@@ -628,7 +643,7 @@ public class BlockBarricade extends BlockDoor
         {
             if(world.getBlockId(i, j - 1, k) != blockID)
             {
-                world.setBlockWithNotify(i, j, k, 0);
+                world.setBlock(i, j, k, 0);
             }
             if(l > 0 && Block.blocksList[l].canProvidePower())
             {
@@ -639,16 +654,16 @@ public class BlockBarricade extends BlockDoor
             boolean flag = false;
             if(world.getBlockId(i, j + 1, k) != blockID)
             {
-                world.setBlockWithNotify(i, j, k, 0);
+                world.setBlock(i, j, k, 0);
                 flag = true;
             }
             if(!world.isBlockOpaqueCube(i, j - 1, k))
             {
-                world.setBlockWithNotify(i, j, k, 0);
+                world.setBlock(i, j, k, 0);
                 flag = true;
                 if(world.getBlockId(i, j + 1, k) == blockID)
                 {
-                    world.setBlockWithNotify(i, j + 1, k, 0);
+                    world.setBlock(i, j + 1, k, 0);
                 }
             }
             if(flag)
@@ -670,7 +685,7 @@ public class BlockBarricade extends BlockDoor
         {
             return 0;
         }
-        return ZCItems.barricade.shiftedIndex;
+        return ZCItems.barricade.itemID;
     }
 
     @Override

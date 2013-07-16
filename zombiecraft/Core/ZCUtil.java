@@ -1,37 +1,36 @@
 package zombiecraft.Core;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.src.ModLoader;
+import net.minecraft.world.World;
+
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
-import CoroAI.entity.EnumTeam;
-import CoroAI.entity.c_EnhAI;
-
-import zombiecraft.Core.Blocks.BlockMobSpawnerWave;
-import zombiecraft.Core.Blocks.BlockPurchasePlate;
-import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
-import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
-import zombiecraft.Server.ZCGameMP;
-
-import net.minecraft.src.*;
+import CoroAI.c_CoroAIUtil;
+import CoroAI.entity.EnumDiploType;
+import CoroAI.entity.c_EnhAI;
 
 public class ZCUtil {
 	
 	
-	public static String field_obf_blockResistance = "co";
-	public static String field_obf_rightClickDelayTimer = "ac";
+	public static String field_obf_blockResistance = "cB";
+	public static String field_obf_rightClickDelayTimer = "ae";
 	public static String field_obf_equippedProgress = "d";
 	public static String field_obf_cameraZoom = "X";
 	public static String field_mcp_blockResistance = "blockResistance";
 	public static String field_mcp_rightClickDelayTimer = "rightClickDelayTimer";
 	public static String field_mcp_equippedProgress = "equippedProgress";
 	public static String field_mcp_cameraZoom = "cameraZoom";
+	public static String field_obf_particleGravity = "i";
+	public static String field_mcp_particleGravity = "particleGravity";
 	
 	public ZCUtil() {
 		
@@ -77,7 +76,7 @@ public class ZCUtil {
     			}
     		} else {
     			//Player to AI
-    			if (bullet.owner instanceof EntityPlayer && ((c_EnhAI)ent).dipl_team == EnumTeam.COMRADE) {
+    			if (bullet.owner instanceof EntityPlayer && ((c_EnhAI)ent).dipl_team == EnumDiploType.COMRADE) {
     				return false;
     			}
     			return true;
@@ -307,28 +306,11 @@ public class ZCUtil {
     }
 	
 	public static void setPrivateValueBoth(Class var0, Object var1, String obf, String mcp, Object var3) {
-    	try {
-            try {
-                setPrivateValue(var0, var1, obf, var3);
-            } catch (NoSuchFieldException ex) {
-                setPrivateValue(var0, var1, mcp, var3);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+		c_CoroAIUtil.setPrivateValueBoth(var0, var1, obf, mcp, var3);
     }
     
     public static Object getPrivateValueBoth(Class var0, Object var1, String obf, String mcp) {
-    	try {
-            try {
-                return getPrivateValue(var0, var1, obf);
-            } catch (NoSuchFieldException ex) {
-                return getPrivateValue(var0, var1, mcp);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
+    	return c_CoroAIUtil.getPrivateValueBoth(var0, var1, obf, mcp);
     }
     
     public static Object getPrivateValue(Class var0, Object var1, String var2) throws IllegalArgumentException, SecurityException, NoSuchFieldException

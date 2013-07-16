@@ -1,7 +1,10 @@
 package zombiecraft.Core.Items;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.Entities.Projectiles.EntityGrenadeStun;
-import net.minecraft.src.*;
 
 public class ItemGrenadeStun extends ItemGun
 {

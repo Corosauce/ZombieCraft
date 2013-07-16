@@ -1,7 +1,11 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.*;
 
 
 public class EntityWorldHook extends Entity {

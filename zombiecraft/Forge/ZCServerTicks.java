@@ -1,38 +1,22 @@
 package zombiecraft.Forge;
 
+import net.minecraft.command.ServerCommandManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.util.EnumSet;
-import java.util.HashMap;
 
-import CoroAI.entity.c_EnhAI;
-
-import zombiecraft.Client.ZCGameSP;
-import zombiecraft.Client.GameLogic.InterfaceManager;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Server.ZCGameMP;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.ContainerPlayer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.InventoryPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Packet;
-import net.minecraft.src.Packet250CustomPayload;
-import net.minecraft.src.ServerCommandManager;
-import net.minecraft.src.Slot;
-import net.minecraft.src.World;
-
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.EntityRegistry;
 
 public class ZCServerTicks implements ITickHandler
 {

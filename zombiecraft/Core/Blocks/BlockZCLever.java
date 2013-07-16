@@ -1,14 +1,32 @@
 package zombiecraft.Core.Blocks;
 
-import net.minecraft.src.*;
+import static net.minecraftforge.common.ForgeDirection.DOWN;
+import static net.minecraftforge.common.ForgeDirection.EAST;
+import static net.minecraftforge.common.ForgeDirection.NORTH;
+import static net.minecraftforge.common.ForgeDirection.SOUTH;
+import static net.minecraftforge.common.ForgeDirection.UP;
+import static net.minecraftforge.common.ForgeDirection.WEST;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import static net.minecraftforge.common.ForgeDirection.*;
 
 public class BlockZCLever extends Block
 {
-    protected BlockZCLever(int par1, int par2)
+    protected BlockZCLever(int par1)
     {
-        super(par1, par2, Material.circuits);
+        super(par1, Material.circuits);
+    }
+    
+    public Icon getIcon(int par1, int par2)
+    {
+        return Block.lever.getIcon(par1, par2);
     }
 
     /**
@@ -115,11 +133,11 @@ public class BlockZCLever extends Block
         if (var9 == -1)
         {
             this.dropBlockAsItem(par1World, par2, par3, par4, par1World.getBlockMetadata(par2, par3, par4), 0);
-            par1World.setBlockWithNotify(par2, par3, par4, 0);
+            par1World.setBlock(par2, par3, par4, 0);
         }
         else
         {
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, var9 + var10);
+            par1World.setBlockMetadataWithNotify(par2, par3, par4, var9 + var10, 3);
         }
     }
 
@@ -201,7 +219,7 @@ public class BlockZCLever extends Block
             if (var7)
             {
                 this.dropBlockAsItem(par1World, par2, par3, par4, par1World.getBlockMetadata(par2, par3, par4), 0);
-                par1World.setBlockWithNotify(par2, par3, par4, 0);
+                par1World.setBlock(par2, par3, par4, 0);
             }
         }
     }
@@ -215,7 +233,7 @@ public class BlockZCLever extends Block
         if (!this.canPlaceBlockAt(par1World, par2, par3, par4))
         {
             this.dropBlockAsItem(par1World, par2, par3, par4, par1World.getBlockMetadata(par2, par3, par4), 0);
-            par1World.setBlockWithNotify(par2, par3, par4, 0);
+            par1World.setBlock(par2, par3, par4, 0);
             return false;
         }
         else
@@ -282,7 +300,7 @@ public class BlockZCLever extends Block
             int var10 = par1World.getBlockMetadata(par2, par3, par4);
             int var11 = var10 & 7;
             int var12 = 8 - (var10 & 8);
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, var11 + var12);
+            par1World.setBlockMetadataWithNotify(par2, par3, par4, var11 + var12, 3);
             par1World.markBlockRangeForRenderUpdate(par2, par3, par4, par2, par3, par4);
             par1World.playSoundEffect((double)par2 + 0.5D, (double)par3 + 0.5D, (double)par4 + 0.5D, "random.click", 0.3F, var12 > 0 ? 0.6F : 0.5F);
             par1World.notifyBlocksOfNeighborChange(par2, par3, par4, this.blockID);

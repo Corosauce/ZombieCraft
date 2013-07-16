@@ -1,43 +1,63 @@
 package zombiecraft.Core.Blocks;
 
-import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.GameLogic.ZCGame;
-import net.minecraft.src.*;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockBarricadePlaceable extends Block
 {
 	
-	int stateToBlockID[];
+	//Icon stateToBlockID[];
 	
-    public BlockBarricadePlaceable(int par1, int[] par2)
+    public BlockBarricadePlaceable(int par1)
     {
-        this(par1, par2, Material.wood);
+        this(par1, Material.wood);
     }
 
-    public BlockBarricadePlaceable(int par1, int[] par2, Material par3Material)
+    public BlockBarricadePlaceable(int par1, Material par3Material)
     {
-        super(par1, par2[0], par3Material);
-        stateToBlockID = par2;
+        super(par1, par3Material);
+        //stateToBlockID = par2;
     }
     
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+		
+        this.blockIcon = Item.doorWood.getIconFromDamage(0);
+        
+    }
+    
+    /*@Override
+    public String getUnlocalizedName() { return Item.doorWood.getUnlocalizedName(); }*/
+    
     @Override
-    public int getBlockTextureFromSideAndMetadata(int par1, int par2)
+    public Icon getIcon(int par1, int par2)
     {
     	int meta = par2;
     	if (meta > 5) meta = 5;
-        return stateToBlockID[meta];//this.getBlockTextureFromSide(par1);
+        return ZCBlocks.barricadeTopTexIDs[meta];//this.getBlockTextureFromSide(par1);
     }
     
     @Override
-    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving) {
-    	par1World.setBlockMetadata(par2, par3, par4, 5);
+    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack is) {
+    	par1World.setBlockMetadataWithNotify(par2, par3, par4, 5, 3);
     }
     
     @Override
@@ -89,7 +109,7 @@ public class BlockBarricadePlaceable extends Block
 				if (meta == 0) {
 					world.setBlock(i, j, k, 0);
 				} else {
-					world.setBlockMetadata(i, j, k, meta);
+					world.setBlockMetadataWithNotify(i, j, k, meta, 3);
 				}
 				
 				//System.out.println("meta: " + meta);
@@ -155,7 +175,7 @@ public class BlockBarricadePlaceable extends Block
             var10 = 1.0F;
         }
 
-        return AxisAlignedBB.getAABBPool().addOrModifyAABBInPool((double)((float)par2 + var9), (double)par3, (double)((float)par4 + var11), (double)((float)par2 + var10), (double)((float)par3 + 1.5F), (double)((float)par4 + var12));
+        return AxisAlignedBB.getAABBPool().getAABB((double)((float)par2 + var9), (double)par3, (double)((float)par4 + var11), (double)((float)par2 + var10), (double)((float)par3 + 1.5F), (double)((float)par4 + var12));
     }
 
     /**

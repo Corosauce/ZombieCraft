@@ -1,17 +1,16 @@
 package zombiecraft.Client;
 
+import net.minecraft.client.audio.SoundManager;
+import net.minecraft.client.audio.SoundPool;
+import net.minecraft.client.audio.SoundPoolEntry;
+import net.minecraft.src.ModLoader;
+
 import java.io.File;
 
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.SoundManager;
-import net.minecraft.src.SoundPool;
-import net.minecraft.src.SoundPoolEntry;
-import net.minecraftforge.client.ModCompatibilityClient;
-import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
-import cpw.mods.fml.common.asm.SideOnly;
-import cpw.mods.fml.common.Side;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 
