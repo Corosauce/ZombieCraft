@@ -1,7 +1,6 @@
 package zombiecraft.Forge;
 
 import net.minecraft.creativetab.CreativeTabs;
-
 import zombiecraft.Core.ZCItems;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

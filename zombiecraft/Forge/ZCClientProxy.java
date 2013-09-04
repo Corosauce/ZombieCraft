@@ -5,19 +5,25 @@ import net.minecraft.entity.Entity;
 import net.minecraft.src.ModLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-
 import zombiecraft.Client.Blocks.TileEntityMobSpawnerWaveRenderer;
+import zombiecraft.Client.Blocks.TileEntityMysteryBoxRenderer;
+import zombiecraft.Client.Blocks.TileEntityPacketTesterRenderer;
 import zombiecraft.Client.Blocks.TileEntityPurchasePlateRenderer;
+import zombiecraft.Client.Blocks.TileEntitySessionRenderer;
+import zombiecraft.Client.Blocks.TileEntityTowerRenderer;
 import zombiecraft.Client.Entities.RenderBullet;
 import zombiecraft.Client.Entities.RenderBulletShot;
 import zombiecraft.Client.Entities.RenderEntityWorldHook;
 import zombiecraft.Client.Entities.RenderZCComrade;
 import zombiecraft.Client.Entities.RenderZCImp;
 import zombiecraft.Client.Entities.RenderZCZombie;
-import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
+import zombiecraft.Core.Blocks.TileEntityMysteryBox;
+import zombiecraft.Core.Blocks.TileEntityPacketTester;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
+import zombiecraft.Core.Blocks.TileEntitySession;
+import zombiecraft.Core.Blocks.TileEntityTower;
 import zombiecraft.Core.Entities.Comrade;
 import zombiecraft.Core.Entities.EntityWorldHook;
 import zombiecraft.Core.Entities.Imp;
@@ -79,6 +85,10 @@ public class ZCClientProxy extends ZCCommonProxy
         
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawnerWave.class, new TileEntityMobSpawnerWaveRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPurchasePlate.class, new TileEntityPurchasePlateRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPacketTester.class, new TileEntityPacketTesterRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySession.class, new TileEntitySessionRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTower.class, new TileEntityTowerRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMysteryBox.class, new TileEntityMysteryBoxRenderer());
         
         //Item render registers
         MinecraftForgeClient.registerItemRenderer(ZCItems.itemAk47.itemID, new GunRenderer());

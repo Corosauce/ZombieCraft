@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -56,7 +56,7 @@ public class BlockBarricadePlaceable extends Block
     }
     
     @Override
-    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack is) {
+    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLivingBase par5EntityLivingBase, ItemStack is) {
     	par1World.setBlockMetadataWithNotify(par2, par3, par4, 5, 3);
     }
     
@@ -64,7 +64,7 @@ public class BlockBarricadePlaceable extends Block
     public void onEntityCollidedWithBlock(World world, int i, int j, int k, Entity entity)
     {
     	
-    	if (entity instanceof EntityLiving) {
+    	if (entity instanceof EntityLivingBase) {
  			entity.motionX = 0.000;
  			if (entity.motionY < 0) entity.motionY *= 0.1;
  			entity.motionZ = 0.000;
@@ -77,7 +77,7 @@ public class BlockBarricadePlaceable extends Block
     	
     	
     	
-    	if (entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
+    	if (entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).func_110143_aJ() > 0)
 		{
 			//System.out.println(oldid);
 			BaseEntAI ent = (BaseEntAI)entity;
@@ -87,7 +87,7 @@ public class BlockBarricadePlaceable extends Block
 			ent.motionY = -0.4F;
 			ent.getNavigator().setPath(null, 0F);
 			
-			if (entity instanceof EntityLiving) {
+			if (entity instanceof EntityLivingBase) {
 	 			entity.motionX = 0.0;
 	 			entity.motionZ = 0.0;
 	 		}

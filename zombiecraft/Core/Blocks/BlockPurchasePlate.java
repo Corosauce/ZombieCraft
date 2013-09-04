@@ -1,21 +1,20 @@
 package zombiecraft.Core.Blocks;
 
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.EnumMobType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import java.util.List;
-import java.util.Random;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
 
@@ -213,7 +212,7 @@ public class BlockPurchasePlate extends BlockContainer
 
         if (this.triggerMobType == EnumMobType.mobs)
         {
-            var8 = par1World.getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox((double)((float)par2 + var7), (double)par3, (double)((float)par4 + var7), (double)((float)(par2 + 1) - var7), (double)par3 + 0.25D, (double)((float)(par4 + 1) - var7)));
+            var8 = par1World.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox((double)((float)par2 + var7), (double)par3, (double)((float)par4 + var7), (double)((float)(par2 + 1) - var7), (double)par3 + 0.25D, (double)((float)(par4 + 1) - var7)));
         }
 
         if (this.triggerMobType == EnumMobType.players)

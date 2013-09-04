@@ -1,7 +1,7 @@
 package zombiecraft.Core.Items;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
@@ -21,10 +21,10 @@ public class ItemSwordZC extends ItemSword {
     	return Item.swordIron.getIconFromDamage(0);
     }
 	
-	public boolean hitEntity(ItemStack par1ItemStack, EntityLiving par2EntityLiving, EntityLiving par3EntityLiving)
+	public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase)
     {
-        //par1ItemStack.damageItem(1, par3EntityLiving);
-		par2EntityLiving.worldObj.playSoundAtEntity(par2EntityLiving, "zc.meleehit", 1.0F, 1.0F);
+        //par1ItemStack.damageItem(1, par3EntityLivingBase);
+		par2EntityLivingBase.worldObj.playSoundAtEntity(par2EntityLivingBase, "zc.meleehit", 1.0F, 1.0F);
         return true;
     }
 	

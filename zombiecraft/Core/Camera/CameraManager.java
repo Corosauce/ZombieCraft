@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
@@ -24,8 +24,8 @@ public class CameraManager {
 	//camera for previewing the level
 	
 	public EnumCameraState camState = EnumCameraState.OFF;
-	public EntityLiving activeCamera = null;
-	public EntityLiving spectateTarget = null;
+	public EntityLivingBase activeCamera = null;
+	public EntityLivingBase spectateTarget = null;
 	public int spectateTargetIndex;
 	public MovementInputProxy mip = null;
 	public Minecraft mc = null;
@@ -316,11 +316,14 @@ public class CameraManager {
 			cam.setAngles(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
 			mc.thePlayer.worldObj.spawnEntityInWorld(cam);
 			mc.thePlayer.worldObj.playerEntities.remove(cam);
-			activeCamera = cam;			
+			activeCamera = cam;
+			forcePosUpdate = true;
 		} else {
 			//System.out.println("Didnt make camera");
 		}
 		if (forcePosUpdate && activeCamera != null) {
+			activeCamera.dimension = mc.thePlayer.dimension;
+			activeCamera.worldObj = mc.thePlayer.worldObj;
 			activeCamera.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.2F, mc.thePlayer.posZ);
 			activeCamera.setAngles(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
 		}
@@ -335,7 +338,7 @@ public class CameraManager {
 		camState = EnumCameraState.OFF;
 	}
 	
-	public void spectate(EntityLiving entity) {
+	public void spectate(EntityLivingBase entity) {
 		checkCamera(true);
 		
 		spectateTarget = entity;
@@ -357,8 +360,8 @@ public class CameraManager {
 			//TEMP!!!!!!!!! - remove the import too
 			for (int i = 0; i < mc.theWorld.loadedEntityList.size(); i++) {
 				Entity ent = (Entity)mc.theWorld.loadedEntityList.get(i);
-				if (ent instanceof ICoroAI && ((EntityLiving)ent).getMaxHealth() == 50 && ent.worldObj.rand.nextInt(10) == 0) {
-					spectate((EntityLiving)ent);
+				if (ent instanceof ICoroAI && ((EntityLivingBase)ent).func_110138_aP() == 50 && ent.worldObj.rand.nextInt(10) == 0) {
+					spectate((EntityLivingBase)ent);
 					spectateTargetIndex = i;
 					return;
 				}
@@ -371,8 +374,8 @@ public class CameraManager {
 					if (safetyBreak++ > 100) return;
 					if (i >= mc.theWorld.playerEntities.size()) i = 0;
 					EntityPlayer entP = (EntityPlayer)mc.theWorld.playerEntities.get(i);
-					System.out.println("what: " + i + " - " + entP + " - h: " + entP.getHealth());
-					if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.getHealth() > 1) {
+					System.out.println("what: " + i + " - " + entP + " - h: " + entP.func_110143_aJ());
+					if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.func_110143_aJ() > 1) {
 						System.out.println("Spectating: " + entP.username);
 						spectate(entP);
 						spectateTargetIndex = i;
@@ -409,7 +412,7 @@ public class CameraManager {
 		camState = EnumCameraState.SCRIPT;
 	}
 	
-	public EntityCamera newCamera(EntityLiving entity) {
+	public EntityCamera newCamera(EntityLivingBase entity) {
 		EntityCamera cam = new EntityCamera(entity.worldObj);
 		return cam;
 	}

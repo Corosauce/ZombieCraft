@@ -1,23 +1,27 @@
 package zombiecraft.Core.Blocks;
 
+import java.util.List;
+
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
+import CoroAI.ITilePacket;
 import CoroAI.entity.c_EnhAI;
+import CoroAI.tile.TileHandler;
 import build.SchematicData;
 import build.world.Build;
 
 
 
-public class TileEntityMobSpawnerWave extends TileEntity implements SchematicData
+public class TileEntityMobSpawnerWave extends TileEntity implements SchematicData, ITilePacket
 {
     /** The stored delay before a new spawn. */
     public int delay = -1;
@@ -51,6 +55,12 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     public int waveMin = 0;
     public int waveMax = 999;
 
+    //GUI/Edit stuff
+    public NBTTagCompound nbtInfoClient = new NBTTagCompound();
+	public NBTTagCompound nbtInfoServer = new NBTTagCompound(); //possibly unneeded because actual values are in tile entity, or use this nbt and write it out entirely, new tiles would have better use for it but sync existing vars to this
+    
+	public static int CMD_SAVE = 1;
+	
     public TileEntityMobSpawnerWave()
     {
         this.delay = 20;
@@ -171,9 +181,9 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
                 		mob = "ZombieCraftMod.EntityZCImp";
                 	}
                 	
-                    EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
+                	EntityLiving var9 = ((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
                     
-                    if (var9 == null) var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
+                    if (var9 == null) var9 = ((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
 
                     if (var9 == null)
                     {
@@ -285,7 +295,8 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     
     @Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-    	this.readFromNBT(pkt.customParam1);
+    	nbtInfoClient = pkt.customParam1;
+    	//this.readFromNBT();
     }
     
     @Override
@@ -295,4 +306,41 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
         this.writeToNBT(var1);
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, var1);
     }
+
+	@Override
+	public TileHandler getTileHandler() {
+		return null;
+	}
+
+	@Override
+	public void handleClientSentNBT(NBTTagCompound par1nbtTagCompound) {
+		//parse, dont do this
+		//nbtInfoServer = par1nbtTagCompound;
+		if (par1nbtTagCompound.hasKey("sync")) {
+			sync();
+		} else if (par1nbtTagCompound.hasKey("cmdID")) {
+			int cmdID = par1nbtTagCompound.getInteger("cmdID");
+			EntityPlayerMP entP = (EntityPlayerMP)worldObj.getPlayerEntityByName(par1nbtTagCompound.getString("username"));
+			
+			System.out.println("cmd! " + cmdID);
+			
+			if (cmdID == CMD_SAVE) {
+				
+			}
+		}
+	}
+	
+	public void sync() {
+		
+	}
+
+	@Override
+	public void handleServerSentDataWatcherList(List parList) {
+		
+	}
+
+	@Override
+	public void handleClientSentDataWatcherList(List parList) {
+		
+	}
 }

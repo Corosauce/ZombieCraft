@@ -6,10 +6,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
-
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 import build.render.Overlays;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -21,6 +22,11 @@ public class RenderZCImp extends RenderBiped
     {
         super(new ModelBiped(), 0.5F);
     }
+
+	@Override
+	protected ResourceLocation func_110775_a(Entity entity) {
+		return new ResourceLocation(ZombieCraftMod.modID + ":textures/entities/imp.png");
+	}
     
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {

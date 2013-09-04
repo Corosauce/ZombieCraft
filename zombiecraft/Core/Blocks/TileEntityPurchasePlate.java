@@ -1,13 +1,12 @@
 package zombiecraft.Core.Blocks;
 
+import java.util.Random;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
-
-import java.util.Random;
-
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
@@ -93,9 +92,6 @@ public class TileEntityPurchasePlate extends TileEntity
     	
     	if (itemIndex != watch_itemIndex || watch_delay_itemIndex == 0) {
     		watch_delay_itemIndex = ZCGame.instance().packetUpdateDelay;
-    		if (zCoord == -689) {
-    			//System.out.println("itemIndex: " + itemIndex + " | " + this);
-    		}
     		//ServerTickHandler.zcGame.updateTileInfo(this, itemIndex);
     		ZCServerTicks.sendPacketToAll(this.getDescriptionPacket());
     	}

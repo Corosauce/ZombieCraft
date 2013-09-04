@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.ZCBlocks;
 
 public class ItemBarricade extends Item
@@ -41,33 +40,17 @@ public class ItemBarricade extends Item
             Block var8;
 
             var8 = ZCBlocks.barricadeS5;
-            
-            /*if (this.doorMaterial == Material.wood)
-            {
-                var8 = Block.doorWood;
-            }
-            else
-            {
-                var8 = Block.doorSteel;
-            }*/
 
-            if (par2EntityPlayer.canCurrentToolHarvestBlock(par4, par5, par6) && par2EntityPlayer.canCurrentToolHarvestBlock(par4, par5 + 1, par6))
-            {
-                if (!var8.canPlaceBlockAt(par3World, par4, par5, par6))
-                {
-                    return false;
-                }
-                else
-                {
-                    int var9 = MathHelper.floor_double((double)((par2EntityPlayer.rotationYaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
-                    placeDoorBlock(par3World, par4, par5, par6, var9, var8);
-                    --par1ItemStack.stackSize;
-                    return true;
-                }
-            }
-            else
+            if (!var8.canPlaceBlockAt(par3World, par4, par5, par6))
             {
                 return false;
+            }
+            else
+            {
+                int var9 = MathHelper.floor_double((double)((par2EntityPlayer.rotationYaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
+                placeDoorBlock(par3World, par4, par5, par6, var9, var8);
+                --par1ItemStack.stackSize;
+                return true;
             }
         }
     }

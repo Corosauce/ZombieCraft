@@ -13,6 +13,11 @@ public class CommandPoints extends CommandBase {
 	}
 
 	@Override
+	public String getCommandUsage(ICommandSender icommandsender) {
+		return "";
+	}
+
+	@Override
 	public void processCommand(ICommandSender var1, String[] var2) {
 		EntityPlayer player = getCommandSenderAsPlayer(var1);
 		if(var1 instanceof EntityPlayerMP)

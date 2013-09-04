@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
@@ -16,6 +15,7 @@ import zombiecraft.Core.Entities.Imp;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.Entities.Projectiles.EntityBulletFlame;
+import zombiecraft.Core.towers.TowerMapping;
 import zombiecraft.Server.ZCGameMP;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -48,6 +48,7 @@ public class ZCCommonProxy implements IGuiHandler
     	ModLoader.addLocalization("deathScreen.spectate", "Spectate");
         
     	Buyables.initItems();
+    	TowerMapping.initData();
     	
     	if (ZCServerTicks.zcGame == null) {
     		ZCServerTicks.zcGame = new ZCGameMP(true);

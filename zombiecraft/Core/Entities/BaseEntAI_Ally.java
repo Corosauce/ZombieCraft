@@ -6,7 +6,6 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
-
 import CoroAI.entity.EnumDiploType;
 import CoroAI.entity.c_EnhAI;
 
@@ -49,10 +48,6 @@ public class BaseEntAI_Ally extends BaseEntAI
 		}
     }
     
-    public float getMoveSpeed() {
-    	return this.moveSpeed;
-    }
-    
     @Override
     public boolean isValidLightLevel() {
     	return true;
@@ -62,11 +57,6 @@ public class BaseEntAI_Ally extends BaseEntAI
     public boolean getCanSpawnHere()
     {
         return /*this.isValidLightLevel() && */super.getCanSpawnHere();
-    }
-
-    public int getMaxHealth()
-    {
-        return 20;
     }
     
     @Override

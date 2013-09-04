@@ -3,7 +3,6 @@ package zombiecraft.Core.Entities;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
 import CoroAI.entity.EnumJob;
 
 public class Comrade extends BaseEntAI_Ally
@@ -20,7 +19,7 @@ public class Comrade extends BaseEntAI_Ally
     {
         super(par1World);
         
-        this.texture = "/mods/ZombieCraft/textures/entities/comrade/skin10.png";
+        //this.texture = "/mods/ZombieCraft/textures/entities/comrade/skin10.png";
         //this.moveSpeed = 0.35F;
         setMoveSpeed(0.33F);
         this.getNavigator().setBreakDoors(true);
@@ -65,11 +64,6 @@ public class Comrade extends BaseEntAI_Ally
         //dont mess with navigator! it will make all pfs bigger ranged! 
         //mod_ZombieCraft.zcGame.setNewNav(this,  new PathNavigate(this, par1World, 64.0F));
         //this.navigator = ;
-    }
-
-    public int getMaxHealth()
-    {
-        return 20;
     }
 
     /**

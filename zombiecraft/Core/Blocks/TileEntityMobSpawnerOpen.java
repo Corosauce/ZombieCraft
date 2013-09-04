@@ -2,13 +2,13 @@ package zombiecraft.Core.Blocks;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
 import CoroAI.entity.c_EnhAI;
@@ -165,9 +165,9 @@ public class TileEntityMobSpawnerOpen extends TileEntity implements SchematicDat
                 		mob = "ZombieCraftMod.EntityZCImp";
                 	}
                 	
-                    EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
+                    EntityLiving var9 = ((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
                     
-                    if (var9 == null) var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
+                    if (var9 == null) var9 = ((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
 
                     if (var9 == null)
                     {

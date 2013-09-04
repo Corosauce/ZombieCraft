@@ -1,12 +1,14 @@
 package zombiecraft.Core.Entities.Projectiles;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,9 +19,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-
-import java.util.List;
-
 import zombiecraft.Client.Entities.RenderZCZombie;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.ZCUtil;
@@ -106,7 +105,7 @@ public class EntityBullet extends Entity
         this.yOffset = 0.0F;
         float var15 = var3.spread;
 
-        /*if (var2 instanceof EntityLiving)
+        /*if (var2 instanceof EntityLivingBase)
         {
             if (var2 instanceof EntityPlayer)
             {
@@ -289,7 +288,7 @@ public class EntityBullet extends Entity
 
         Vec3 var17 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
         Vec3 var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-        MovingObjectPosition var3 = this.worldObj.rayTraceBlocks(var17, var2);
+        MovingObjectPosition var3 = this.worldObj.clip(var17, var2);
         var17 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
         var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -404,7 +403,7 @@ public class EntityBullet extends Entity
         {
             int var9 = this.worldObj.getBlockId(var3.blockX, var3.blockY, var3.blockZ);
 
-            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && (var3.entityHit instanceof EntityLiving) && ((EntityLiving)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
+            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && (var3.entityHit instanceof EntityLivingBase) && ((EntityLivingBase)var3.entityHit).func_110143_aJ() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
             {
                 if (var3.entityHit != null)
                 {
@@ -447,16 +446,16 @@ public class EntityBullet extends Entity
 	                    if (this.owner != var3.entityHit) {
 	                    	//System.out.println("lasthit temp disabled");
 	                    	lastHit = var3.entityHit;
-		                    if (var3.entityHit instanceof EntityLiving)
+		                    if (var3.entityHit instanceof EntityLivingBase)
 		                    {
-		                    	if (wasHeadshot && var3.entityHit instanceof BaseEntAI && var20 >= ((BaseEntAI)var3.entityHit).getHealth()) {
+		                    	if (wasHeadshot && var3.entityHit instanceof BaseEntAI && var20 >= ((BaseEntAI)var3.entityHit).func_110143_aJ()) {
 		                    		//((BaseEntAI)var3.entityHit).wasHeadshot = wasHeadshot;
 		                    		((BaseEntAI)var3.entityHit).headshot();
 		                    		
 		                    	}
-		                    	((EntityLiving)var3.entityHit).hurtResistantTime = 0;//((EntityLiving)var3.entityHit).maxHurtResistantTime;
+		                    	((EntityLivingBase)var3.entityHit).hurtResistantTime = 0;//((EntityLivingBase)var3.entityHit).maxHurtResistantTime;
 		                    	var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var20);
-		                        //ZCSdkTools.attackEntityIgnoreDelay((EntityLiving)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var20);
+		                        //ZCSdkTools.attackEntityIgnoreDelay((EntityLivingBase)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var20);
 		                    }
 		                    else
 		                    {

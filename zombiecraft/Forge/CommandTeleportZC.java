@@ -4,7 +4,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 
 public class CommandTeleportZC extends CommandBase {
@@ -12,6 +11,11 @@ public class CommandTeleportZC extends CommandBase {
 	@Override
 	public String getCommandName() {
 		return "zc";
+	}
+
+	@Override
+	public String getCommandUsage(ICommandSender icommandsender) {
+		return "";
 	}
 
 	@Override

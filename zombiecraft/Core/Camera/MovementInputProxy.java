@@ -2,7 +2,6 @@ package zombiecraft.Core.Camera;
 
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.MovementInput;
-
 import zombiecraft.Forge.ZCClientTicks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

@@ -1,15 +1,15 @@
 package zombiecraft.Core.GameLogic;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Forge.ZCClientTicks;
@@ -129,7 +129,7 @@ public class WaveManager {
 			zcGame.movePlayersToLobby();
 			
 			if (ZCGame.autostart) {
-				waitingToStart = true;	
+				waitingToStart = true;
 			}
 			if (ZCGame.autoload) {
 				
@@ -242,8 +242,9 @@ public class WaveManager {
 			if (ent != null) {
 				if (instaRemove) {
 					ent.setDead();
-				} else if (ent instanceof EntityLiving) {
-					((EntityLiving)ent).setEntityHealth(0);
+				} else if (ent instanceof EntityLivingBase) {
+					((EntityLivingBase)ent).attackEntityFrom(DamageSource.onFire, 999999); //insta kill the more animated way
+					//((EntityLivingBase)ent).setEntityHealth(0);
 				}
 			}
 		}
@@ -302,7 +303,7 @@ public class WaveManager {
 		boolean allDead = true;
 		List<EntityPlayer> players = zcGame.getPlayers();
 		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).getHealth() > 0) {
+			if (players.get(i).func_110143_aJ() > 0) {
 				allDead = false;
 			}
 		}

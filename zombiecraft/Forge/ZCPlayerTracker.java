@@ -1,7 +1,6 @@
 package zombiecraft.Forge;
 
 import net.minecraft.entity.player.EntityPlayer;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 import cpw.mods.fml.common.IPlayerTracker;
 

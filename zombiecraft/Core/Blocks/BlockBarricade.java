@@ -3,9 +3,6 @@ package zombiecraft.Core.Blocks;
 import java.util.List;
 import java.util.Random;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -24,6 +21,8 @@ import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.GameLogic.ZCGame;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockBarricade extends BlockDoor
@@ -422,7 +421,7 @@ public class BlockBarricade extends BlockDoor
     	}
     	
     	
-		if (world.getBlockId(i, j, k) != ZCBlocks.barricadeS0.blockID && (oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
+		if (world.getBlockId(i, j, k) != ZCBlocks.barricadeS0.blockID && (oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).func_110143_aJ() > 0)
 		{
 			//System.out.println(oldid);
 			BaseEntAI ent = (BaseEntAI)entity;

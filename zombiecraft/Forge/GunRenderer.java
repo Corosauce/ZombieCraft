@@ -2,7 +2,7 @@ package zombiecraft.Forge;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,7 +34,7 @@ public class GunRenderer implements IItemRenderer {
 			//System.out.println("what: " + data);
 			
 			EntityPlayer entP = (EntityPlayer)data[1];
-			EntityLiving entL = new EntityChicken(entP.worldObj);
+			EntityLivingBase entL = new EntityChicken(entP.worldObj);
 			entL.setPosition(entP.posX, entP.posY, entP.posZ);
 			Render var10 = null;
 			var10 = RenderManager.instance.getEntityRenderObject(entL);

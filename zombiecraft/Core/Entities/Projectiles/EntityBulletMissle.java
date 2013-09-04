@@ -1,9 +1,12 @@
 package zombiecraft.Core.Entities.Projectiles;
 
+import java.util.Iterator;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,10 +18,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-
-import java.util.Iterator;
-import java.util.List;
-
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;
@@ -85,7 +84,7 @@ public class EntityBulletMissle extends EntityBullet
 
         Vec3 var16 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
         Vec3 var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-        MovingObjectPosition var3 = this.worldObj.rayTraceBlocks(var16, var2);
+        MovingObjectPosition var3 = this.worldObj.clip(var16, var2);
         var16 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
         var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -156,10 +155,10 @@ public class EntityBulletMissle extends EntityBullet
 	
 	                //var9 = this.checkHeadshot(var3, var8, var9);
 	
-	                if (var3.entityHit instanceof EntityLiving)
+	                if (var3.entityHit instanceof EntityLivingBase)
 	                {
-	                    //ZCSdkTools.attackEntityIgnoreDelay((EntityLiving)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var9);
-	                	((EntityLiving)var3.entityHit).hurtResistantTime = 0;//((EntityLiving)var3.entityHit).maxHurtResistantTime;
+	                    //ZCSdkTools.attackEntityIgnoreDelay((EntityLivingBase)var3.entityHit, DamageSource.causeThrownDamage(this, this.owner), var9);
+	                	((EntityLivingBase)var3.entityHit).hurtResistantTime = 0;//((EntityLivingBase)var3.entityHit).maxHurtResistantTime;
                     	var3.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.owner), var9);
 	                }
 	                else

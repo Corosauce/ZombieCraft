@@ -4,8 +4,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.src.ModLoader;
-import net.minecraft.util.Icon;
-
 import zombiecraft.Core.Items.ItemAbility;
 import zombiecraft.Core.Items.ItemBarricade;
 import zombiecraft.Core.Items.ItemBarricadePlaceable;
@@ -23,7 +21,9 @@ import zombiecraft.Core.Items.ItemGunShotgun;
 import zombiecraft.Core.Items.ItemGunSniper;
 import zombiecraft.Core.Items.ItemGunUzi;
 import zombiecraft.Core.Items.ItemSwordZC;
+import zombiecraft.Core.config.ConfigIDs;
 import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.util.CoroUtilItem;
 
 public class ZCItems {
 	
@@ -66,6 +66,9 @@ public class ZCItems {
     public static Item itemPickupMaxAmmo;
     public static Item itemPickupNuke;
     public static Item itemPickupInstaKill;
+    
+    public static Item itemPlacerTower;
+    public static Item itemPlacerWall;
     
     /*public static int itemSwordID;
     public static int itemPistolID;
@@ -110,8 +113,8 @@ public class ZCItems {
     
     //Gun fields //
     
-    public static int itemIndexID;
-    public static int abilityIndexID;
+    //public static int itemIndexID;
+    public static int abilityIndexID = 25;
     
     //public static Potion zcPotionSpeed;
     //public static Potion zcPotionExStatic;
@@ -122,47 +125,42 @@ public class ZCItems {
 	}
 	
 	public static void load(ZombieCraftMod pMod) {
-		barricade = (new ItemBarricade(itemIndexID++, Material.wood))/*.setIconCoord(11, 2)*/.setUnlocalizedName("ZombieCraft:barricade").setCreativeTab(ZombieCraftMod.tabBlock);
-		editTool = (new ItemEditTool(itemIndexID++, 0))/*.setIconCoord(5, 4)*/.setUnlocalizedName("ZombieCraft:editTool").setCreativeTab(ZombieCraftMod.tabBlock);
+		CoroUtilItem.setUnlocalizedNameAndTexture(barricade = (new ItemBarricade(ConfigIDs.ID_I_BARRICADE, Material.wood)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":barricade");
+		CoroUtilItem.setUnlocalizedNameAndTexture(editTool = (new ItemEditTool(ConfigIDs.ID_I_EDITTOOL, 0)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":editTool");
 		
-		//zcPotionSpeed = (new ZCPotionSpeed(abilityIndexID+0, false, 8171462)).setPotionName("potion.zc.speed");
-		//zcPotionExStatic = (new ZCPotionExStatic(abilityIndexID+1, false, 8171462)).setPotionName("potion.zc.exstatic");
-        //zcPotionJugg = (new ZCPotionJugg(abilityIndexID+2, false, 8171462)).setPotionName("potion.zc.jugg");
-        //itemPerkCharge = (new ZCPotionJugg(28, false, 8171462)).setPotionName("potion.zc.charge");
-        //itemPerkComrade = (new ZCPotionJugg(29, false, 8171462)).setPotionName("potion.zc.comrade");
-        
         //Items \\
-        itemSword = (new ItemSwordZC(itemIndexID++, EnumToolMaterial.IRON))/*.setIconCoord(2, 4)*/.setUnlocalizedName("ZombieCraft:swordIronZC").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemDEagle = (new ItemGunDEagle(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunDeagle").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemAk47 = (new ItemGunAk47(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunAk47").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemShotgun = (new ItemGunShotgun(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunShotgun").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemM4 = (new ItemGunM4(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunM4").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemSniper = (new ItemGunSniper(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunSniper").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemFlamethrower = (new ItemGunFlamethrower(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunFlamethrower").setCreativeTab(ZombieCraftMod.tabBlock);
+		CoroUtilItem.setUnlocalizedNameAndTexture(itemSword = (new ItemSwordZC(ConfigIDs.ID_I_SWORD, EnumToolMaterial.IRON))/*.setIconCoord(2, 4)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":swordIronZC");
+        itemDEagle = (new ItemGunDEagle(ConfigIDs.ID_I_DEAGLE)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunDeagle").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemAk47 = (new ItemGunAk47(ConfigIDs.ID_I_AK47)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunAk47").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemShotgun = (new ItemGunShotgun(ConfigIDs.ID_I_SHOTGUN)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunShotgun").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemM4 = (new ItemGunM4(ConfigIDs.ID_I_M4)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunM4").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemSniper = (new ItemGunSniper(ConfigIDs.ID_I_SNIPER)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunSniper").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemFlamethrower = (new ItemGunFlamethrower(ConfigIDs.ID_I_FLAMETHROWER)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunFlamethrower").setCreativeTab(ZombieCraftMod.tabBlock);
         
-        itemM1911 = (new ItemGunM1911(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunM1911").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemRifle = (new ItemGunRifle(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunRifle").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemUzi = (new ItemGunUzi(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunUzi").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemRaygun = (new ItemGunRaygun(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunRaygun").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemRPG = (new ItemGunRPG(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunRPG").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemChickenGun = (new ItemGunChickenGun(itemIndexID++)).setUnlocalizedName("ZombieCraft:guns/itemGunChickenGun").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemM1911 = (new ItemGunM1911(ConfigIDs.ID_I_M1911)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunM1911").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemRifle = (new ItemGunRifle(ConfigIDs.ID_I_RIFLE)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunRifle").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemUzi = (new ItemGunUzi(ConfigIDs.ID_I_UZI)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunUzi").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemRaygun = (new ItemGunRaygun(ConfigIDs.ID_I_RAYGUN)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunRaygun").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemRPG = (new ItemGunRPG(ConfigIDs.ID_I_RPG)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunRPG").setCreativeTab(ZombieCraftMod.tabBlock);
+        itemChickenGun = (new ItemGunChickenGun(ConfigIDs.ID_I_CHICKENGUN)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunChickenGun").setCreativeTab(ZombieCraftMod.tabBlock);
         
-        //itemGrenade = (new ItemGrenade(itemGrenadeID)).setIconIndex(itemGrenadeTexID).setUnlocalizedName("itemGrenade").setCreativeTab(ZombieCraftMod.tabBlock);
-        //itemGrenadeStun = (new ItemGrenadeStun(itemGrenadeStunID)).setIconIndex(itemGrenadeStunTexID).setUnlocalizedName("itemGrenadeStun").setCreativeTab(ZombieCraftMod.tabBlock);
+        //itemGrenade = (new ItemGrenade(itemGrenadeID)).setIconIndex(itemGrenadeTexID).setUnlocalizedNameAndTexture("itemGrenade").setCreativeTab(ZombieCraftMod.tabBlock);
+        //itemGrenadeStun = (new ItemGrenadeStun(itemGrenadeStunID)).setIconIndex(itemGrenadeStunTexID).setUnlocalizedNameAndTexture("itemGrenadeStun").setCreativeTab(ZombieCraftMod.tabBlock);
         
-        itemPerkSpeed = (new ItemAbility(itemIndexID++, abilityIndexID++))/*.setIconCoord(15, 14)*/.setUnlocalizedName("ZombieCraft:itemPerkSpeed").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPerkExStatic = (new ItemAbility(itemIndexID++, abilityIndexID++))/*.setIconCoord(15, 14)*/.setUnlocalizedName("ZombieCraft:itemPerkExStatic").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPerkJugg = (new ItemAbility(itemIndexID++, abilityIndexID++))/*.setIconCoord(15, 14)*/.setUnlocalizedName("ZombieCraft:itemPerkJugg").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPerkCharge = (new ItemAbility(itemIndexID++, abilityIndexID++))/*.setIconCoord(15, 14)*/.setUnlocalizedName("ZombieCraft:itemPerkCharge").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPerkComrade = (new ItemAbility(itemIndexID++, abilityIndexID++))/*.setIconCoord(15, 14)*/.setUnlocalizedName("ZombieCraft:itemPerkComrade").setCreativeTab(ZombieCraftMod.tabBlock);
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPerkSpeed = (new ItemAbility(ConfigIDs.ID_I_PERKSPEED, abilityIndexID++))/*.setIconCoord(15, 14)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":itemPerkSpeed");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPerkExStatic = (new ItemAbility(ConfigIDs.ID_I_PERKEXSTATIC, abilityIndexID++))/*.setIconCoord(15, 14)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":itemPerkExStatic");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPerkJugg = (new ItemAbility(ConfigIDs.ID_I_PERKJUGG, abilityIndexID++))/*.setIconCoord(15, 14)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":itemPerkJugg");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPerkCharge = (new ItemAbility(ConfigIDs.ID_I_PERKCHARGE, abilityIndexID++))/*.setIconCoord(15, 14)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":itemPerkCharge");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPerkComrade = (new ItemAbility(ConfigIDs.ID_I_PERKCOMRADE, abilityIndexID++))/*.setIconCoord(15, 14)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":itemPerkComrade");
         
-        itemPickupDoublePoints = (new ItemAbility(itemIndexID++, abilityIndexID++, true)).setUnlocalizedName("ZombieCraft:doublepoints").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPickupInstaKill = (new ItemAbility(itemIndexID++, abilityIndexID++, true)).setUnlocalizedName("ZombieCraft:instakill").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPickupMaxAmmo = (new ItemAbility(itemIndexID++, abilityIndexID++, true)).setUnlocalizedName("ZombieCraft:maxammo").setCreativeTab(ZombieCraftMod.tabBlock);
-        itemPickupNuke = (new ItemAbility(itemIndexID++, abilityIndexID++, true)).setUnlocalizedName("ZombieCraft:nuke").setCreativeTab(ZombieCraftMod.tabBlock);
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPickupDoublePoints = (new ItemAbility(ConfigIDs.ID_I_PICKUPDOUBLEPOINTS, abilityIndexID++, true)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":doublepoints");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPickupInstaKill = (new ItemAbility(ConfigIDs.ID_I_PICKUPINSTAKILL, abilityIndexID++, true)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":instakill");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPickupMaxAmmo = (new ItemAbility(ConfigIDs.ID_I_PICKUPMAXAMMO, abilityIndexID++, true)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":maxammo");
+        CoroUtilItem.setUnlocalizedNameAndTexture(itemPickupNuke = (new ItemAbility(ConfigIDs.ID_I_PICKUPNUKE, abilityIndexID++, true)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":nuke");
         
-        
-        barricadePlaceable = (new ItemBarricadePlaceable(itemIndexID++, Material.wood))/*.setIconCoord(11, 2)*/.setUnlocalizedName("ZombieCraft:barricadePlaceable").setCreativeTab(ZombieCraftMod.tabBlock);
+        CoroUtilItem.setUnlocalizedNameAndTexture(barricadePlaceable = (new ItemBarricadePlaceable(ConfigIDs.ID_I_PICKUPBARRICADEPLACEABLE, Material.wood))/*.setIconCoord(11, 2)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":barricadePlaceable");
+        //itemPlacerTower = (new ItemPlacerTower(ConfigIDs.ID_I_PLACERTOWER)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":placerTower").setCreativeTab(ZombieCraftMod.tabBlock);
+        //itemPlacerWall = (new ItemPlacerWall(ConfigIDs.ID_I_PLACERWALL)).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":placerWall").setCreativeTab(ZombieCraftMod.tabBlock);
         
         ModLoader.addName(itemSword, "Sword");
         ModLoader.addName(itemDEagle, "Desert Eagle");
@@ -192,11 +190,13 @@ public class ZCItems {
         ModLoader.addName(itemPickupMaxAmmo, "Refill Ammo");
         ModLoader.addName(itemPickupNuke, "Nuke");
         
-        ModLoader.addName(ZCItems.barricade,"Barricade");
-        ModLoader.addName(ZCItems.barricadePlaceable,"Placeable Barricade");
-    	ModLoader.addName(ZCItems.editTool,"ZC Editor Tool");
+        ModLoader.addName(barricade,"Barricade");
+        ModLoader.addName(barricadePlaceable,"Placeable Barricade");
+    	ModLoader.addName(editTool,"ZC Editor Tool");
+    	//ModLoader.addName(itemPlacerTower,"Tower Placer");
+    	//ModLoader.addName(itemPlacerWall,"Wall Placer");
         //Items //
 		
-		//buildTool = (new ItemBuildTool(z_ItemIDStart++, 0)).setIconCoord(5, 5).setUnlocalizedName("buildTool").setCreativeTab(ZombieCraftMod.tabBlock);
+		//buildTool = (new ItemBuildTool(z_ItemIDStart++, 0)).setIconCoord(5, 5).setUnlocalizedNameAndTexture("buildTool").setCreativeTab(ZombieCraftMod.tabBlock);
 	}
 }

@@ -1,25 +1,27 @@
 package zombiecraft.Core.Entities;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHalfSlab;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
-import java.util.Random;
-
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Blocks.BlockBarrier;
+import zombiecraft.Core.Blocks.BlockTower;
+import zombiecraft.Core.Blocks.BlockWallPlaceable;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -99,7 +101,9 @@ public class BaseEntAI extends c_EnhAI
 	    		if (!entP.username.contains("fakePlayer") && is != null && is.getItem() instanceof ItemGun) {
 	    			ItemGun ig = (ItemGun)is.getItem();
 	    			
+	    			this.inventory.currentItem = slot_Ranged;
 	    			this.inventory.setInventorySlotContents(slot_Ranged, is.copy());
+	    			
 	    			
 	    			int ammoID = ig.ammoType.ordinal();
 	    			int giveAmount = ZCUtil.getAmmoData(entP.username, ammoID);
@@ -108,7 +112,7 @@ public class BaseEntAI extends c_EnhAI
 					ZCUtil.setAmmoData(fakePlayer.username, ammoID, giveAmount + ZCUtil.getAmmoData(fakePlayer.username, ammoID));
 					ZCUtil.setAmmoData(entP.username, ammoID, 0);
 					entP.inventory.setInventorySlotContents(entP.inventory.currentItem, null);
-					
+
 					syncClientItems();
 					
 					return false;
@@ -334,7 +338,7 @@ public class BaseEntAI extends c_EnhAI
     }
     
     public float getMoveSpeed() {
-    	return this.moveSpeed;
+    	return (float) this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111126_e();
     }
     
     @Override
@@ -352,11 +356,6 @@ public class BaseEntAI extends c_EnhAI
     public float getBlockPathWeight(int par1, int par2, int par3)
     {
         return 1.0F;//0.5F - this.worldObj.getLightBrightness(par1, par2, par3);
-    }
-
-    public int getMaxHealth()
-    {
-        return 20;
     }
     
     @Override
@@ -422,7 +421,7 @@ public class BaseEntAI extends c_EnhAI
 	            
 	            //Wave based difficulty adjustments
 	    		//ent.setExp((int)(ent.getExp() + (ent.getExp() * (wMan.amp_Exp * wMan.wave_Stage))));
-	    		ent.setHealth((int)(ent.getHealth() + (ent.getHealth() * (wMan.amp_Health * wMan.wave_Stage))));
+	    		ent.setHealth((int)(ent.func_110143_aJ() + (ent.func_110143_aJ() * (wMan.amp_Health * wMan.wave_Stage))));
 	    		ent.lungeFactor += ent.lungeFactor * (wMan.amp_Lunge * wMan.wave_Stage);
 	    		
 	    		setMoveSpeed(0.23F);
@@ -530,6 +529,10 @@ public class BaseEntAI extends c_EnhAI
 			return 0;
 		} else if (Block.blocksList[id] instanceof BlockBarrier) {
 			return -2;
+		} else if (Block.blocksList[id] instanceof BlockWallPlaceable) {
+			return -2;
+		} else if (Block.blocksList[id] instanceof BlockTower) {
+			return -2;
 		}
 		return -66;
     }
@@ -553,9 +556,9 @@ public class BaseEntAI extends c_EnhAI
     		}
     	}
     	
-    	if (var1 instanceof EntityLiving) {
+    	if (var1 instanceof EntityLivingBase) {
 	    	
-    		DamageSource ds = DamageSource.causeMobDamage((EntityLiving)var1);
+    		DamageSource ds = DamageSource.causeMobDamage((EntityLivingBase)var1);
     		ds.damageType = "zc.zombie";
     		
     		var1.attackEntityFrom(ds, damage);

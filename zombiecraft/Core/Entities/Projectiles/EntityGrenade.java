@@ -1,17 +1,14 @@
 package zombiecraft.Core.Entities.Projectiles;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-
-import zombiecraft.Core.ZCItems;
 import zombiecraft.Forge.ZombieCraftMod;
 
 public class EntityGrenade extends EntityItem
@@ -45,7 +42,7 @@ public class EntityGrenade extends EntityItem
         this.setPosition(var2, var4, var6);
     }
 
-    public EntityGrenade(World var1, EntityLiving var2)
+    public EntityGrenade(World var1, EntityLivingBase var2)
     {
         this(var1);
         this.setAngles(var2.rotationYaw, 0.0F);
@@ -55,9 +52,9 @@ public class EntityGrenade extends EntityItem
         this.motionY = -this.initialVelocity * (double)MathHelper.sin(var2.rotationPitch / 180.0F * (float)Math.PI);
         this.motionZ = this.initialVelocity * var5 * (double)MathHelper.cos(var2.rotationPitch / 180.0F * (float)Math.PI);
 
-        if (var2.ridingEntity != null && var2.ridingEntity instanceof EntityLiving)
+        if (var2.ridingEntity != null && var2.ridingEntity instanceof EntityLivingBase)
         {
-            var2 = (EntityLiving)var2.ridingEntity;
+            var2 = (EntityLivingBase)var2.ridingEntity;
         }
 
         this.motionX += var2.motionX;

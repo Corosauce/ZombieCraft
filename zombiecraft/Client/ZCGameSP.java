@@ -1,12 +1,13 @@
 package zombiecraft.Client;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.texturepacks.ITexturePack;
-import net.minecraft.client.texturepacks.TexturePackDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,12 +15,7 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovementInputFromOptions;
 import net.minecraft.world.World;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.DataTypes;
@@ -367,25 +363,18 @@ public class ZCGameSP extends ZCGame {
 	}
 	
 	@Override
-	public void setNewNav(EntityLiving ent, PathNavigate nav) {
-		//this.setPrivateValueBoth(EntityLiving.class, ent, this.refl_c_Item_maxStackSize, this.refl_mcp_Item_maxStackSize);
+	public void setNewNav(EntityLivingBase ent, PathNavigate nav) {
+		//this.setPrivateValueBoth(EntityLivingBase.class, ent, this.refl_c_Item_maxStackSize, this.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override
-	public void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLiving ent) {
+	public void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLivingBase ent) {
 		float moveSpeed = 0.23F;
 		if (ent instanceof Zombie) {
 			moveSpeed = ((Zombie)ent).getMoveSpeed();
 		}
 		//tasks.addTask(2, new EntityAI_ZA_AttackPersist(ent, EntityPlayer.class, moveSpeed, false));
 		//targetTasks.addTask(2, new EntityAI_ZA_Pathfind(ent, EntityPlayer.class, 128.0F, 0, false));
-	}
-	
-	@Override
-	public EntityPlayer newFakePlayer() {
-		EntityPlayerSP player = new EntityPlayerSP(mc, mc.theWorld, ZCClientTicks.mc.session, mc.theWorld.provider.dimensionId);
-		player.movementInput = new MovementInputFromOptions(ZCClientTicks.mc.gameSettings);
-		return player;
 	}
 	
 	@Override
@@ -563,7 +552,8 @@ public class ZCGameSP extends ZCGame {
 	@Override
 	public boolean trySetTexturePack(String packFileName) {
 		
-		if (packFileName.equals("default")) {
+		System.out.println("TEXTURE PACK SETTING DISABLED");
+		/*if (packFileName.equals("default")) {
 			mc.texturePackList.setTexturePack(new TexturePackDefault());
 			mc.renderEngine.refreshTextures();
 			return true;
@@ -581,7 +571,8 @@ public class ZCGameSP extends ZCGame {
 				}
 			}
 			return false;
-		}
+		}*/
+		return false;
 	}
 	
 	@Override

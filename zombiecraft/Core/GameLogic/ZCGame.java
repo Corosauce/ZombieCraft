@@ -1,8 +1,19 @@
 package zombiecraft.Core.GameLogic;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,16 +27,6 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import zombiecraft.Core.AmmoDataLatcher;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
@@ -35,6 +36,7 @@ import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.Blocks.BlockBarricade;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
 import zombiecraft.Core.Entities.EntityWorldHook;
@@ -87,6 +89,9 @@ public abstract class ZCGame {
 	
 	//New vars
 	public boolean gameActive = false;
+	public boolean lobbyActive = false; //can only be true if !gameActive
+	public String lobbyLeader = "";
+	public List<ZombieSaveRecord> listMaps;
 	//public boolean editMode = false;
 	
 	//public static int key_Buy = 16; //q
@@ -97,6 +102,13 @@ public abstract class ZCGame {
 	public boolean cfg_ff = false;
 	
 	public int packetUpdateDelay = 40;
+	
+	public int sx; public int sy; public int sz;
+	public boolean settingSize = false;
+	
+	//Session stuff
+	public static NBTTagCompound nbtInfoSessionClient = new NBTTagCompound();
+	public NBTTagCompound nbtInfoServer = new NBTTagCompound();
 	
 	public static ZCGame instance() {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
@@ -109,23 +121,18 @@ public abstract class ZCGame {
 	public ZCGame(boolean serverMode) {
 		this.serverMode = serverMode;
 		entFields = new HashMap();
+		listMaps = new ArrayList<ZombieSaveRecord>();
+		loadMapList();
 		
 		//instance() = this;
-		
-		System.out.println("ZC Items and Blocks Init");
-		
-		
 		mapMan = new MapManager(this);
 		
 		//for dummy mode data
 		zcLevel = new Level(this);
 		mapMan.zcLevel = zcLevel;
 		
-		
-		
 		mapMan.updateEditState();
 		ZCUtil.setBlocksMineable(true);
-		
 		
 		new Persister();
 	}
@@ -140,7 +147,7 @@ public abstract class ZCGame {
 	}
 	
 	public int noHookTicks = 0;
-    public void watchWorldHook() {
+    public void watchWorldHook() { // i really hope this isnt used anymore
     	//if (var4 instanceof EntityWorldHook) {
             if (worldSaver == null) {
             	noHookTicks++;
@@ -190,8 +197,12 @@ public abstract class ZCGame {
 	}
 	
 	public int syncTimeout = 60;
+	
 	public void handleSyncFixing() {
-		if (syncTimeout == 0) {
+		handleSyncFixing(false);
+	}
+	public void handleSyncFixing(boolean forceUpdate) {
+		if (syncTimeout == 0 || forceUpdate) {
 			syncTimeout = 200;
 			List<EntityPlayer> players = this.getPlayers();
 			for (int i = 0; i < players.size(); i++) {
@@ -204,6 +215,11 @@ public abstract class ZCGame {
 			}
 			
 		}
+	}
+	
+	public void gameInit() {
+		wMan = new WaveManager(this);
+		
 	}
 	
 	public void syncPlayer(EntityPlayer entPl) {
@@ -219,12 +235,7 @@ public abstract class ZCGame {
 			System.out.println("cant sync build data coords!");
 		}
 	}
-	
-	public void gameInit() {
-		wMan = new WaveManager(this);
-		
-	}
-	
+
 	public void movePlayersToLobby() {
 		for (int var1 = 0; var1 < zcLevel.playersInGame.size(); ++var1)
         {
@@ -319,6 +330,7 @@ public abstract class ZCGame {
 	}*/		
 	
 	public long lastWorldTime = 0;
+	public List listLobbyPlayersClient = new ArrayList();
 	
 	public void tick() {
 		
@@ -332,11 +344,8 @@ public abstract class ZCGame {
 		if (lastWorldTime != world.getWorldTime()) {
 			lastWorldTime = world.getWorldTime();
 			
-			
-			
 			if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 				if (mapMan != null) mapMan.tick();
-				
 				
 				if (writeOutTimeout > 0) writeOutTimeout--;
 				handleWriteOut();
@@ -344,7 +353,6 @@ public abstract class ZCGame {
 				handleSyncFixing();
 			}
 		}
-		
 		
         //if (Keyboard.isKeyDown(Keyboard.KEY_INSERT)) {
         	//wMan.start();
@@ -480,12 +488,16 @@ public abstract class ZCGame {
 		check(player);
 		
 		int zcPoints = 0;
+		int zcPointsTotal = 0;
+		int zcPointsTotalExtra = 0;
 		try {
+			zcPointsTotal = (Integer)this.getData(player, DataTypes.zcPointsTotal);
 			int extra = 0;
 			if (!noBonus) {
 				extra = (Integer)this.getData(player, DataTypes.doublePointsTime) > 0 ? amount : 0;
 			}
 			zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(amount + extra);
+			zcPointsTotalExtra = (int)(amount + extra);
 		} catch (Exception ex) {
 			System.out.println("Something horrible has happened! username - " + (player != null ? player.username : "??"));
 			ex.printStackTrace();
@@ -495,6 +507,7 @@ public abstract class ZCGame {
 		
 		//this.setData(player, DataTypes.lastPoints, lastPoints);
 		this.setData(player, DataTypes.zcPoints, zcPoints);
+		this.setData(player, DataTypes.zcPointsTotal, zcPointsTotal + zcPointsTotalExtra);
 		if (!player.username.contains("fakePlayer")) this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
 	}
 	
@@ -847,7 +860,7 @@ public abstract class ZCGame {
     @SideOnly(Side.CLIENT)
 	public static String getClientSidePath() {
 		//System.out.println("pathhhh: " + FMLClientHandler.instance().getClient().getMinecraftDir().getAbsolutePath());
-		return FMLClientHandler.instance().getClient().getMinecraftDir().getPath();
+		return FMLClientHandler.instance().getClient().mcDataDir.getPath();
 	}
     
     public static String getMapSaveFolderPath() {
@@ -902,7 +915,7 @@ public abstract class ZCGame {
     
     public abstract void updateAmmoData(EntityPlayer ent);
     
-    public abstract void setNewNav(EntityLiving ent, PathNavigate nav);
+    public abstract void setNewNav(EntityLivingBase ent, PathNavigate nav);
     
     public abstract int getItemMaxStackSize(Item item);
     
@@ -922,9 +935,7 @@ public abstract class ZCGame {
 	
 	public abstract void updateWaveInfo();
 	
-	public abstract void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLiving ent);
-	
-	public abstract EntityPlayer newFakePlayer();
+	public abstract void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLivingBase ent);
 	
 	public abstract void playSoundEffect(String sound, EntityPlayer player, float vol, float pitch);
 	
@@ -994,9 +1005,6 @@ public abstract class ZCGame {
 	public void sendPacket(EntityPlayer player, int packetType, int[] dataInt, String[] dataString) {
 		
 	}
-	
-	public int sx; public int sy; public int sz;
-	public boolean settingSize = false;
 	
 	public void renderInWorldOverlay() {
 		
@@ -1103,5 +1111,56 @@ public abstract class ZCGame {
 		
 		return plCount;
     }
+    
+    public void loadMapList() {
+    	listMaps.clear();
+    	checkFolder(ZCGame.getMapSaveFolderPath() + File.separator);
+		File zombieWorldDir = new File(ZCGame.getMapSaveFolderPath() + File.separator);
+		
+		if(zombieWorldDir.exists() && zombieWorldDir.isDirectory())
+        {
+            File afile[] = zombieWorldDir.listFiles();
+            File afile1[] = afile;
+            int i = afile1.length;
+            for(int j = 0; j < i; j++)
+            {
+                File file = afile1[j];
+                
+                try {
+	                if (file.isDirectory()) {
+	                	listMaps.add(new ZombieSaveRecord(zombieWorldDir,file.getName(),0));
+	                } else if (file.isFile() && file.getName().toLowerCase().endsWith(".zip")) {
+	                	listMaps.add(new ZombieSaveRecord(zombieWorldDir,file.getName(),1));
+	                } else if (file.isFile() && file.getName().toLowerCase().endsWith(".schematic")) {
+	                	listMaps.add(new ZombieSaveRecord(zombieWorldDir,file.getName(),2));
+		            }
+                }
+                catch(Exception exception)
+                {
+                    exception.printStackTrace();
+                }
+            }
+        }
+       
+        ZombieSaveRecord zombiesaverecord;
+        for(Iterator iterator = listMaps.iterator(); iterator.hasNext();)
+        {
+            zombiesaverecord = (ZombieSaveRecord)iterator.next();
+            zombiesaverecord.load();
+        }
+        Collections.sort(this.listMaps);
+    }
+    
+    public void checkFolder(String path) {
+		File theDir = new File(path);
+
+		if (!theDir.exists()) {
+			System.out.println("creating directory: " + path);
+			boolean result = theDir.mkdir();  
+			if(result){    
+				System.out.println("DIR created");  
+		    }
+		}
+	}
 	
 }

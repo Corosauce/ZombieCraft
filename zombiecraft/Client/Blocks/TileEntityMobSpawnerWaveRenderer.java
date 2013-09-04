@@ -1,5 +1,8 @@
 package zombiecraft.Client.Blocks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -8,9 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
@@ -67,7 +67,7 @@ public class TileEntityMobSpawnerWaveRenderer extends TileEntitySpecialRenderer
     
     protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9)
     {
-        //float var10 = par1EntityLiving.getDistanceToEntity(this.renderManager.livingPlayer);
+        //float var10 = par1EntityLivingBase.getDistanceToEntity(this.renderManager.livingPlayer);
 
     	
     	

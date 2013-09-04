@@ -6,7 +6,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.PacketTypes;
@@ -14,6 +13,7 @@ import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.Comrade;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.entity.EnumJob;
 
 public class ItemAbility extends Item {
@@ -43,6 +43,7 @@ public class ItemAbility extends Item {
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
     	if (!par2World.isRemote) {
+    		ZCGame.instance().check(par3EntityPlayer);
     		if (abilityID == ((ItemAbility)ZCItems.itemPerkCharge).abilityID) {
     			
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkComrade).abilityID) {
@@ -80,7 +81,7 @@ public class ItemAbility extends Item {
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupMaxAmmo).abilityID) {
     			ZCGame.instance().refillAmmo(par3EntityPlayer);
     			ZCGame.instance().syncPlayer(par3EntityPlayer);
-    			par2World.playSoundAtEntity(par3EntityPlayer, "zc.ammo", 1.0F, 1.0F);
+    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":" + "zc.ammo", 1.0F, 1.0F);
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupNuke).abilityID) {
     			ZCGame.instance().nukeInvaders(par3EntityPlayer);
     			par2World.playSoundAtEntity(par3EntityPlayer, "zc.nuke", 1.0F, 1.0F);

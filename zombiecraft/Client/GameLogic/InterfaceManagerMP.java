@@ -2,7 +2,6 @@ package zombiecraft.Client.GameLogic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.GameLogic.ZCGame;

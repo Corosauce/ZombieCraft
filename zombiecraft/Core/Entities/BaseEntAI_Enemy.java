@@ -6,7 +6,6 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.ZCItems;
 import CoroAI.entity.EnumDiploType;
 import CoroAI.entity.c_EnhAI;
@@ -84,10 +83,6 @@ public class BaseEntAI_Enemy extends BaseEntAI
 		}
 	}
     
-    public float getMoveSpeed() {
-    	return this.moveSpeed;
-    }
-    
     @Override
     public boolean isValidLightLevel() {
     	return true;
@@ -97,11 +92,6 @@ public class BaseEntAI_Enemy extends BaseEntAI
     public boolean getCanSpawnHere()
     {
         return /*this.isValidLightLevel() && */super.getCanSpawnHere();
-    }
-
-    public int getMaxHealth()
-    {
-        return 20;
     }
     
     @Override

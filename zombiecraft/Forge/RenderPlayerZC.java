@@ -1,35 +1,34 @@
 package zombiecraft.Forge;
 
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
-
+import net.minecraft.entity.EntityLivingBase;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;
 
 public class RenderPlayerZC extends RenderPlayer {
 
 	@Override
-	public void renderPlayer(EntityPlayer par1EntityPlayer, double par2, double par4, double par6, float par8, float par9) {
+	public void func_130009_a(AbstractClientPlayer par1EntityPlayer, double par2, double par4, double par6, float par8, float par9) {
 		
-		super.renderPlayer(par1EntityPlayer, par2, par4, par6, par8, par9);
+		super.func_130009_a(par1EntityPlayer, par2, par4, par6, par8, par9);
 	}
 	
 	@Override
-	public void doRenderLiving(EntityLiving par1EntityLiving, double par2, double par4, double par6, float par8, float par9) {
+	public void func_130000_a(EntityLivingBase par1EntityLivingBase, double par2, double par4, double par6, float par8, float par9) {
 		
-		super.doRenderLiving(par1EntityLiving, par2, par4, par6, par8, par9);
+		super.func_130000_a(par1EntityLivingBase, par2, par4, par6, par8, par9);
 	}
 	
 	@Override
-	protected void preRenderCallback(EntityLiving par1EntityLiving, float par2) {
+	protected void preRenderCallback(EntityLivingBase par1EntityLivingBase, float par2) {
 		ModelBiped model = (ModelBiped)ZCUtil.getPrivateValueBoth(RenderLiving.class, this, "i", "mainModel");
 		
 		//aiming and arm sockets at head
 		if (model != null) {
-			if (par1EntityLiving.getHeldItem() != null && par1EntityLiving.getHeldItem().getItem() instanceof ItemGun) {
+			if (par1EntityLivingBase.getHeldItem() != null && par1EntityLivingBase.getHeldItem().getItem() instanceof ItemGun) {
 				model.aimedBow = true;
 			}
 			//model.bipedRightArm.rotationPointY = 0F;
@@ -62,6 +61,6 @@ public class RenderPlayerZC extends RenderPlayer {
 	        
 	            
 		}
-		super.preRenderCallback(par1EntityLiving, par2);
+		super.preRenderCallback(par1EntityLivingBase, par2);
 	}
 }

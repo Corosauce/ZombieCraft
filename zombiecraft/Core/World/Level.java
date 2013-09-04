@@ -1,22 +1,22 @@
 package zombiecraft.Core.World;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import zombiecraft.Core.Camera.CameraPoint;
 import zombiecraft.Core.GameLogic.ZCGame;
 import build.world.Build;
 
+/* This class should mainly be for stuff thats used on top of the buildmod schematic spec */
 public class Level {
 	
 	public ZCGame zcGame;
 	
-	public List<EntityPlayer> playersInGame;
-	public List<String> playersInGame_Names;
+	public List<EntityPlayer> playersInGame; //could be moved to ZCGame
+	public List<String> playersInGame_Names; //could be moved to ZCGame
 	
 	//NBT Loaded stuff
 	public String levelName = "";
@@ -31,9 +31,9 @@ public class Level {
 	public static int lobby_coord_playerY = 100;
 	public static int lobby_coord_playerZ = 30;
 	
-	public int lobby_coord_maxX = 0;
-	public int lobby_coord_maxY = 0;
-	public int lobby_coord_maxZ = 0;
+	public static int lobby_coord_maxX = lobby_coord_minX + 7;
+	public static int lobby_coord_maxY = lobby_coord_minY + 5;
+	public static int lobby_coord_maxZ = lobby_coord_minZ + 9;
 	
 	
 	
@@ -189,6 +189,9 @@ public class Level {
 			buildData.levelData = new NBTTagCompound();
 		}
 		
+		//new
+		buildData.newFormat = true;
+		
 		//Extra data
 		buildData.levelData.setString("levelName", levelName);
 		buildData.levelData.setInteger("player_spawnX", player_spawnX);
@@ -220,7 +223,11 @@ public class Level {
 		for(int i = 0; i < players.size(); i++) {
 			EntityPlayer player = players.get(i); 
 			
-			if (lobby_distCheck) {
+			//force always add
+			playersInLobby.add(player);
+			playersInGame_Names.add(player.username);
+			
+			/*if (lobby_distCheck) {
 				System.out.println("lobby: " + lobby_tileEntX + "," + lobby_tileEntY + "," + lobby_tileEntZ);
 				if (player.getDistance(lobby_tileEntX, lobby_tileEntY, lobby_tileEntZ) < lobby_scanSize) {
 					playersInLobby.add(player);
@@ -236,7 +243,7 @@ public class Level {
 					playersInLobby.add(player);
 					playersInGame_Names.add(player.username);
 				}
-			}
+			}*/
 		}
 		
 		return playersInLobby;

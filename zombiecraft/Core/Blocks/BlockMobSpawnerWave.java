@@ -1,18 +1,19 @@
 package zombiecraft.Core.Blocks;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import java.util.Random;
-
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 
 public class BlockMobSpawnerWave extends BlockContainer
 {
@@ -31,6 +32,19 @@ public class BlockMobSpawnerWave extends BlockContainer
     public Icon getIcon(int par1, int par2)
     {
         return Block.mobSpawner.getIcon(par1, par2);
+    }
+    
+    @Override
+    public boolean onBlockActivated(World world, int x, int y,
+    		int z, EntityPlayer par5EntityPlayer, int par6, float par7,
+    		float par8, float par9) {
+    	
+    	if (!world.isRemote && ZCGame.instance().canEdit(par5EntityPlayer)) {
+    		//par5EntityPlayer.openGui(ZombieCraftMod.instance, -1, world, x, y, z);
+    	}
+    	
+    	return super.onBlockActivated(world, x, y, z, par5EntityPlayer,
+    			par6, par7, par8, par9);
     }
 
     /**

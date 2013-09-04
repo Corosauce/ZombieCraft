@@ -1,5 +1,6 @@
 package zombiecraft.Forge;
 
+import modconfig.ConfigMod;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,16 +10,11 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.util.logging.Level;
-
-import zombiecraft.Core.ZCBlocks;
-import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
-import cpw.mods.fml.common.FMLLog;
+import zombiecraft.Core.config.ConfigIDs;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -28,10 +24,11 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class)
-@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "v3.0")
+@NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input", "Session" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class/*, versionBounds = "[2.0.0,2.1.0)"*/)
+@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "3.3")
 
 
 public class ZombieCraftMod
@@ -39,6 +36,7 @@ public class ZombieCraftMod
 
     @SidedProxy(clientSide = "zombiecraft.Forge.ZCClientProxy", serverSide = "zombiecraft.Forge.ZCCommonProxy")
     public static ZCCommonProxy proxy;
+    public static String modID = "zombiecraft";
 
 	public Configuration preInitConfig;
 	
@@ -53,53 +51,16 @@ public class ZombieCraftMod
 	public static CreativeTabs tabBlock;
     //getNextID()-4
     
-    @PreInit
+	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        preInitConfig = new Configuration(event.getSuggestedConfigurationFile());
-
-        try
-        {
-        	
-        	ZCItems.itemIndexID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemIndexIDStart", 22701).getInt();
-        	ZCItems.abilityIndexID = preInitConfig.get("Potion", "potionIndexIDStart", 25).getInt();
-        	
-        	ZCBlocks.z_BlockIDStart = preInitConfig.get(Configuration.CATEGORY_BLOCK, "blockIDStart_CHANGING_BREAKS_ZC_MAPS", 190).getInt();
-        	
-        	/*itemSwordID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSwordID", itemIndexID++).getInt();
-        	itemAk47ID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemAk47ID", itemIndexID++).getInt();
-        	itemPistolID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPistolID", itemIndexID++).getInt();
-        	itemShotgunID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemShotgunID", itemIndexID++).getInt();
-        	itemM4ID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemM4ID", itemIndexID++).getInt();
-        	itemSniperID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemSniperID", itemIndexID++).getInt();
-        	itemFlamethrowerID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemFlamethrowerID", itemIndexID++).getInt();
-        	
-        	itemGrenadeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemGrenadeID", itemIndexID++).getInt();
-        	itemGrenadeStunID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemGrenadeStunID", itemIndexID++).getInt();
-        	
-        	itemPerkSpeedID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkSpeedID", itemIndexID++).getInt();
-        	itemPerkExStaticID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkExStaticID", itemIndexID++).getInt();
-        	itemPerkJuggID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkJuggID", itemIndexID++).getInt();
-        	itemPerkChargeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkChargeID", itemIndexID++).getInt();
-        	itemPerkComradeID = preInitConfig.getItem(Configuration.CATEGORY_ITEM, "itemPerkComradeID", itemIndexID++).getInt();*/
-        	
-            preInitConfig.load();
-            
-            //load here
-        }
-        catch (Exception e)
-        {
-            FMLLog.log(Level.SEVERE, e, "ZombieCraft has a problem loading it's configuration");
-        }
-        finally
-        {
-            preInitConfig.save();
-        }
-        
+    	
+    	ConfigMod.addConfigFile(event, "zcids", new ConfigIDs(), false);
+    	
         proxy.loadSounds();
     }
     
-    @Init
+    @Mod.EventHandler
     public void load(FMLInitializationEvent event)
     {
     	
@@ -116,6 +77,7 @@ public class ZombieCraftMod
         
 		MinecraftForge.EVENT_BUS.register(new ZCEventHandler());
 		GameRegistry.registerPlayerTracker(new ZCPlayerTracker());
+		NetworkRegistry.instance().registerGuiHandler(this, new GuiHandler());
 		
 		//custom texture sheet info:
 		//just do MinecraftForge.registerTextureSheet or something like that in ClientProxy
@@ -126,7 +88,7 @@ public class ZombieCraftMod
         //int what = Potion.potionTypes[0].id;
     }
 
-    @PostInit
+    @Mod.EventHandler
     public void modsLoaded(FMLPostInitializationEvent event)
     {
     	
@@ -139,7 +101,7 @@ public class ZombieCraftMod
 	{
 		//TeleporterTropics tropicsTeleporter = new TeleporterTropics();
 		ServerConfigurationManager scm = MinecraftServer.getServer().getConfigurationManager();
-		if (player.dimension == 0) {
+		if (player.dimension != ZCGame.instance().ZCDimensionID) {
 			scm.transferPlayerToDimension(player, ZCGame.instance().ZCDimensionID, new ZCTeleporter((WorldServer)player.worldObj));
 		} else {
 			scm.transferPlayerToDimension(player, 0, new ZCTeleporter((WorldServer)player.worldObj));

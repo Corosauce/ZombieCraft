@@ -1,5 +1,7 @@
 package zombiecraft.Core;
 
+import java.lang.reflect.Field;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,9 +9,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.src.ModLoader;
 import net.minecraft.world.World;
-
-import java.lang.reflect.Field;
-
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
@@ -21,15 +20,16 @@ import CoroAI.entity.c_EnhAI;
 public class ZCUtil {
 	
 	
-	public static String field_obf_blockResistance = "cB";
-	public static String field_obf_rightClickDelayTimer = "ae";
-	public static String field_obf_equippedProgress = "d";
-	public static String field_obf_cameraZoom = "X";
+	public static String field_obf_blockResistance = "field_72029_cc";
+	public static String field_obf_rightClickDelayTimer = "field_71467_ac";
+	public static String field_obf_equippedProgress = "field_78454_c";
+	public static String field_obf_cameraZoom = "field_78503_V";
+	public static String field_obf_particleGravity = "field_70545_g";
+	
 	public static String field_mcp_blockResistance = "blockResistance";
 	public static String field_mcp_rightClickDelayTimer = "rightClickDelayTimer";
 	public static String field_mcp_equippedProgress = "equippedProgress";
 	public static String field_mcp_cameraZoom = "cameraZoom";
-	public static String field_obf_particleGravity = "i";
 	public static String field_mcp_particleGravity = "particleGravity";
 	
 	public ZCUtil() {
@@ -305,12 +305,14 @@ public class ZCUtil {
         }
     }
 	
-	public static void setPrivateValueBoth(Class var0, Object var1, String obf, String mcp, Object var3) {
-		c_CoroAIUtil.setPrivateValueBoth(var0, var1, obf, mcp, var3);
+	public static void setPrivateValueBoth(Class var0, Object var1, String srg, String mcp, Object var3) {
+		c_CoroAIUtil.setPrivateValueSRGMCP(var0, var1, srg, mcp, var3);
+		//c_CoroAIUtil.setPrivateValueBoth(var0, var1, obf, mcp, var3);
     }
     
-    public static Object getPrivateValueBoth(Class var0, Object var1, String obf, String mcp) {
-    	return c_CoroAIUtil.getPrivateValueBoth(var0, var1, obf, mcp);
+    public static Object getPrivateValueBoth(Class var0, Object var1, String srg, String mcp) {
+    	return c_CoroAIUtil.getPrivateValueSRGMCP(var0, var1, srg, mcp);
+    	//return c_CoroAIUtil.getPrivateValueBoth(var0, var1, obf, mcp);
     }
     
     public static Object getPrivateValue(Class var0, Object var1, String var2) throws IllegalArgumentException, SecurityException, NoSuchFieldException

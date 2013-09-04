@@ -9,11 +9,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.c_CoroAIUtil;
 import CoroAI.entity.c_EnhAI;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -64,6 +64,12 @@ public class ItemGun extends Item
         //clipAmount = clipAmountClient = magSize;
         
         setFull3D();
+    }
+    
+    public Item setUnlocalizedNameAndTexture(String nameTex) {
+    	this.setUnlocalizedName(nameTex);
+    	this.func_111206_d(nameTex);
+    	return this;
     }
     
     public void checkNBTStack(ItemStack stack) {
@@ -309,12 +315,12 @@ public class ItemGun extends Item
 		        }*/
 	        	
 	        	/*if (curReloadDelay == 0) */
-	        	var2.playSoundToNearExcept(var3, firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	        	var2.playSoundToNearExcept(var3, ZombieCraftMod.modID + ":" + firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        	//var2.func_85173_a(var3, firingSound, (double)var3.posX, (double)var3.posY, (double)var3.posZ, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        } else {
-	        	var2.playSound(var3.posX, var3.posY, var3.posZ, firingSound, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F), false);
+	        	var2.playSound(var3.posX, var3.posY, var3.posZ, ZombieCraftMod.modID + ":" + firingSound, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F), false);
 	        	recoil();
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
+	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_110158_av = 5;
 	        }
 	        
 	        
@@ -537,7 +543,7 @@ public class ItemGun extends Item
 	            
 		        
 	                
-		        var2.playSoundAtEntity(var3, firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+		        var2.playSoundAtEntity(var3, ZombieCraftMod.modID + ":" + firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 		        
 		        
 		        
@@ -554,7 +560,7 @@ public class ItemGun extends Item
 		        	var1.stackTagCompound.setInteger("reloadDelay", reloadTime);
 	        	}
 	        	//if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingItem();
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
+	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_110158_av = 5;
 	        }
 	        
 	        

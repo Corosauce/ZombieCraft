@@ -9,7 +9,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
 

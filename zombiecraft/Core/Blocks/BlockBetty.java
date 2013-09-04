@@ -5,15 +5,16 @@ import java.util.Iterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.packet.Packet60Explosion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import zombiecraft.Core.ZCExplosion;
 import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.Entities.BaseEntAI_Enemy;
 
@@ -21,7 +22,7 @@ public class BlockBetty extends Block {
 	
 	public BlockBetty(int par1, Material par3Material) {
 		super(par1, par3Material);
-		// TODO Auto-generated constructor stub
+		this.setBlockBounds(0F, 0F, 0F, 1F, 0.05F, 1F);
 	}
 
 	@Override
@@ -63,9 +64,10 @@ public class BlockBetty extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int i, int j, int k3, Entity entity2)
     {
-		if (!world.isRemote && (entity2 instanceof BaseEntAI_Enemy || (entity2 instanceof EntityLiving && !(entity2 instanceof EntityChicken || entity2 instanceof BaseEntAI_Ally || entity2 instanceof EntityPlayer)))) {
-			explode(world, i, j, k3);
+		if (!world.isRemote && (entity2 instanceof EntityLivingBase && ((EntityLivingBase)entity2).func_110143_aJ() > 0 && (entity2 instanceof BaseEntAI_Enemy || (entity2 instanceof EntityLivingBase && !(entity2 instanceof EntityChicken || entity2 instanceof EntityBat || entity2 instanceof BaseEntAI_Ally || entity2 instanceof EntityPlayer))))) {
+			//make block gone to prevent weird LOS issues causing no damage on some zombies
 			world.setBlock(i, j, k3, 0);
+			explode(world, i, j, k3);
 		}
     }
 	
@@ -73,7 +75,7 @@ public class BlockBetty extends Block {
     	
     	float size = 2.5F;
     	
-    	Explosion var11 = new Explosion(world, null, x, y, z, size);
+    	ZCExplosion var11 = new ZCExplosion(world, null, x, y, z, size, 2F);
         var11.isFlaming = false;
         var11.isSmoking = true;
         var11.doExplosionA();

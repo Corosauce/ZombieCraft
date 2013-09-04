@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
 import CoroAI.entity.EnumJob;
 
 public class Imp extends BaseEntAI_Enemy
@@ -21,7 +20,7 @@ public class Imp extends BaseEntAI_Enemy
     public Imp(World par1World)
     {
         super(par1World);
-        this.texture = "/mods/ZombieCraft/textures/entities/imp.png";
+        //this.texture = "/mods/ZombieCraft/textures/entities/imp.png";
         //this.moveSpeed = 0.23F;
         this.getNavigator().setBreakDoors(true);
         
@@ -29,11 +28,6 @@ public class Imp extends BaseEntAI_Enemy
         
         cooldown_Ranged = 80;
         
-    }
-
-    public int getMaxHealth()
-    {
-        return 20;
     }
 
     /**

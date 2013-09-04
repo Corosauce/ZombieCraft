@@ -16,10 +16,10 @@ import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
 
-import zombiecraft.Client.GuiEditorCP;
-import zombiecraft.Client.GuiGameOverZC;
-import zombiecraft.Client.GuiLeaderboard;
 import zombiecraft.Client.ZCGameSP;
+import zombiecraft.Client.gui.GuiEditorCP;
+import zombiecraft.Client.gui.GuiGameOverZC;
+import zombiecraft.Client.gui.GuiLeaderboard;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
@@ -35,6 +35,8 @@ import zombiecraft.Forge.ZCKeybindHandler;
 import zombiecraft.Forge.ZCServerTicks;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class InterfaceManager {
 	
@@ -147,6 +149,8 @@ public abstract class InterfaceManager {
 				if (consoleOpenDelay == 0) {
 					consoleOpenDelay = 5;
 					ModLoader.openGUI(mc.thePlayer, new GuiEditorCP());
+					//TEMP SWAP!!!!
+					//ModLoader.openGUI(mc.thePlayer, new GuiScrollableTest(null));
 				}
 				
 			}
@@ -252,7 +256,7 @@ public abstract class InterfaceManager {
 		
 		//Fix for weird double gui game over display
 		if (mc.currentScreen instanceof GuiGameOverZC) {
-			if (mc.thePlayer != null && mc.thePlayer.getHealth() > 1) {
+			if (mc.thePlayer != null && mc.thePlayer.func_110143_aJ() > 1) {
 				mc.currentScreen = null;
 			}
 		}
@@ -323,9 +327,15 @@ public abstract class InterfaceManager {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
+    public boolean isPaused() {
+    	if (FMLClientHandler.instance().getClient().getIntegratedServer() != null && FMLClientHandler.instance().getClient().getIntegratedServer().getServerListeningThread() != null && FMLClientHandler.instance().getClient().getIntegratedServer().getServerListeningThread().isGamePaused()) return true;
+    	return false;
+    }
+	
 	public void handleGunBinds() {
 		//used to check !ingui
-		if (!mc.isGamePaused && mc.currentScreen == null) {
+		if (!isPaused() && mc.currentScreen == null) {
 			if (mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() instanceof ItemGun) {
 				if (!usingGun) {
 					usingGun = true;

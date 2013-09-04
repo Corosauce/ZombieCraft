@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
-
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;

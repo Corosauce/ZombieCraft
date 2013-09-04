@@ -1,8 +1,8 @@
 package zombiecraft.Forge;
 
-import net.minecraft.client.settings.KeyBinding;
-
 import java.util.EnumSet;
+
+import net.minecraft.client.settings.KeyBinding;
 
 import org.lwjgl.input.Keyboard;
 

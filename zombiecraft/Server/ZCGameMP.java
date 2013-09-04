@@ -1,12 +1,17 @@
 package zombiecraft.Server;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemInWorldManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet53BlockChange;
 import net.minecraft.pathfinding.PathNavigate;
@@ -17,13 +22,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumGameType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import zombiecraft.Core.AmmoDataLatcher;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
@@ -623,29 +621,14 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	@Override
-	public void setNewNav(EntityLiving ent, PathNavigate nav) {
+	public void setNewNav(EntityLivingBase ent, PathNavigate nav) {
 		
 	}
 	
 	@Override
-	public void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLiving ent) {
+	public void addTasks(EntityAITasks tasks, EntityAITasks targetTasks, EntityLivingBase ent) {
 		
 		//tasks.addTask(2, new EntityAI_ZA_Pathfind(ent, EntityPlayer.class, 128.0F, 0, false));
-	}
-	
-	@Override
-	public EntityPlayer newFakePlayer() {
-		c_EntityPlayerMPExt player = new c_EntityPlayerMPExt(mc, mc.worldServerForDimension(0), "fakePlayer", new ItemInWorldManager(mc.worldServerForDimension(0)));
-		if (ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.size() > 0) {
-			player.playerNetServerHandler = ((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).playerNetServerHandler;
-		} else {
-			//player.playerNetServerHandler = new NetServerHandler();
-			System.out.println("fakeplayer has no netserverhandler, expect crashes");
-		}
-		
-		//mc.configManager.netManager
-		//player.movementInput = new MovementInputFromOptions(ZombieCraftMod.mc.gameSettings);
-		return player;
 	}
 	
 	@Override
@@ -769,7 +752,7 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	public boolean isOp(EntityPlayer player) {
-		return mc.getConfigurationManager().areCommandsAllowed(player.username);
+		return this.lobbyLeader.equals(player.username) || mc.getConfigurationManager().areCommandsAllowed(player.username);
 	}
 	
 	@Override

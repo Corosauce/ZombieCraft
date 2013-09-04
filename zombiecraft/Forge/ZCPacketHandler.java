@@ -1,19 +1,24 @@
 package zombiecraft.Forge;
 
-import net.minecraft.entity.Entity;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
+import net.minecraft.world.World;
+import zombiecraft.Core.DataTypes;
+import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.GameLogic.ZCGame;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.tile.PacketHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
@@ -21,6 +26,13 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ZCPacketHandler implements IPacketHandler
 {
+
+	public static int CMD_GAMESETUPJOINLEAVE = 0;
+	public static int CMD_GAMESTART = 1;
+	public static int CMD_TELEPORT = 2;
+	public static int CMD_MAPSETNAME = 3;
+	public static int CMD_MAPGENERATE = 4;
+	
     public ZCPacketHandler()
     {
     }
@@ -123,6 +135,16 @@ public class ZCPacketHandler implements IPacketHandler
 	        		ZCClientTicks.zcGame.handlePacket(entP, packetMLMP);
 	        	}
 	        	
+	        } else if ("Session".equals(packet.channel)) {
+	        	NBTTagCompound nbt = Packet.readNBTTagCompound(dis);
+	        	if (side == Side.SERVER) {
+	        		if (player instanceof EntityPlayer) {
+						handleClientSentNBT(((EntityPlayer)player).worldObj, nbt);
+		        	}
+	        	} else if (side == Side.CLIENT) {
+	        		ZCGame.nbtInfoSessionClient = nbt;
+	        	}
+	        	
 	        }
         }
         catch (Exception ex)
@@ -131,4 +153,146 @@ public class ZCPacketHandler implements IPacketHandler
             //ex.printStackTrace();
         }
     }
+    
+    public void handleClientSentNBT(World world, NBTTagCompound par1nbtTagCompound) {
+		
+		//move all this to a non tile bound thing once you need the gui to open from anywhere, or will we skip that and just have them warp back to lobby to click block?
+		if (par1nbtTagCompound.hasKey("sync")) {
+			sync();
+		} else if (par1nbtTagCompound.hasKey("cmdID")) {
+			int cmdID = par1nbtTagCompound.getInteger("cmdID");
+			EntityPlayerMP entP = (EntityPlayerMP)world.getPlayerEntityByName(par1nbtTagCompound.getString("username"));
+			
+			if (cmdID == CMD_GAMESETUPJOINLEAVE) {
+				if (ZCGame.instance().gameActive) {
+					//join game - which is basically just teleporting, itll auto pull them in next round, add an easy way to spectate!
+					if (entP != null) {
+						ZombieCraftMod.teleportPlayerToggle(entP);
+					}
+				} else {
+					if (ZCGame.instance().lobbyActive) {
+						//if leader, close lobby, else join lobby
+						if (ZCGame.instance().lobbyLeader.equals(par1nbtTagCompound.getString("username"))) {
+							ZCGame.instance().lobbyActive = false;
+							ZCGame.instance().lobbyLeader = "";
+						} else {
+							if (entP != null && entP.dimension != ZCGame.ZCDimensionID) {
+								ZombieCraftMod.teleportPlayerToggle(entP);
+							}
+						}
+					} else {
+						//start lobby as leader
+						ZCGame.instance().lobbyActive = true;
+						ZCGame.instance().lobbyLeader = par1nbtTagCompound.getString("username");
+						if (entP != null && entP.dimension != ZCGame.ZCDimensionID) {
+							ZombieCraftMod.teleportPlayerToggle(entP);
+						} else {
+							ZCGame.instance().zcLevel.newGame(); //apparently just scans for players
+						}
+					}
+					
+					sync();
+				}
+				
+				//if (nbtInfoServer.getBoolean("lobbyActive"))
+			} else if (cmdID == CMD_GAMESTART) {
+				if (ZCGame.instance().lobbyLeader.equals(par1nbtTagCompound.getString("username"))) {
+					if (!ZCGame.instance().gameActive) {
+						ZCGame.instance().wMan.prepGame();
+						ZCGame.instance().wMan.waitingToStart = true; //should make the game start once it generates
+					} else {
+						ZCGame.instance().wMan.stopGame();
+					}
+					ZCGame.instance().handleSyncFixing(true);
+				} else {
+					//hacking attempt or bug
+				}
+			} else if (cmdID == CMD_TELEPORT) {
+				if (entP != null) {
+					ZombieCraftMod.teleportPlayerToggle(entP);
+				}
+			} else if (cmdID == CMD_MAPSETNAME) {
+				if (entP != null) {
+					String mapName = par1nbtTagCompound.getString("mapName");
+					if (ZCGame.instance().lobbyLeader.equals(par1nbtTagCompound.getString("username")) && mapName.length() > 0) {
+						ZCGame.instance().setMapName(entP, par1nbtTagCompound.getString("mapName"), true);
+						ZCGame.instance().mapMan.loadLevel();
+					}
+				}
+				ZCGame.instance().handleSyncFixing(true);
+			} else if (cmdID == CMD_MAPGENERATE) {
+				if (entP != null && ZCGame.instance().lobbyLeader.equals(par1nbtTagCompound.getString("username"))) {
+					//ZCGame.instance().movePlayersToLobby();
+					ZCGame.instance().mapMan.loadLevel();
+		    		ZCGame.instance().mapMan.buildStart(entP);
+		    		ZCGame.instance().trySetTexturePack(ZCGame.instance().zcLevel.texturePack);
+				}
+			}
+		}
+		
+		/*if (entInt == null && par1nbtTagCompound.hasKey("buildStart")) {
+			buildStart();
+			sync();
+		}*/
+		
+		//technically i should be doing some sanity checking here
+		//readFromNBTPacket(par1nbtTagCompound);
+		
+		//System.out.println("handled client send data to " + this);
+	}
+    
+    public void updateServerNBTForSync() {
+		ZCGame zcg = ZCGame.instance();
+		zcg.nbtInfoServer.setBoolean("lobbyActive", zcg.lobbyActive);
+		//nbtInfoServer.setBoolean("gameActive", zcg.gameActive);
+		zcg.nbtInfoServer.setString("lobbyLeader", zcg.lobbyLeader);
+		//ok, try to use the existing packet methods for setting map name etc, lets not reinvent everything and cause potential weird desyncs....
+		//we are only reading game active setting, not setting it here
+		//nbtInfoServer.
+		
+		zcg.nbtInfoServer.setInteger("lobbyPlayerCount", zcg.zcLevel.playersInGame.size());
+		for (int i = 0; i < zcg.zcLevel.playersInGame.size(); i++) {
+			EntityPlayer entP = zcg.zcLevel.playersInGame.get(i);
+			
+			zcg.nbtInfoServer.setString("lobbyPlayerName_" + i, entP.username);
+			zcg.nbtInfoServer.setInteger("lobbyPlayerScore_" + i, (Integer)zcg.getData(entP, DataTypes.zcPointsTotal)); //use for active player info, unless this code gets repurposed for handling both?
+		}
+		
+		zcg.loadMapList();
+		zcg.nbtInfoServer.setInteger("mapCount", zcg.listMaps.size());
+		for (int i = 0; i < zcg.listMaps.size(); i++) {
+			ZombieSaveRecord save = zcg.listMaps.get(i);
+			
+			zcg.nbtInfoServer.setString("mapName_" + i, save.getText());
+			//nbtInfoServer.setInteger("lobbyPlayerScore_" + i, (Integer)zcg.getData(entP, DataTypes.zcPointsTotal)); //use for active player info, unless this code gets repurposed for handling both?
+		}
+		
+	}
+    
+    public void sync() {
+    	updateServerNBTForSync();
+    	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(getSessionPacket(ZCGame.instance().nbtInfoServer));
+    }
+    
+    public static Packet250CustomPayload getSessionPacket(NBTTagCompound data) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+
+        try
+        {
+        	PacketHelper.writeNBTTagCompound(data, dos);
+            
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        Packet250CustomPayload pkt = new Packet250CustomPayload();
+        pkt.channel = "Session";
+        pkt.data = bos.toByteArray();
+        pkt.length = bos.size();
+        
+        return pkt;
+	}
 }

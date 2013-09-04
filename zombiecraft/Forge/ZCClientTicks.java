@@ -1,5 +1,9 @@
 package zombiecraft.Forge;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.util.EnumSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -8,16 +12,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.src.ModLoader;
 import net.minecraft.world.World;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.util.EnumSet;
-
-import zombiecraft.Client.GuiMainMenuZC;
 import zombiecraft.Client.ZCGameSP;
 import zombiecraft.Client.ZCSoundManager;
 import zombiecraft.Client.GameLogic.InterfaceManager;
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
+import zombiecraft.Client.gui.GuiMainMenuZC;
 import zombiecraft.Core.Camera.CameraManager;
 import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -37,8 +36,8 @@ public class ZCClientTicks implements ITickHandler
 	public static World lastWorld;
 	
 	public static CameraManager camMan = new CameraManager();
-	
-    @Override
+
+	@Override
     public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
     @Override
@@ -169,6 +168,7 @@ public class ZCClientTicks implements ITickHandler
         	camMan.gameTick();
         }
         
+        //System.out.println("ZOMBIECRAFT SOUND MANAGER OFF");
         if (sMan != null) {
         	sMan.tick();
         }

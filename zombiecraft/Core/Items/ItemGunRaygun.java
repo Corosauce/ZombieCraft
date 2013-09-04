@@ -2,7 +2,6 @@ package zombiecraft.Core.Items;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.Entities.Projectiles.EntityBulletLaser;
@@ -16,7 +15,7 @@ public class ItemGunRaygun extends ItemGun
         //this.requiredBullet = mod_ZCSdkGuns.itemOil;
         this.numBullets = 1;
         this.damage = 60;
-        this.muzzleVelocity = 0.75F;
+        this.muzzleVelocity = 2F;
         this.spread = 0.0F;
         this.useDelay = 10;
         this.recoil = 1.0F;

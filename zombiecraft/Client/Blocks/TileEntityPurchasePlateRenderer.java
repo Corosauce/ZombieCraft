@@ -1,14 +1,15 @@
 package zombiecraft.Client.Blocks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,6 +28,7 @@ public class TileEntityPurchasePlateRenderer extends TileEntitySpecialRenderer
     public long lifeTick = 0;
     public long lastWorldTick = 0;
     
+    public ResourceLocation resGUI = new ResourceLocation("/misc/mapbg.png");
     
     public TileEntityPurchasePlateRenderer() {
     	
@@ -109,7 +111,8 @@ public class TileEntityPurchasePlateRenderer extends TileEntitySpecialRenderer
         GL11.glScalef(scale, scale, scale);
         GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
         GL11.glRotatef(RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
-        ZCClientTicks.mc.renderEngine.bindTexture("/misc/mapbg.png");
+        //ZCClientTicks.mc.renderEngine.bindTexture("/misc/mapbg.png");
+        ZCClientTicks.mc.func_110434_K().func_110577_a(resGUI);
         Tessellator tessellator = Tessellator.instance;
         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
         tessellator.startDrawingQuads();
@@ -133,7 +136,7 @@ public class TileEntityPurchasePlateRenderer extends TileEntitySpecialRenderer
     
     protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9)
     {
-        //float var10 = par1EntityLiving.getDistanceToEntity(this.renderManager.livingPlayer);
+        //float var10 = par1EntityLivingBase.getDistanceToEntity(this.renderManager.livingPlayer);
 
     	
     	

@@ -5,7 +5,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemAbility;
 import zombiecraft.Core.Items.ItemGun;

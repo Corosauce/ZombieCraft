@@ -1,10 +1,10 @@
 package zombiecraft.Core;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 public class DataLatcher {
 	
@@ -19,6 +19,7 @@ public class DataLatcher {
 		values.put(DataTypes.purchaseItemIndex, 0);
 		values.put(DataTypes.lastPoints, 0); //unused
 		values.put(DataTypes.zcPoints, 0);
+		values.put(DataTypes.zcPointsTotal, 0);
 		
 		//Abilities
 		values.put(DataTypes.hasCharge, 0);

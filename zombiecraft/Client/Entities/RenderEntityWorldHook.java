@@ -4,6 +4,7 @@ package zombiecraft.Client.Entities;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -31,5 +32,11 @@ public class RenderEntityWorldHook extends Render {
    public void renderClouds(float var1, Entity var2) {
       
    }
+
+	@Override
+	protected ResourceLocation func_110775_a(Entity entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

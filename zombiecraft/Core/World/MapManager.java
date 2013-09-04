@@ -1,17 +1,17 @@
 package zombiecraft.Core.World;
 
+import java.io.File;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-
-import java.io.File;
-
 import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
 import build.BuildServerTicks;
 import build.world.BuildJob;
 
+/* I guess this class is for map specific stuff I felt I didn't want to clutter ZCGame with */
 public class MapManager {
 	
 	public ZCGame zcGame;
@@ -180,7 +180,10 @@ public class MapManager {
 		int lobbyBuildID = -67;
 		
 		if (!BuildServerTicks.buildMan.isBuildActive(lobbyBuildID)) {
-			if (world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0) {
+			if (world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0 || 
+					world.getBlockId(zcLevel.lobby_coord_maxX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0 || 
+					world.getBlockId(zcLevel.lobby_coord_maxX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ) == 0 || 
+					world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ) == 0) {
 				BuildJob bj = new BuildJob(lobbyBuildID, zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ, zcGame.getSaveFolderPath() + "Lobby");
 				bj.build.dim = ZCGame.ZCDimensionID;
 				BuildServerTicks.buildMan.addBuild(bj);
@@ -196,7 +199,9 @@ public class MapManager {
 		
 		if (player.getDistance(zcLevel.lobby_coord_playerX, zcLevel.lobby_coord_playerY, zcLevel.lobby_coord_playerZ) > 8) {
 			int randRange = 2;
-			this.zcGame.teleportPlayer(player, zcLevel.lobby_coord_playerX - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange), zcLevel.lobby_coord_playerY, zcLevel.lobby_coord_playerZ - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange));
+			this.zcGame.teleportPlayer(player, zcLevel.lobby_coord_playerX - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange), zcLevel.lobby_coord_playerY + 1.5D, zcLevel.lobby_coord_playerZ - (randRange/2) + (player.worldObj.rand.nextFloat() * randRange));
+			
+			player.motionY = 0.8F;
 		}
 	}
 	

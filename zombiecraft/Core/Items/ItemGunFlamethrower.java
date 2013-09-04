@@ -2,7 +2,6 @@ package zombiecraft.Core.Items;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.Entities.Projectiles.EntityBulletFlame;

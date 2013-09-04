@@ -1,14 +1,11 @@
 package zombiecraft.Core.Entities.Projectiles;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 
-import zombiecraft.Core.ZCItems;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 public class EntityGrenadeStun extends EntityGrenade
 {
@@ -33,7 +30,7 @@ public class EntityGrenadeStun extends EntityGrenade
         //this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
     }
 
-    public EntityGrenadeStun(World var1, EntityLiving var2)
+    public EntityGrenadeStun(World var1, EntityLivingBase var2)
     {
         super(var1, var2);
         //this.item = new ItemStack(ZCItems.itemGrenadeStun, 1, 0);
@@ -46,11 +43,11 @@ public class EntityGrenadeStun extends EntityGrenade
             this.exploded = true;
             this.worldObj.playSoundAtEntity(this, "sdk.stungrenade", 4.0F, 1.0F / (this.rand.nextFloat() * 0.1F + 0.95F));
             //mod_SdkFlasher.LightEntity(this.worldObj, this, 15, 2);
-            ArrayList var1 = this.getEntityLivingsInRange(32.0D);
+            ArrayList var1 = this.getEntityLivingBasesInRange(32.0D);
 
             for (int var2 = 0; var2 < var1.size(); ++var2)
             {
-                EntityLiving var3 = (EntityLiving)var1.get(var2);
+                EntityLivingBase var3 = (EntityLivingBase)var1.get(var2);
 
                 if (var3.canEntityBeSeen(this))
                 {
@@ -194,7 +191,7 @@ public class EntityGrenadeStun extends EntityGrenade
         }
     }
 
-    public ArrayList getEntityLivingsInRange(double var1)
+    public ArrayList getEntityLivingBasesInRange(double var1)
     {
         ArrayList var3 = new ArrayList();
 
@@ -202,9 +199,9 @@ public class EntityGrenadeStun extends EntityGrenade
         {
             Entity var5 = (Entity)this.worldObj.loadedEntityList.get(var4);
 
-            if (var5 instanceof EntityLiving && var5.isEntityAlive() && this.getDistanceSqToEntity(var5) < var1 * var1)
+            if (var5 instanceof EntityLivingBase && var5.isEntityAlive() && this.getDistanceSqToEntity(var5) < var1 * var1)
             {
-                var3.add((EntityLiving)var5);
+                var3.add((EntityLivingBase)var5);
             }
         }
 

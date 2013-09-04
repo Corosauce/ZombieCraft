@@ -4,9 +4,11 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
 import org.lwjgl.opengl.GL11;
@@ -14,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 import build.render.Overlays;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,6 +28,11 @@ public class RenderZCZombie extends RenderBiped
     {
         super(new ModelZombieZC(), 0.5F);
     }
+
+	@Override
+	protected ResourceLocation func_110775_a(Entity entity) {
+		return new ResourceLocation(ZombieCraftMod.modID + ":textures/entities/zombie.png");
+	}
     
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
@@ -68,13 +76,13 @@ public class RenderZCZombie extends RenderBiped
 		
     }
     
-    protected void rotateCorpse(EntityLiving par1EntityLiving, float par2, float par3, float par4)
+    protected void rotateCorpse(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4)
     {
         GL11.glRotatef(180.0F - par3, 0.0F, 1.0F, 0.0F);
 
-        if (par1EntityLiving.deathTime > 0)
+        if (par1EntityLivingBase.deathTime > 0)
         {
-            float var5 = ((float)par1EntityLiving.deathTime + par4 - 1.0F) / 20.0F * 1.6F;
+            float var5 = ((float)par1EntityLivingBase.deathTime + par4 - 1.0F) / 20.0F * 1.6F;
             var5 = MathHelper.sqrt_float(var5);
 
             if (var5 > 1.0F)
@@ -82,10 +90,10 @@ public class RenderZCZombie extends RenderBiped
                 var5 = 1.0F;
             }
 
-            if (((BaseEntAI)par1EntityLiving).wasHeadshot) {
-            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLiving), 1.0F, 0.0F, 0.0F);
+            if (((BaseEntAI)par1EntityLivingBase).wasHeadshot) {
+            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLivingBase), 1.0F, 0.0F, 0.0F);
             } else {
-            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLiving), 0.0F, 0.0F, 1.0F);
+            	GL11.glRotatef(var5 * this.getDeathMaxRotation(par1EntityLivingBase), 0.0F, 0.0F, 1.0F);
             }
         }
     }

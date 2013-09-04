@@ -1,14 +1,15 @@
 package zombiecraft.Core.Dimension;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.Teleporter;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-
-import java.util.Random;
-
+import net.minecraftforge.common.DimensionManager;
 import zombiecraft.Core.GameLogic.ZCGame;
 
 public class ZCTeleporter extends Teleporter
@@ -31,11 +32,17 @@ public class ZCTeleporter extends Teleporter
     @Override
     public void placeInPortal(Entity par2Entity, double par3, double par5, double par7, float par9)
     {
-    	par2Entity.posY = world.getHeightValue((int)par2Entity.posX, (int)par2Entity.posZ);
+    	
     	
     	if (par2Entity.dimension == ZCGame.ZCDimensionID) {
+    		par2Entity.posY = world.getHeightValue((int)par2Entity.posX, (int)par2Entity.posZ) + 0.5D;
     		par2Entity.posX = world.rand.nextInt(50) - 25;
     		par2Entity.posZ = world.rand.nextInt(50) - 25;
+    	} else {
+    		World worldDest = DimensionManager.getWorld(par2Entity.dimension);
+    		if (worldDest != null) {
+    			par2Entity.posY = worldDest.getHeightValue((int)par2Entity.posX, (int)par2Entity.posZ) + 0.5D;
+    		}
     	}
     	
     	System.out.println("zc tele! " + par2Entity.dimension);

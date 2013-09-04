@@ -1,7 +1,9 @@
 package zombiecraft.Core.Entities.Projectiles;
 
+import java.util.List;
+
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -11,8 +13,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import java.util.List;
-
 public class EntityImpFireball extends EntityFireball
 {
     private int xTile = -1;
@@ -20,7 +20,7 @@ public class EntityImpFireball extends EntityFireball
     private int zTile = -1;
     private int inTile = 0;
     private boolean inGround = false;
-    public EntityLiving shootingEntity;
+    public EntityLivingBase shootingEntity;
     private int ticksAlive;
     private int ticksInAir = 0;
     public double accelerationX;
@@ -58,12 +58,12 @@ public class EntityImpFireball extends EntityFireball
         this.accelerationZ = par12 / var14 * 0.1D;
     }
 
-    public EntityImpFireball(World par1World, EntityLiving par2EntityLiving, double par3, double par5, double par7)
+    public EntityImpFireball(World par1World, EntityLivingBase par2EntityLivingBase, double par3, double par5, double par7)
     {
         super(par1World);
-        this.shootingEntity = par2EntityLiving;
+        this.shootingEntity = par2EntityLivingBase;
         this.setSize(1.0F, 1.0F);
-        this.setLocationAndAngles(par2EntityLiving.posX, par2EntityLiving.posY, par2EntityLiving.posZ, par2EntityLiving.rotationYaw, par2EntityLiving.rotationPitch);
+        this.setLocationAndAngles(par2EntityLivingBase.posX, par2EntityLivingBase.posY, par2EntityLivingBase.posZ, par2EntityLivingBase.rotationYaw, par2EntityLivingBase.rotationPitch);
         this.setPosition(this.posX, this.posY, this.posZ);
         this.yOffset = 0.0F;
         this.motionX = this.motionY = this.motionZ = 0.0D;
@@ -120,7 +120,7 @@ public class EntityImpFireball extends EntityFireball
 
             Vec3 var15 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             Vec3 var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            MovingObjectPosition var3 = this.worldObj.rayTraceBlocks(var15, var2);
+            MovingObjectPosition var3 = this.worldObj.clip(var15, var2);
             var15 = Vec3.createVectorHelper(this.posX, this.posY, this.posZ);
             var2 = Vec3.createVectorHelper(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
 
@@ -290,9 +290,9 @@ public class EntityImpFireball extends EntityFireball
                 this.accelerationZ = this.motionZ * 0.1D;
             }
 
-            if (par1DamageSource.getEntity() instanceof EntityLiving)
+            if (par1DamageSource.getEntity() instanceof EntityLivingBase)
             {
-                this.shootingEntity = (EntityLiving)par1DamageSource.getEntity();
+                this.shootingEntity = (EntityLivingBase)par1DamageSource.getEntity();
             }
 
             return true;

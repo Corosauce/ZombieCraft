@@ -1,7 +1,6 @@
 package zombiecraft.Core.Camera;
 
 import net.minecraft.nbt.NBTTagCompound;
-
 import build.SchematicData;
 import build.world.Build;
 
