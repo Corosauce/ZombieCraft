@@ -32,6 +32,7 @@ import net.minecraft.world.storage.WorldInfo;
 
 import org.lwjgl.opengl.GL11;
 
+import zombiecraft.Client.gui.elements.GuiMapSlot;
 import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -457,7 +458,7 @@ public class GuiSelectZCMap extends GuiScreen
         return var8;
     }
 
-    static List getList(GuiSelectZCMap par0GuiSelectWorld)
+    public static List getList(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.saveList;
     }
@@ -465,7 +466,7 @@ public class GuiSelectZCMap extends GuiScreen
     /**
      * called whenever an element in this gui is selected
      */
-    static int onElementSelected(GuiSelectZCMap par0GuiSelectWorld, int par1)
+    public static int onElementSelected(GuiSelectZCMap par0GuiSelectWorld, int par1)
     {
         return par0GuiSelectWorld.selectedWorld = par1;
     }
@@ -473,7 +474,7 @@ public class GuiSelectZCMap extends GuiScreen
     /**
      * returns the world currently selected
      */
-    static int getSelectedWorld(GuiSelectZCMap par0GuiSelectWorld)
+    public static int getSelectedWorld(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.selectedWorld;
     }
@@ -481,7 +482,7 @@ public class GuiSelectZCMap extends GuiScreen
     /**
      * returns the select button
      */
-    static GuiButton getSelectButton(GuiSelectZCMap par0GuiSelectWorld)
+    public static GuiButton getSelectButton(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.buttonSelect;
     }
@@ -489,7 +490,7 @@ public class GuiSelectZCMap extends GuiScreen
     /**
      * returns the rename button
      */
-    static GuiButton getRenameButton(GuiSelectZCMap par0GuiSelectWorld)
+    public static GuiButton getRenameButton(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.buttonRename;
     }
@@ -497,32 +498,32 @@ public class GuiSelectZCMap extends GuiScreen
     /**
      * returns the delete button
      */
-    static GuiButton getDeleteButton(GuiSelectZCMap par0GuiSelectWorld)
+    public static GuiButton getDeleteButton(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.buttonDelete;
     }
 
-    static GuiButton func_82312_f(GuiSelectZCMap par0GuiSelectWorld)
+    public static GuiButton func_82312_f(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.field_82316_w;
     }
 
-    static String func_82313_g(GuiSelectZCMap par0GuiSelectWorld)
+    public static String func_82313_g(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.localizedWorldText;
     }
 
-    static DateFormat func_82315_h(GuiSelectZCMap par0GuiSelectWorld)
+    public static DateFormat func_82315_h(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.dateFormatter;
     }
 
-    static String func_82311_i(GuiSelectZCMap par0GuiSelectWorld)
+    public static String func_82311_i(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.localizedMustConvertText;
     }
 
-    static String[] func_82314_j(GuiSelectZCMap par0GuiSelectWorld)
+    public static String[] func_82314_j(GuiSelectZCMap par0GuiSelectWorld)
     {
         return par0GuiSelectWorld.localizedGameModeText;
     }

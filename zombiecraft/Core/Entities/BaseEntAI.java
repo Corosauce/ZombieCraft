@@ -7,123 +7,140 @@ import net.minecraft.block.BlockHalfSlab;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.EntityReddustFX;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Blocks.BlockBarricade;
 import zombiecraft.Core.Blocks.BlockBarrier;
 import zombiecraft.Core.Blocks.BlockTower;
 import zombiecraft.Core.Blocks.BlockWallPlaceable;
-import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.WaveManager;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
+import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.c_IEnhAI;
-import CoroAI.entity.EnumDiploType;
-import CoroAI.entity.JobBase;
-import CoroAI.entity.JobProtect;
-import CoroAI.entity.c_EnhAI;
+import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.componentAI.AIAgent;
+import CoroAI.componentAI.IAdvPF;
+import CoroAI.componentAI.ICoroAI;
+import CoroAI.componentAI.jobSystem.JobBase;
+import CoroAI.componentAI.jobSystem.JobProtect;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BaseEntAI extends c_EnhAI
+public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
 {
-	
-	//public int team;
-	
 	public boolean initWaveSettings = true;
-
 	public int curBlockDamage;
-
 	public boolean isBreaking;
-	
 	public boolean wasHeadshot;
+    
+    public float aimVal = 0.8F;
+    public float recoilVal = 0.9F;
+    public float reloadVal = 0.5F;
+    
+    public int holsterDelay = 0;
 	
-	public BaseEntAI(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
+	//new AI gen
+	public AIAgent agent;
+	
+	//added for gun handling
+	public int curCooldown_FireGun;
+	public int curCooldown_Reload;
+	public int curClipAmount;
 	
     public BaseEntAI(World par1World)
     {
         super(par1World);
         
         //team = 0;
-        maxReach_Melee = 2.0F;
+        agent.maxReach_Melee = 2.0F;
         
         //no reload time to let guns handle it?
-        cooldown_Ranged = 3;
+        //cooldown_Ranged = 3; moved to override
         
         //System.out.println("REMOVING SERVERMODE CHECK BaseEntAI constructor");
         if (ZCServerTicks.zcGame.serverMode) {
-        	this.serverMode = true;
         	
-        	maxReach_Melee = 1.3F;
+        	agent.maxReach_Melee = 1.3F;
         }
+        
+        agent.PFRangePathing = 96;
         
         //System.out.println("maxReach_Melee: " + maxReach_Melee);
         
-        entityCollisionReduction = 0.9F;
+        //entityCollisionReduction = 0.9F;
         
-        this.setExp(1);
+        //this.setExp(1);
         //mod_ZombieCraft.zcGame.addTasks(tasks, targetTasks, this);
         
     }
     
     @Override
+    protected void onDeathUpdate()
+    {
+        ++this.deathTime;
+
+        if (this.deathTime == 20)
+        {
+            int i;
+
+            if (!this.worldObj.isRemote && (this.recentlyHit > 0 || this.isPlayer()) && !this.isChild() && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot"))
+            {
+                i = this.getExperiencePoints(this.attackingPlayer);
+
+                while (i > 0)
+                {
+                    int j = EntityXPOrb.getXPSplit(i);
+                    i -= j;
+                    this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, j));
+                }
+            }
+
+            this.setDead();
+
+            for (i = 0; i < 5; ++i)
+            {
+                double d0 = this.rand.nextGaussian() * 0.15D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                double d2 = this.rand.nextGaussian() * 0.15D;
+                this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.2F/* + (double)(this.rand.nextFloat() * this.height)*/, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
+            }
+        }
+    }
+    
+    @Override
+    protected int getExperiencePoints(EntityPlayer par1EntityPlayer) {
+    	return 1;
+    }
+    
+    @Override
     public void entityInit() {
     	super.entityInit();
-    	this.dataWatcher.addObject(24, Integer.valueOf(0));
+    	checkAgent();
+    	agent.entityInit();
+    	this.dataWatcher.addObject(27, Integer.valueOf(0)); //headshot state
     }
     
     public void dropItems() {
     	
     }
     
-    @Override
-	public boolean attackEntityFrom(DamageSource damagesource, int i) {
-    	
-    	if (dipl_team == EnumDiploType.COMRADE) {
-	    	if (damagesource.getEntity() instanceof EntityPlayer && fakePlayer != null) {
-	    		EntityPlayer entP = (EntityPlayer)damagesource.getEntity();
-	    		ItemStack is = entP.getCurrentEquippedItem();
-	    		if (!entP.username.contains("fakePlayer") && is != null && is.getItem() instanceof ItemGun) {
-	    			ItemGun ig = (ItemGun)is.getItem();
-	    			
-	    			this.inventory.currentItem = slot_Ranged;
-	    			this.inventory.setInventorySlotContents(slot_Ranged, is.copy());
-	    			
-	    			
-	    			int ammoID = ig.ammoType.ordinal();
-	    			int giveAmount = ZCUtil.getAmmoData(entP.username, ammoID);
-					
-	    			//give all your ammo of that gun to him
-					ZCUtil.setAmmoData(fakePlayer.username, ammoID, giveAmount + ZCUtil.getAmmoData(fakePlayer.username, ammoID));
-					ZCUtil.setAmmoData(entP.username, ammoID, 0);
-					entP.inventory.setInventorySlotContents(entP.inventory.currentItem, null);
-
-					syncClientItems();
-					
-					return false;
-	    		}
-	    	}
-    	}
-    	
-    	return super.attackEntityFrom(damagesource, i);
-    }
-    
-    @Override
+    //needs reconsideration
+    /*@Override
     public boolean customRightClick(World world, ItemStack stack, EntityPlayer player) {
     	ItemStack is = this.getCurrentEquippedItem();
     	if (is != null && is.getItem() instanceof ItemGun) {
@@ -141,28 +158,39 @@ public class BaseEntAI extends c_EnhAI
     		}
     	}
     	return true;
-    }
-    
-    public float aimVal = 0.8F;
-    public float recoilVal = 0.9F;
-    public float reloadVal = 0.5F;
-    
-    public int holsterDelay = 0;
+    }*/
     
     @Override
-    public void updateSwing() {
+    public void swingItem()
+    {
+    	super.swingItem();
+    	if (!worldObj.isRemote) {
+    		agent.swingArm();
+    	}
+    }
+    
+    @Override
+    protected void updateArmSwingProgress() {
+    	
+    	if (!worldObj.isRemote) return;
     	
     	if (holsterDelay > 0) holsterDelay--;
     	
-    	ItemStack is = this.getCurrentEquippedItem();
-    	if (is != null && is.getItem() instanceof ItemGun) {
-    		if(swingArm) {
-	            swingTick++;
+    	//ItemStack is = this.getCurrentEquippedItem();
+    	if (this.getCurrentItemOrArmor(0) != null && this.getCurrentItemOrArmor(0).getItem() instanceof ItemGun/*agent.useInv && agent.entInv.getCurrentEquippedItem() != null && agent.entInv.getCurrentEquippedItem().getItem() instanceof ItemGun*/) {
+    		if(agent.swingArm) {
+    			agent.swingTick++;
 	
-	            
-	            if(swingTick >= 5) {
-	                swingTick = 0;
-	                swingArm = false;
+    			int recoilAnimTime = 5;
+    			
+    			ItemStack is = this.getCurrentItemOrArmor(0);
+    	    	if (is != null && is.getItem() instanceof ItemGun) {
+    	    		recoilAnimTime = ((ItemGun)is.getItem()).useDelay;
+    	    	}
+	            //System.out.println(recoilAnimTime);
+	            if(agent.swingTick >= Math.max(2, Math.min(8, recoilAnimTime))) {
+	            	agent.swingTick = 0;
+	            	agent.swingArm = false;
 	            } else {
 	            	holsterDelay = 60;
 	            }
@@ -170,39 +198,45 @@ public class BaseEntAI extends c_EnhAI
 	            //swingProgress = recoilVal;
 	            
 	        } else {
-	            swingTick = 0;
+	        	agent.swingTick = 0;
 	        }
     		
-    		//this depended on item stack synced nbt, now broken reload animation
+    		//this depended on item stack synced nbt, now broken reload animation, definately still broken
     		//if (is.stackTagCompound.hasKey("reloadDelay")) {
-        		int nReloadDelay = this.curCooldown_Reload;//is.stackTagCompound.getInteger("reloadDelay");
-        		
-        		if (nReloadDelay > 0) {
-        			if (holsterDelay > 10) holsterDelay = 10;
-        		}
+    		int nReloadDelay = curCooldown_Reload;//is.stackTagCompound.getInteger("reloadDelay");
+    		
+    		if (nReloadDelay > 0) {
+    			if (holsterDelay > 10) holsterDelay = 10;
+    		}
     		//}
 	
+    		//System.out.println(agent.swingArm + " - agent.swingTick: " + agent.swingTick);
+    		
     		if (holsterDelay > 10) {
-    			swingProgress = 0.36F - (swingTick * 0.04F);
+    			swingProgress = 0.36F - (agent.swingTick * 0.04F);
     		} else {
     			swingProgress = holsterDelay * 0.01F;
     		}
     		prevSwingProgress = swingProgress;
     	} else {
-	    	if(swingArm) {
-	            swingTick++;
+	    	if(agent.swingArm) {
+	    		agent.swingTick++;
 	
 	            
-	            if(swingTick == 8) {
-	                swingTick = 0;
-	                swingArm = false;
+	            if(agent.swingTick == 8) {
+	            	agent.swingTick = 0;
+	            	agent.swingArm = false;
 	            }
 	        } else {
-	            swingTick = 0;
+	        	agent.swingTick = 0;
 	        }
 	
-	        swingProgress = (float)swingTick / 8F;
+	        swingProgress = (float)agent.swingTick / 8F;
     	}
+    	
+    	//swingProgress = 0.5F;
+    	
+    	
     }
     
     @Override
@@ -210,7 +244,7 @@ public class BaseEntAI extends c_EnhAI
 		return isBreaking;
 	}
     
-    @Override
+    /*@Override
     public void setPrjOwner(int offset) {
     	super.setPrjOwner(offset);
     	
@@ -218,76 +252,15 @@ public class BaseEntAI extends c_EnhAI
     	if (ent instanceof EntityBullet) {
     		((EntityBullet) ent).owner = this;
     	}
-    }
+    }*/
     
     public void leftClickItem(Entity var1) {
-    	ZCGame.instance().pvpFixPre();
-    	super.leftClickItem(var1);
-    	ZCGame.instance().pvpFixPost();
+    	
     }
     
     protected void updateAITasks()
     {
-        ++this.entityAge;
-        //Profiler.startSection("checkDespawn");
-        this.despawnEntity();
-        //Profiler.endSection();
-        //Profiler.startSection("sensing");
-        //this.func_48090_aM().func_48481_a();
-        //Profiler.endSection();
-        //Profiler.startSection("targetSelector");
-        //this.targetTasks.onUpdateTasks();
-        //Profiler.endSection();
-        //Profiler.startSection("goalSelector");
-        //this.tasks.onUpdateTasks();
-        //Profiler.endSection();
-        //Profiler.startSection("navigation");
-        
-        //entityCollisionReduction = 0.6F;
-        
-        //these 2 methods must stick together in this order
-        checkPathfindLock();
-        this.getNavigator().onUpdateNavigation();
-        
-        updateAI();
-        
-        //float oldSpeed = getAIMoveSpeed();
-        
-        
-        if (!this.getNavigator().noPath()) {
-        	
-        	//something to help aiming while pathfinding
-        	try {
-	            double pposX = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75646_b", "posX").toString());
-	            double pposY = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75647_c", "posY").toString());
-	            double pposZ = Double.valueOf(c_CoroAIUtil.getPrivateValueSRGMCP(EntityMoveHelper.class, this.getMoveHelper(), "field_75644_d", "posZ").toString());
-	            
-	            for (int i = 0; i < 6; i++) {
-	        		this.getMoveHelper().onUpdateMoveHelper();
-	    	        this.getMoveHelper().setMoveTo(pposX, pposY, pposZ, getMoveHelper().getSpeed());
-	        	}
-        	} catch (Exception ex) {
-        		System.out.println("REFLECTION FAIL");
-        		ex.printStackTrace();
-        	}
-        	
-        	
-        }
-        
-        this.getMoveHelper().onUpdateMoveHelper();
-        this.getLookHelper().onUpdateLook();
-        this.getJumpHelper().doJump();
-        
-        
-        
-        //Profiler.endSection();
-        //Profiler.startSection("mob tick");
-        
-        //this.func_48097_s_();
-        //Profiler.endSection();
-        //Profiler.startSection("controls");
-        
-        //Profiler.endSection();
+    	agent.updateAITasks();
         isBreaking = false;
     }
     
@@ -332,16 +305,11 @@ public class BaseEntAI extends c_EnhAI
         }
     }
     
-    @Override
-    public void updateAI() {
-    	super.updateAI();
-    }
-    
     public float getMoveSpeed() {
     	return (float) this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111126_e();
     }
     
-    @Override
+    
     public boolean isValidLightLevel() {
     	return true;
     }
@@ -350,12 +318,6 @@ public class BaseEntAI extends c_EnhAI
     public boolean getCanSpawnHere()
     {
         return /*this.isValidLightLevel() && */super.getCanSpawnHere();
-    }
-    
-    @Override
-    public float getBlockPathWeight(int par1, int par2, int par3)
-    {
-        return 1.0F;//0.5F - this.worldObj.getLightBrightness(par1, par2, par3);
     }
     
     @Override
@@ -391,16 +353,60 @@ public class BaseEntAI extends c_EnhAI
 		}
     }
 
+	@Override
+	protected void func_110147_ax() {
+		super.func_110147_ax();
+		float speed = 0.5F;
+		float health = 20;
+		try {
+			health = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveHealth));
+			float healthAmp = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveHealthAmp));
+			float entBaseSpeed = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedBase));
+			float entRandSpeedAdd = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedRand));
+			float amp_Speed = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedAmp));
+			float speedMax = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedAmpMax));
+			
+			if (!(this instanceof BaseEntAI_Ally)) {
+				WaveManager wMan = ZCServerTicks.zcGame.wMan;
+				speed = entBaseSpeed + (entRandSpeedAdd * worldObj.rand.nextFloat()) + (amp_Speed * wMan.wave_Stage);
+				if (speed > speedMax) speed = speedMax;
+				health = (int)(health + (health * (healthAmp * wMan.wave_Stage)));
+				setEntityHealth(health);
+			} else {
+				speed = 0.55F;
+			}
+		} catch (Exception ex) {
+			//occurs when ents near player load before games initialized LevelConfig
+			//not really a big deal as these entities should get cleared out elsewhere on load if not in active ZC game anyways
+		}
+		agent.setSpeedFleeAdditive(0.1F);
+		agent.setSpeedNormalBase(speed);
+		agent.applyEntityAttributes();
+		//System.out.println("setting ZC zombie health/speed to: " + health + "/" + speed);
+        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(health);
+	}
+    
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
      */
+	@Override
     public void onLivingUpdate()
     {
-    
+        if (curCooldown_FireGun > 0) { curCooldown_FireGun--; }
+        if (curCooldown_Reload > 0) { curCooldown_Reload--; }
+        
+        //cancel any swing arm attempts while reloading so client doesnt spaz out thinking its firing
+        if (curCooldown_Reload > 0) {
+        	//System.out.println("cancel swing!");
+        	agent.swingArm = false;
+        }
+        
+		this.updateArmSwingProgress();
+		agent.onLivingUpdateTick();
     	//entityCollisionReduction = 0.9F;
     	
-    	if (worldObj.isRemote && getDataWatcher().getWatchableObjectInt(24) == 1) {
+    	if (worldObj.isRemote && getDataWatcher().getWatchableObjectInt(27) == 1) {
     		if (!wasHeadshot) {
     			particleHeadShot();
     		}
@@ -421,21 +427,21 @@ public class BaseEntAI extends c_EnhAI
 	            
 	            //Wave based difficulty adjustments
 	    		//ent.setExp((int)(ent.getExp() + (ent.getExp() * (wMan.amp_Exp * wMan.wave_Stage))));
-	    		ent.setHealth((int)(ent.func_110143_aJ() + (ent.func_110143_aJ() * (wMan.amp_Health * wMan.wave_Stage))));
-	    		ent.lungeFactor += ent.lungeFactor * (wMan.amp_Lunge * wMan.wave_Stage);
 	    		
-	    		setMoveSpeed(0.23F);
+	    		//ent.lungeFactor += ent.lungeFactor * (wMan.amp_Lunge * wMan.wave_Stage);
+	    		
+	    		//setMoveSpeed(0.23F);
 	    		
 	    		//random variation
-	    		ent.setMoveSpeed(this.getMoveSpeed() + (0.1F * worldObj.rand.nextFloat()));
+	    		//ent.setMoveSpeed(this.getMoveSpeed() + (0.1F * worldObj.rand.nextFloat()));
 	    		
 	    		if (!worldObj.isRemote) {
 	    			//System.out.println("speed was: " + this.getMoveSpeed());
 	    		}
 	    		
-	    		ent.setMoveSpeed(this.getMoveSpeed() + (0.002F * wMan.wave_Stage));
-	    		if (ent.getMoveSpeed() > wMan.amp_Speed_Max) ent.setMoveSpeed(wMan.amp_Speed_Max);
-	    		if (ent.lungeFactor > wMan.amp_Lunge_Max) ent.lungeFactor = wMan.amp_Lunge_Max;
+	    		//ent.setMoveSpeed(this.getMoveSpeed() + (0.002F * wMan.wave_Stage));
+	    		//if (ent.getMoveSpeed() > wMan.amp_Speed_Max) ent.setMoveSpeed(wMan.amp_Speed_Max);
+	    		//if (ent.lungeFactor > wMan.amp_Lunge_Max) ent.lungeFactor = wMan.amp_Lunge_Max;
 	    		
 	    		//System.out.println("ent.lungeFactor " + ent.lungeFactor);
 	    		if (true) {
@@ -500,7 +506,7 @@ public class BaseEntAI extends c_EnhAI
     @Override
 	public void setDead() {
     	
-    	JobBase jb = job.getPrimaryJobClass();
+    	JobBase jb = agent.jobMan.getPrimaryJob();
 		if (jb instanceof JobProtect) {
 			String name = ((JobProtect) jb).playerName;
 			ZCGame.instance().check(name);
@@ -514,17 +520,23 @@ public class BaseEntAI extends c_EnhAI
     }
     
     @Override
-	public int overrideBlockPathOffset(c_IEnhAI ent, int id, int meta, int x, int y, int z) {
-    	c_EnhAI entAI = (c_EnhAI)ent;
+	public int overrideBlockPathOffset(ICoroAI ent, int id, int meta, int x, int y, int z) {
+    	ICoroAI entAI = (ICoroAI)ent;
     	
 		if (id == ZCBlocks.barricadePlaceable.blockID) {
-			if (entAI.dipl_team == EnumDiploType.COMRADE) {
+			if (entAI instanceof BaseEntAI_Ally) {
 				return -2;
 			}
-			if (entAI.worldObj.rand.nextInt(10) != 0) {
+			if (((EntityLiving)entAI).worldObj.rand.nextInt(10) != 0) {
 				return 1;
 			}
 			return -2;
+		} else if (Block.blocksList[id] instanceof BlockBarricade) {
+			if (entAI instanceof BaseEntAI_Ally) {
+				return 0;
+			} else {
+				return 1;
+			}
 		} else if (Block.blocksList[id] instanceof BlockHalfSlab) {
 			return 0;
 		} else if (Block.blocksList[id] instanceof BlockBarrier) {
@@ -536,11 +548,50 @@ public class BaseEntAI extends c_EnhAI
 		}
 		return -66;
     }
-    
-    @Override
-    public void attackEntityWithNothing(Entity var1) {
+
+	public void headshot() {
+		//System.out.println("headshot");
+		if (getDataWatcher().getWatchableObjectInt(27) == 0) {
+			worldObj.playSoundAtEntity(this, ZombieCraftMod.modID + ":zc.headshot", 0.6F, 1.0F);
+		}
+		getDataWatcher().updateObject(27, Integer.valueOf(1));
+	}
+	
+	//ICoroAI overrides \
+
+	@Override
+	public AIAgent getAIAgent() {
+		return agent;
+	}
+
+	@Override
+	public void setPathResultToEntity(PathEntity pathentity) {
+		agent.setPathToEntity(pathentity);
+	}
+
+	@Override
+	public boolean isEnemy(Entity ent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getCooldownMelee() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getCooldownRanged() {
+		return 3;
+	}
+
+	@Override
+	public void attackMelee(Entity ent, float dist) {
+		
+		ZCGame.instance().pvpFixPre();
     	
-    	int damage = 1;
+		int damage = 1;
     	
     	if (ZCGame.instance().wMan.difficulty == EnumDifficulty.MEDIUM) {
     		damage = 2;
@@ -548,34 +599,73 @@ public class BaseEntAI extends c_EnhAI
     		damage = 3;
     	}
     	
-    	if (var1 instanceof EntityPlayer) {
-    		EntityPlayer entP = (EntityPlayer)var1;
+    	if (ent instanceof EntityPlayer) {
+    		EntityPlayer entP = (EntityPlayer)ent;
     		
     		if ((Integer)ZCGame.instance().getData(entP, zombiecraft.Core.DataTypes.juggTime) > 0) {
     			damage /= 2;
     		}
     	}
     	
-    	if (var1 instanceof EntityLivingBase) {
+    	if (ent instanceof EntityLivingBase) {
 	    	
-    		DamageSource ds = DamageSource.causeMobDamage((EntityLivingBase)var1);
+    		DamageSource ds = DamageSource.causeMobDamage((EntityLivingBase)ent);
     		ds.damageType = "zc.zombie";
     		
-    		var1.attackEntityFrom(ds, damage);
+    		ent.attackEntityFrom(ds, damage);
 	    	//super.attackEntityWithNothing(var1);
-	    	var1.velocityChanged = false;
+    		ent.velocityChanged = false;
 	    	
 	    	
     	}
-    }
-
-	public void headshot() {
-		// TODO Auto-generated method stub
-		//System.out.println("headshot");
-		if (getDataWatcher().getWatchableObjectInt(24) == 0) {
-			worldObj.playSoundAtEntity(this, "zc.headshot", 0.6F, 1.0F);
-		}
-		getDataWatcher().updateObject(24, Integer.valueOf(1));
+    	
+    	ZCGame.instance().pvpFixPost();
 	}
+
+	@Override
+	public void attackRanged(Entity ent, float dist) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cleanup() {
+		agent = null;
+	}
+	
+	//ICoroAI overrides /
+	
+	public void checkAgent() {
+		if (agent == null) agent = new AIAgent(this, false);
+	}
+
+	@Override
+	public boolean canClimbWalls() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canClimbLadders() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getDropSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+    @Override
+    public void readEntityFromNBT(NBTTagCompound par1nbtTagCompound) {
+    	agent.readEntityFromNBT(par1nbtTagCompound);
+    	super.readEntityFromNBT(par1nbtTagCompound);
+    }
     
+    @Override
+    public void writeEntityToNBT(NBTTagCompound par1nbtTagCompound) {
+    	agent.writeEntityToNBT(par1nbtTagCompound);
+    	super.writeEntityToNBT(par1nbtTagCompound);
+    }
 }

@@ -17,7 +17,7 @@ import net.minecraftforge.event.world.WorldEvent.Unload;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.componentAI.ICoroAI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -108,8 +108,8 @@ public class ZCEventHandler {
 	        	}
 	        	
 	        	EntityPlayer playerRef = null;
-	        	if (entSource instanceof c_EnhAI) {
-	        		playerRef = ((c_EnhAI)entSource).fakePlayer;
+	        	if (entSource instanceof ICoroAI && ((ICoroAI)entSource).getAIAgent().useInv) {
+	        		playerRef = ((ICoroAI)entSource).getAIAgent().entInv.fakePlayer;
 	        	} else if (entSource instanceof EntityPlayer) {
 	        		playerRef = (EntityPlayer)entSource;
 	        	}

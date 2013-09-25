@@ -12,6 +12,7 @@ import net.minecraftforge.common.Property;
 
 import org.lwjgl.opengl.GL11;
 
+import zombiecraft.Client.gui.elements.GuiButtonZC;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
@@ -44,6 +45,7 @@ public class GuiEditorCP extends GuiScreen
     private static int G_TOOLMODE_SPAWN = 12;
     
     private static int G_LOBBYMENU = 13;
+    private static int G_MAPCONFIG = 14;
     
     public ResourceLocation resGUI = new ResourceLocation(ZombieCraftMod.modID + ":textures/gui/editorCP.png");
     
@@ -136,6 +138,7 @@ public class GuiEditorCP extends GuiScreen
 	        //this.buttonList.add(new GuiButton(G_TOOLMODE_SPAWN, startX2 + 70, startY + div*4 + var1, 20, 20, "S"));
 	        
 	        //this.buttonList.add(new GuiButton(G_TOOLMODE, startX2, startY + div*5 + var1, 90, 20, "Tool Mode: " + ZCGame.instance().mapMan.editToolMode));
+	        this.buttonList.add(new GuiButton(G_MAPCONFIG, startX2, startY + div*5 + var1, 90, 20, "Map Config"));
 	        
 	        this.buttonList.add(new GuiButton(G_DOORNOCLIP, startX2, startY + div*6 + var1, 90, 20, (ZCGame.instance().mapMan.doorNoClip ? "\u00A74" : "") + "Door No-Clip"));
         }
@@ -226,6 +229,10 @@ public class GuiEditorCP extends GuiScreen
         if (var1.id == G_LOBBYMENU)
         {
         	this.mc.displayGuiScreen(new GuiSession(mc.thePlayer.inventory));
+        }
+        if (var1.id == G_MAPCONFIG)
+        {
+        	this.mc.displayGuiScreen(new GuiMapConfig(mc.thePlayer.inventory));
         }
         if (var1.id == G_EDITMODE)
         {

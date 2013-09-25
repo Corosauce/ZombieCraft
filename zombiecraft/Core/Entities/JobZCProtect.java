@@ -1,15 +1,11 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumMovingObjectType;
-import net.minecraft.util.MovingObjectPosition;
-import zombiecraft.Core.ZCItems;
-import zombiecraft.Core.ZCUtil;
-import zombiecraft.Core.Items.ItemGun;
+import zombiecraft.Core.World.LevelConfig;
+import CoroAI.componentAI.jobSystem.JobManager;
+import CoroAI.componentAI.jobSystem.JobProtect;
 import CoroAI.entity.EnumJobState;
-import CoroAI.entity.JobManager;
-import CoroAI.entity.JobProtect;
 
 public class JobZCProtect extends JobProtect {
 	
@@ -28,6 +24,12 @@ public class JobZCProtect extends JobProtect {
 	}
 	
 	@Override
+	public void fleeFrom(Entity fleeFrom) {
+		super.fleeFrom(fleeFrom);
+		//ai.entityToAttack = null;
+	}
+	
+	/*@Override
 	public void setJobItems() {
 		ent.inventory.addItemStackToInventory(new ItemStack(ZCItems.itemSword, 1));
 		
@@ -36,26 +38,26 @@ public class JobZCProtect extends JobProtect {
 		ent.inventory.addItemStackToInventory(new ItemStack(spawnGun, 1));
 		
 		ZCUtil.setAmmoData(ent.fakePlayer.username, spawnGun.ammoType.ordinal(), spawnGun.magSize * 4);
-	}
+	}*/
 	
 	@Override
 	public void onIdleTick() {
-		if(((ent.getNavigator().getPath() == null || ent.getNavigator().getPath().isFinished()) && ent.rand.nextInt(5) == 0/* || ent.rand.nextInt(80) == 0*/))
+		if(((ent.getNavigator().getPath() == null || ent.getNavigator().getPath().isFinished()) && ent.worldObj.rand.nextInt(5) == 0/* || ent.rand.nextInt(80) == 0*/))
         {
         	
         	//System.out.println("home dist: " + ent.getDistance(ent.homeX, ent.homeY, ent.homeZ));
-        	if (ent.getDistance(ent.homeX, ent.homeY, ent.homeZ) < ent.maxDistanceFromHome) {
-        		if (ent.rand.nextInt(5) == 0) {
+        	if (ent.getDistance(ai.homeX, ai.homeY, ai.homeZ) < ai.maxDistanceFromHome) {
+        		if (ent.worldObj.rand.nextInt(5) == 0) {
         			int randsize = 8;
-            		ent.walkTo(ent, ent.homeX+ent.rand.nextInt(randsize) - (randsize/2), ent.homeY+1, ent.homeZ+ent.rand.nextInt(randsize) - (randsize/2),ent.maxPFRange, 600);
+            		ai.walkTo(ent, ai.homeX+ent.worldObj.rand.nextInt(randsize) - (randsize/2), ai.homeY+1, ai.homeZ+ent.worldObj.rand.nextInt(randsize) - (randsize/2),ai.maxPFRange, 600);
         		} else {
-        			ent.updateWanderPath();
+        			ai.updateWanderPath();
         		}
         		
         		
         	} else {
         		int randsize = 8;
-        		ent.walkTo(ent, ent.homeX+ent.rand.nextInt(randsize) - (randsize/2), ent.homeY+1, ent.homeZ+ent.rand.nextInt(randsize) - (randsize/2),ent.maxPFRange, 600);
+        		ai.walkTo(ent, ai.homeX+ent.worldObj.rand.nextInt(randsize) - (randsize/2), ai.homeY+1, ai.homeZ+ent.worldObj.rand.nextInt(randsize) - (randsize/2),ai.maxPFRange, 600);
         	}
         } else {
         	if (ent.getNavigator().getPath() == null || ent.getNavigator().getPath().isFinished()) {
@@ -66,7 +68,8 @@ public class JobZCProtect extends JobProtect {
 	
 	@Override
 	public boolean avoid(boolean actOnTrue) {
-		return false;
+		return super.avoid(actOnTrue);
+		
 	}
 	
 	@Override
@@ -88,7 +91,7 @@ public class JobZCProtect extends JobProtect {
 		int pZ = (int)(entP.posZ-0.5F);
 		
 		if (state == EnumJobState.IDLE) {
-			ent.walkTo(ent, pX, pY, pZ, ent.maxPFRange, 600);
+			ai.walkTo(ent, pX, pY, pZ, ai.maxPFRange, 600);
 			setJobState(EnumJobState.W1);
 		} else if (state == EnumJobState.W1) {
 			if (ent.getDistanceToEntity(entP)/*ent.getDistance(pX, pY, pZ)*/ <= minDist) {
@@ -99,7 +102,7 @@ public class JobZCProtect extends JobProtect {
 				//setJobState(EnumJobState.W2);
 			} else if (walkingTimeout <= 0 || ent.getNavigator().getPath() == null || ent.getNavigator().getPath().isFinished()) {
 				//ent.setPathExToEntity(null);
-				ent.walkTo(ent, pX, pY, pZ, ent.maxPFRange, 600);
+				ai.walkTo(ent, pX, pY, pZ, ai.maxPFRange, 600);
 			}
 		} else if (state == EnumJobState.W2) {
 			
@@ -109,6 +112,11 @@ public class JobZCProtect extends JobProtect {
 	}
 	
 	@Override
+	public boolean shouldTickCloseCombat() {
+		return false;
+	}
+	
+	/*@Override
 	public void onCloseCombatTick() {
 		EntityPlayer entP = ent.worldObj.getPlayerEntityByName(playerName);
 		
@@ -132,6 +140,6 @@ public class JobZCProtect extends JobProtect {
 	    		ent.jump();
 			}
 		}
-	}
+	}*/
 	
 }

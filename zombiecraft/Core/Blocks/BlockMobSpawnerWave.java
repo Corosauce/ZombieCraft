@@ -12,7 +12,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.Items.ItemEditTool;
 import zombiecraft.Forge.ZombieCraftMod;
 
 public class BlockMobSpawnerWave extends BlockContainer
@@ -39,12 +41,16 @@ public class BlockMobSpawnerWave extends BlockContainer
     		int z, EntityPlayer par5EntityPlayer, int par6, float par7,
     		float par8, float par9) {
     	
-    	if (!world.isRemote && ZCGame.instance().canEdit(par5EntityPlayer)) {
-    		//par5EntityPlayer.openGui(ZombieCraftMod.instance, -1, world, x, y, z);
+    	if (par5EntityPlayer.getCurrentEquippedItem() == null || !(par5EntityPlayer.getCurrentEquippedItem().getItem() instanceof ItemEditTool)) {
+    		par5EntityPlayer.openGui(ZombieCraftMod.instance, -1, world, x, y, z);
+    		return true;
+    	} else {
+	    	if (!world.isRemote && ZCGame.instance().canEdit(par5EntityPlayer)) {
+	    		return false;
+	    	} else {
+	    		return false;
+	    	}
     	}
-    	
-    	return super.onBlockActivated(world, x, y, z, par5EntityPlayer,
-    			par6, par7, par8, par9);
     }
 
     /**

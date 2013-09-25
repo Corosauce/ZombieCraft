@@ -39,6 +39,7 @@ import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.Blocks.BlockBarricade;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.EntityWorldHook;
 import zombiecraft.Core.Items.ItemAbility;
 import zombiecraft.Core.Items.ItemGun;
@@ -49,10 +50,8 @@ import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
 import CoroAI.Persister;
 import CoroAI.c_CoroAIUtil;
-import CoroAI.entity.EnumJob;
-import CoroAI.entity.JobBase;
-import CoroAI.entity.JobProtect;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.componentAI.jobSystem.JobBase;
+import CoroAI.componentAI.jobSystem.JobProtect;
 import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -107,8 +106,8 @@ public abstract class ZCGame {
 	public boolean settingSize = false;
 	
 	//Session stuff
-	public static NBTTagCompound nbtInfoSessionClient = new NBTTagCompound();
-	public NBTTagCompound nbtInfoServer = new NBTTagCompound();
+	public static NBTTagCompound nbtInfoClientSession = new NBTTagCompound();
+	public NBTTagCompound nbtInfoServerSession = new NBTTagCompound();
 	
 	public static ZCGame instance() {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
@@ -239,7 +238,8 @@ public abstract class ZCGame {
 	public void movePlayersToLobby() {
 		for (int var1 = 0; var1 < zcLevel.playersInGame.size(); ++var1)
         {
-			mapMan.movePlayerToLobby(zcLevel.playersInGame.get(var1));
+			EntityPlayer entP = zcLevel.playersInGame.get(var1);
+			if (!entP.capabilities.isCreativeMode) mapMan.movePlayerToLobby(entP);
         }
 	}
 	
@@ -460,9 +460,9 @@ public abstract class ZCGame {
 			//System.out.println("comrade ammo: " + ZCUtil.getAmmoData(player.username, ammoID));
 			
 			
-			c_EnhAI ent = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(player.username);
+			BaseEntAI ent = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(player.username);
 			if (ent != null) {
-				JobBase jb = ent.job.getJobClass();
+				JobBase jb = ent.agent.jobMan.getPrimaryJob();
 				if (jb instanceof JobProtect) {
 					String owner = ((JobProtect)jb).playerName;
 					if (owner != null && owner.length() > 0) {
@@ -511,7 +511,7 @@ public abstract class ZCGame {
 		if (!player.username.contains("fakePlayer")) this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
 	}
 	
-	public void entTick(c_EnhAI ent) {
+	public void entTick(BaseEntAI ent) {
 		
 	}
 	
@@ -750,6 +750,7 @@ public abstract class ZCGame {
 			
 			if (((BlockBarricade)Block.blocksList[id]).tryRepairDoor(player.worldObj,x,y,z,player)) {
 				this.givePoints(player, Buyables.barricadeRepairRedeem);
+				points = (Integer)this.getData(player, DataTypes.zcPoints);
 				/*points += Buyables.barricadeRepairRedeem;
 				this.setData(player, DataTypes.zcPoints, points);*/
 				
@@ -783,7 +784,7 @@ public abstract class ZCGame {
 		}
 	}
     
-    public void spawnWaveEntity(c_EnhAI ent) {
+    public void spawnWaveEntity(BaseEntAI ent) {
 		ent.worldObj.spawnEntityInWorld(ent);
     	
     	//spawning as weather effect, Persister automatically converts to chunk entity if within range, so far no issues
@@ -793,8 +794,8 @@ public abstract class ZCGame {
 		wMan.wave_Invaders.add(ent);
 		
 		//wave based settings moved to entity init so client on smp can also have the data
-		
-		ent.initJobAndStates(EnumJob.INVADER);
+		ent.agent.spawnedOrNBTReloadedInit();
+		//ent.initJobAndStates(EnumJob.INVADER);
 	}
     
     public void writeGameNBT() {
@@ -975,12 +976,13 @@ public abstract class ZCGame {
 				if (tileent instanceof TileEntityMobSpawnerWave)			
 				{
 					if (tileent != null) {
-							((TileEntityMobSpawnerWave)tileent).watchX = x;
+							((TileEntityMobSpawnerWave)tileent).setWatchCoords(x, y, z);
+							/*watchX = x;
 							((TileEntityMobSpawnerWave)tileent).watchY = y;
 							((TileEntityMobSpawnerWave)tileent).watchZ = z;
-							((TileEntityMobSpawnerWave)tileent).act_Watch = true;
+							((TileEntityMobSpawnerWave)tileent).act_Watch = true;*/
 							
-							ZCServerTicks.sendPacketToAll(tileent.getDescriptionPacket());
+							//ZCServerTicks.sendPacketToAll(tileent.getDescriptionPacket());
 					}
 				}
 			}
@@ -1052,6 +1054,10 @@ public abstract class ZCGame {
 	}
 	
 	public boolean isOp(EntityPlayer player) {
+		return true;
+	}
+	
+	public boolean isOp(String parName) {
 		return true;
 	}
 	

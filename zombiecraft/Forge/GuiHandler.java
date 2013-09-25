@@ -8,8 +8,11 @@ import zombiecraft.Client.gui.ContainerSession;
 import zombiecraft.Client.gui.GuiPacketTester;
 import zombiecraft.Client.gui.GuiSession;
 import zombiecraft.Client.gui.tiles.ContainerTileMobSpawnerWave;
+import zombiecraft.Client.gui.tiles.ContainerTileMysteryBox;
 import zombiecraft.Client.gui.tiles.GuiTileMobSpawnerWave;
+import zombiecraft.Client.gui.tiles.GuiTileMysteryBox;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
+import zombiecraft.Core.Blocks.TileEntityMysteryBox;
 import zombiecraft.Core.Blocks.TileEntityPacketTester;
 import cpw.mods.fml.common.network.IGuiHandler;
 
@@ -26,6 +29,8 @@ public class GuiHandler implements IGuiHandler {
 		
 		if (tileEntity instanceof TileEntityMobSpawnerWave) {
 			return new ContainerTileMobSpawnerWave(player.inventory, (TileEntityMobSpawnerWave) tileEntity);
+		} else if (tileEntity instanceof TileEntityMysteryBox) {
+			return new ContainerTileMysteryBox(player.inventory, (TileEntityMysteryBox) tileEntity);
 		} else if (tileEntity instanceof TileEntityPacketTester){
             return new ContainerPacketTester(player.inventory, (TileEntityPacketTester) tileEntity);
 		} else if (ID == 1) {
@@ -41,6 +46,8 @@ public class GuiHandler implements IGuiHandler {
 		
 		if (tileEntity instanceof TileEntityMobSpawnerWave) {
 			return new GuiTileMobSpawnerWave(player.inventory, (TileEntityMobSpawnerWave) tileEntity);
+		} else if (tileEntity instanceof TileEntityMysteryBox) {
+			return new GuiTileMysteryBox(player.inventory, (TileEntityMysteryBox) tileEntity);
 		} else if (tileEntity instanceof TileEntityPacketTester){
             return new GuiPacketTester(player.inventory, (TileEntityPacketTester) tileEntity);
 		} else if (ID == 1) {

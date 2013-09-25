@@ -29,13 +29,13 @@ import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.c_CoroAIUtil;
-import CoroAI.entity.c_EnhAI;
 import CoroAI.entity.c_EntityPlayerMPExt;
 import build.world.Build;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -300,12 +300,12 @@ public class ZCGameMP extends ZCGame {
 			setData(player, DataTypes.exStaticCooldown, --exStaticCooldown);
 		}
 		
-		List var4 = player.worldObj.getEntitiesWithinAABB(c_EnhAI.class, player.boundingBox.expand(1.0D, 2.0D, 1.0D));
+		List var4 = player.worldObj.getEntitiesWithinAABB(BaseEntAI.class, player.boundingBox.expand(1.0D, 2.0D, 1.0D));
         if (var4 != null && !var4.isEmpty())
         {
         	if (exStaticTime > 0) {
 	        	for (int i = 0; i < var4.size(); i++) {
-	        		c_EnhAI ent = (c_EnhAI)var4.get(i);
+	        		BaseEntAI ent = (BaseEntAI)var4.get(i);
 	        		
 	        		if (ent.isEnemy(player)) {
 	        			ent.attackEntityFrom(DamageSource.causeMobDamage(player), 5);
@@ -514,7 +514,7 @@ public class ZCGameMP extends ZCGame {
 				ig.setReloadDelay(is, player.worldObj, player, ig.reloadTime);
 				//ig.clipAmount = ig.magSize;
 				//ig.reloadDelay = ig.reloadTime;
-				player.worldObj.playSoundAtEntity(player, "zc.gun.reload", 1.0F, 1.0F / (player.worldObj.rand.nextFloat() * 0.4F + 0.8F));
+				playSoundEffect("zc.gun.reload", player, 1.0F, 1.0F / (player.worldObj.rand.nextFloat() * 0.4F + 0.8F));
 			}
 		}  
 		
@@ -632,12 +632,13 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	@Override
-	public void entTick(c_EnhAI ent) {
+	public void entTick(BaseEntAI ent) {
+		if (ent.agent == null) return;
 		if (ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.size() > 0) {
 			//player.playerNetServerHandler = ((EntityPlayerMP)ModLoader.getMinecraftServerInstance().configManager.playerEntities.get(0)).playerNetServerHandler;
-			ent.homeX = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posX;
-			ent.homeY = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posY;
-			ent.homeZ = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posZ;
+			ent.agent.homeX = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posX;
+			ent.agent.homeY = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posY;
+			ent.agent.homeZ = (int)((EntityPlayerMP)ModLoader.getMinecraftServerInstance().getConfigurationManager().playerEntityList.get(0)).posZ;
 		}
 	}
 	
@@ -686,13 +687,13 @@ public class ZCGameMP extends ZCGame {
 		if (player == null) {
 			//send to all
 		} else {
-			ZCServerTicks.worldRef.playSoundAtEntity(player, sound, vol, pitch);
+			ZCServerTicks.worldRef.playSoundAtEntity(player, ZombieCraftMod.modID + ":" + sound, vol, pitch);
 		}
 	}
 	
 	@Override
 	public void playSound(String sound, int x, int y, int z, float vol, float pitch) {
-		ZCServerTicks.worldRef.playSoundEffect(x, y, z, sound, vol, pitch);
+		ZCServerTicks.worldRef.playSoundEffect(x, y, z, ZombieCraftMod.modID + ":" + sound, vol, pitch);
 	}
 	
 	@Override
@@ -752,7 +753,11 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	public boolean isOp(EntityPlayer player) {
-		return this.lobbyLeader.equals(player.username) || mc.getConfigurationManager().areCommandsAllowed(player.username);
+		return isOp(player.username);
+	}
+	
+	public boolean isOp(String parName) {
+		return this.lobbyLeader.equals(parName) || mc.getConfigurationManager().areCommandsAllowed(parName);
 	}
 	
 	@Override

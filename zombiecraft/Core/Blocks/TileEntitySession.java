@@ -44,7 +44,7 @@ public class TileEntitySession extends TileEntity implements ITilePacket
     }
 
 	@Override
-	public void handleClientSentNBT(NBTTagCompound par1nbtTagCompound) {
+	public void handleClientSentNBT(String parUsername, NBTTagCompound par1nbtTagCompound) {
 		
 	}
 	
@@ -65,7 +65,7 @@ public class TileEntitySession extends TileEntity implements ITilePacket
     @Override
     public Packet getDescriptionPacket()
     {
-        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, ZCGame.instance().nbtInfoServer);
+        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, ZCGame.instance().nbtInfoServerSession);
     }
     
 	@Override
@@ -92,7 +92,7 @@ public class TileEntitySession extends TileEntity implements ITilePacket
 	}
 
 	@Override
-	public void handleClientSentDataWatcherList(List parList) {
+	public void handleClientSentDataWatcherList(String parUsername, List parList) {
 		// TODO Auto-generated method stub
 		
 	}

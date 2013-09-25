@@ -23,13 +23,14 @@ import zombiecraft.Core.PacketTypes;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
+import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.c_CoroAIUtil;
 import CoroAI.c_IEnhPF;
-import CoroAI.entity.c_EnhAI;
 import build.render.Overlays;
 import cpw.mods.fml.common.FMLCommonHandler;
 
@@ -182,10 +183,10 @@ public class ZCGameSP extends ZCGame {
 	        	if (packet.dataInt[0] > wMan.wave_Stage && wMan.wave_Stage != 0) {
 	        		//playSoundEffect("sdkzc.round_over", player, 2F, 1.0F);
 	        		//player.worldObj.playSoundAtEntity(player, "sdkzc.round_over", 1.0F, 1.0F);
-	        		ZCClientTicks.mc.sndManager.playSoundFX("zc.round_over", 1F, 1.0F);
+	        		ZCClientTicks.mc.sndManager.playSoundFX(ZombieCraftMod.modID + ":zc.round_over", 1F, 1.0F);
 	        		//System.out.println("HYYYYYYYYYYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 	        	} else if (packet.dataInt[0] == 1 && packet.dataInt[0] > wMan.wave_Stage) {
-	        		ZCClientTicks.mc.sndManager.playSoundFX("zc.start", 1F, 1.0F);
+	        		ZCClientTicks.mc.sndManager.playSoundFX(ZombieCraftMod.modID + ":zc.start", 1F, 1.0F);
 	        	}
 	        	wMan.wave_Stage = packet.dataInt[0];
 	        	wMan.wave_StartDelay = packet.dataInt[1];
@@ -378,10 +379,10 @@ public class ZCGameSP extends ZCGame {
 	}
 	
 	@Override
-	public void entTick(c_EnhAI ent) {
-		ent.homeX = (int)mc.thePlayer.posX;
-		ent.homeY = (int)mc.thePlayer.posY;
-		ent.homeZ = (int)mc.thePlayer.posZ;
+	public void entTick(BaseEntAI ent) {
+		ent.agent.homeX = (int)mc.thePlayer.posX;
+		ent.agent.homeY = (int)mc.thePlayer.posY;
+		ent.agent.homeZ = (int)mc.thePlayer.posZ;
 		
 	}
 	
@@ -526,12 +527,12 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public void playSoundEffect(String sound, EntityPlayer player, float vol, float pitch) {
-		ZCClientTicks.worldRef.playSoundAtEntity(player, sound, vol, pitch);
+		ZCClientTicks.worldRef.playSoundAtEntity(player, ZombieCraftMod.modID + ":" + sound, vol, pitch);
 	}
 	
 	@Override
 	public void playSound(String sound, int x, int y, int z, float vol, float pitch) {
-		ZCClientTicks.worldRef.playSoundEffect(x, y, z, sound, vol, pitch);
+		ZCClientTicks.worldRef.playSoundEffect(x, y, z, ZombieCraftMod.modID + ":" + sound, vol, pitch);
 	}
 	
 	@Override

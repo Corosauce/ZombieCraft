@@ -177,13 +177,16 @@ public class MapManager {
 	
 	public void buildLobbyIfMissing(World world) {
 		
+		
+		
 		int lobbyBuildID = -67;
 		
 		if (!BuildServerTicks.buildMan.isBuildActive(lobbyBuildID)) {
 			if (world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0 || 
-					world.getBlockId(zcLevel.lobby_coord_maxX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0 || 
-					world.getBlockId(zcLevel.lobby_coord_maxX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ) == 0 || 
-					world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ) == 0) {
+					world.getBlockId(zcLevel.lobby_coord_maxX-1, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ) == 0 || 
+					world.getBlockId(zcLevel.lobby_coord_maxX-1, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ-1) == 0 || 
+					world.getBlockId(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ-1) == 0) {
+				System.out.println("lobby missing: generating");
 				BuildJob bj = new BuildJob(lobbyBuildID, zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ, zcGame.getSaveFolderPath() + "Lobby");
 				bj.build.dim = ZCGame.ZCDimensionID;
 				BuildServerTicks.buildMan.addBuild(bj);

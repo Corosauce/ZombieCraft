@@ -18,6 +18,7 @@ import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.World.LevelConfig;
 import CoroAI.tile.PacketHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
@@ -139,12 +140,27 @@ public class ZCPacketHandler implements IPacketHandler
 	        	NBTTagCompound nbt = Packet.readNBTTagCompound(dis);
 	        	if (side == Side.SERVER) {
 	        		if (player instanceof EntityPlayer) {
-						handleClientSentNBT(((EntityPlayer)player).worldObj, nbt);
+	        			
+	        			//ANTI HACK SAFETY USERNAME FORCE OVERRIDE
+	        			nbt.setString("username", ((EntityPlayer)player).username);
+	        			
+						handleClientSentNBTSession(((EntityPlayer)player).worldObj, nbt);
 		        	}
 	        	} else if (side == Side.CLIENT) {
-	        		ZCGame.nbtInfoSessionClient = nbt;
+	        		ZCGame.nbtInfoClientSession = nbt;
 	        	}
 	        	
+	        } else if (packet.channel.equals("MapConfig")) {
+	        	NBTTagCompound nbt = Packet.readNBTTagCompound(dis);
+	        	if (side == Side.SERVER) {
+	        		if (player instanceof EntityPlayer && ZCGame.instance().isOp((EntityPlayer)player)) { //proper is op check, doesnt use internal username
+	        			//ANTI HACK SAFETY USERNAME FORCE OVERRIDE
+	        			nbt.setString("username", ((EntityPlayer)player).username);
+	        			LevelConfig.handleClientSentNBTMapConfig(((EntityPlayer)player).worldObj, nbt);
+		        	}
+	        	} else if (side == Side.CLIENT) {
+	        		LevelConfig.handleServerSentNBTMapConfig(nbt);
+	        	}
 	        }
         }
         catch (Exception ex)
@@ -154,7 +170,7 @@ public class ZCPacketHandler implements IPacketHandler
         }
     }
     
-    public void handleClientSentNBT(World world, NBTTagCompound par1nbtTagCompound) {
+    public void handleClientSentNBTSession(World world, NBTTagCompound par1nbtTagCompound) {
 		
 		//move all this to a non tile bound thing once you need the gui to open from anywhere, or will we skip that and just have them warp back to lobby to click block?
 		if (par1nbtTagCompound.hasKey("sync")) {
@@ -243,27 +259,27 @@ public class ZCPacketHandler implements IPacketHandler
     
     public void updateServerNBTForSync() {
 		ZCGame zcg = ZCGame.instance();
-		zcg.nbtInfoServer.setBoolean("lobbyActive", zcg.lobbyActive);
+		zcg.nbtInfoServerSession.setBoolean("lobbyActive", zcg.lobbyActive);
 		//nbtInfoServer.setBoolean("gameActive", zcg.gameActive);
-		zcg.nbtInfoServer.setString("lobbyLeader", zcg.lobbyLeader);
+		zcg.nbtInfoServerSession.setString("lobbyLeader", zcg.lobbyLeader);
 		//ok, try to use the existing packet methods for setting map name etc, lets not reinvent everything and cause potential weird desyncs....
 		//we are only reading game active setting, not setting it here
 		//nbtInfoServer.
 		
-		zcg.nbtInfoServer.setInteger("lobbyPlayerCount", zcg.zcLevel.playersInGame.size());
+		zcg.nbtInfoServerSession.setInteger("lobbyPlayerCount", zcg.zcLevel.playersInGame.size());
 		for (int i = 0; i < zcg.zcLevel.playersInGame.size(); i++) {
 			EntityPlayer entP = zcg.zcLevel.playersInGame.get(i);
 			
-			zcg.nbtInfoServer.setString("lobbyPlayerName_" + i, entP.username);
-			zcg.nbtInfoServer.setInteger("lobbyPlayerScore_" + i, (Integer)zcg.getData(entP, DataTypes.zcPointsTotal)); //use for active player info, unless this code gets repurposed for handling both?
+			zcg.nbtInfoServerSession.setString("lobbyPlayerName_" + i, entP.username);
+			zcg.nbtInfoServerSession.setInteger("lobbyPlayerScore_" + i, (Integer)zcg.getData(entP, DataTypes.zcPointsTotal)); //use for active player info, unless this code gets repurposed for handling both?
 		}
 		
 		zcg.loadMapList();
-		zcg.nbtInfoServer.setInteger("mapCount", zcg.listMaps.size());
+		zcg.nbtInfoServerSession.setInteger("mapCount", zcg.listMaps.size());
 		for (int i = 0; i < zcg.listMaps.size(); i++) {
 			ZombieSaveRecord save = zcg.listMaps.get(i);
 			
-			zcg.nbtInfoServer.setString("mapName_" + i, save.getText());
+			zcg.nbtInfoServerSession.setString("mapName_" + i, save.getText());
 			//nbtInfoServer.setInteger("lobbyPlayerScore_" + i, (Integer)zcg.getData(entP, DataTypes.zcPointsTotal)); //use for active player info, unless this code gets repurposed for handling both?
 		}
 		
@@ -271,8 +287,29 @@ public class ZCPacketHandler implements IPacketHandler
     
     public void sync() {
     	updateServerNBTForSync();
-    	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(getSessionPacket(ZCGame.instance().nbtInfoServer));
+    	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(getSessionPacket(ZCGame.instance().nbtInfoServerSession));
     }
+    
+    public static Packet250CustomPayload getNBTPacket(NBTTagCompound data, String channel) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+
+        try
+        {
+        	PacketHelper.writeNBTTagCompound(data, dos);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        Packet250CustomPayload pkt = new Packet250CustomPayload();
+        pkt.channel = channel;
+        pkt.data = bos.toByteArray();
+        pkt.length = bos.size();
+        
+        return pkt;
+	}
     
     public static Packet250CustomPayload getSessionPacket(NBTTagCompound data) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -281,7 +318,6 @@ public class ZCPacketHandler implements IPacketHandler
         try
         {
         	PacketHelper.writeNBTTagCompound(data, dos);
-            
         }
         catch (Exception ex)
         {

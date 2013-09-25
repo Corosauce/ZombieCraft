@@ -9,12 +9,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZCPacketHandler;
 import CoroAI.ITilePacket;
 import CoroAI.tile.ITileInteraction;
 import CoroAI.tile.TileHandler;
+import CoroAI.util.CoroUtilNBT;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -42,14 +45,22 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	//runtime vars
 	public boolean cycling = false;
 	public int timeRandomizeCur = 0;
-	public int timeRandomizeMax = 80;
+	public int timeRandomizeMax;
 	public int itemToRenderIndex = 0;
 	public int ticksPerCycleCur = 1;
 	public int ticksPerCycleMax = 5;
 	public int purchaseChanceTimeoutCur = 0;
-	public int purchaseChanceTimeoutMax = 80;
+	public int purchaseChanceTimeoutMax;
 	//client side only
 	public ItemStack itemToRenderStack = null;
+	
+	//GUI/Edit stuff
+    public NBTTagCompound nbtInfoClient = new NBTTagCompound();
+	public NBTTagCompound nbtInfoServer = new NBTTagCompound();
+	
+	//GUI Elements
+	public String nbtStrTimeoutPurchase = "nbtStrTimeoutPurchase";
+	public String nbtStrTimeoutRandomize = "nbtStrTimeoutRandomize";
 	
     public TileEntityMysteryBox() {
     	for (int i = 0; i < Buyables.items.size(); i++) {
@@ -59,7 +70,34 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     	tileHandler.addObject("renderItemStack", (ItemStack)Buyables.getBuyItem(0));
     	tileHandler.addObject("cycling", Integer.valueOf(0));
     	tileHandler.addObject("purchaseTimeout", Integer.valueOf(purchaseChanceTimeoutCur));
+    	
+    	//defaults
+    	NBTTagCompound tileData = new NBTTagCompound();
+    	setDefaults(tileData);
+    	nbtInfoServer.setCompoundTag("tileData", tileData);
+    	//sync(); //needed? getdescpacket might be auto called for whom needs it
+    	
     }
+    
+    public void setDefaults(NBTTagCompound tileData) {
+    	tileData.setString(nbtStrTimeoutPurchase, "100");
+    	tileData.setString(nbtStrTimeoutRandomize, "80");
+    }
+    
+    public void updateReferences() {
+    	NBTTagCompound tileData = nbtInfoServer.getCompoundTag("tileData");
+    	
+    	purchaseChanceTimeoutMax = Integer.valueOf(tileData.getString(nbtStrTimeoutPurchase));
+    	timeRandomizeMax = Integer.valueOf(tileData.getString(nbtStrTimeoutRandomize));
+    }
+    
+    public String getData(String name) {
+    	if (worldObj.isRemote) {
+    		return nbtInfoClient.getCompoundTag("tileData").getString(name);
+    	} else {
+    		return nbtInfoServer.getCompoundTag("tileData").getString(name);
+    	}
+	}
     
 	@Override
 	public void updateEntity()
@@ -107,21 +145,40 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-        
+        nbtInfoServer.setCompoundTag("tileData", tagCompound.getCompoundTag("tileData"));
         //readFromNBTPacket(tagCompound);
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
-        
+        tagCompound.setCompoundTag("tileData", nbtInfoServer.getCompoundTag("tileData"));
         //writeToNBTPacket(tagCompound);
     }
 
 	@Override
-	public void handleClientSentNBT(NBTTagCompound par1nbtTagCompound) {
+	public void handleClientSentNBT(String parUsername, NBTTagCompound par1nbtTagCompound) {
+		if (!ZCGame.instance().isOp(parUsername)) return;
 		
+		NBTTagCompound nbtPartialClientData = par1nbtTagCompound.getCompoundTag("tileData");
+    	NBTTagCompound tempCopyOfServerNBT = nbtInfoServer.getCompoundTag("tileData");
+    	tempCopyOfServerNBT = CoroUtilNBT.copyOntoNBT(nbtPartialClientData, tempCopyOfServerNBT);
+    	nbtInfoServer.setCompoundTag("tileData", tempCopyOfServerNBT);
+    	
+    	//assumes data doesnt come in when sync request
+		if (par1nbtTagCompound.hasKey("sync")) {
+			sync();
+		} else {
+			updateReferences();
+		}
 	}
+	
+	public void sync() {
+    	NBTTagCompound nbtForClient = nbtInfoServer;//.getCompoundTag("tileData");
+    	if (nbtForClient == null) nbtForClient = new NBTTagCompound();
+    	nbtForClient.setBoolean("markUpdated", true);
+    	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, nbtForClient));
+    }
 	
 	@Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
@@ -129,17 +186,19 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     	//this.readFromNBTPacket(pkt.customParam1);
     }
 	
-	//redundant?
+	//this one reads from both saving to disk nbt and network nbt
 	@SideOnly(Side.CLIENT)
 	public void setClientNBT(NBTTagCompound nbt) {
+		nbtInfoClient = nbt;
 		//ZCGame.nbtInfoSessionClient = nbt;
 	}
     
-    @Override
+	//pretty sure this isnt needed here
+    /*@Override
     public Packet getDescriptionPacket()
     {
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, ZCGame.instance().nbtInfoServer);
-    }
+    }*/
     
 	@Override
 	public void validate()
@@ -164,7 +223,7 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	}
 
 	@Override
-	public void handleClientSentDataWatcherList(List parList) {
+	public void handleClientSentDataWatcherList(String parUsername, List parList) {
 		//unneeded
 	}
 

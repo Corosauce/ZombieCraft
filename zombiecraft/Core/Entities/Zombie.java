@@ -3,17 +3,13 @@ package zombiecraft.Core.Entities;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import CoroAI.componentAI.jobSystem.JobInvade;
 import CoroAI.entity.EnumJob;
 
 public class Zombie extends BaseEntAI_Enemy
 {
 	
 	//public static Entity owner = null;
-	
-	public Zombie(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
 	
     public Zombie(World par1World)
     {
@@ -22,10 +18,11 @@ public class Zombie extends BaseEntAI_Enemy
         //this.moveSpeed = 0.23F;
         this.getNavigator().setBreakDoors(true);
         
-        addJob(EnumJob.FINDFOOD);
-        addJob(EnumJob.INVADER);
+        //addJob(EnumJob.FINDFOOD);
+        //addJob(EnumJob.INVADER);
+        agent.jobMan.addPrimaryJob(new JobZCInvade(agent.jobMan));
         
-        maxReach_Ranged = 0;
+        agent.maxReach_Ranged = 0;
         
         /*this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIBreakDoor(this));

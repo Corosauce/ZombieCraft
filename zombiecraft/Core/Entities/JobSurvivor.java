@@ -6,11 +6,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import CoroAI.c_CoroAIUtil;
+import CoroAI.componentAI.jobSystem.JobBase;
+import CoroAI.componentAI.jobSystem.JobManager;
 import CoroAI.entity.EnumActState;
 import CoroAI.entity.EnumInfo;
 import CoroAI.entity.EnumJobState;
-import CoroAI.entity.JobBase;
-import CoroAI.entity.JobManager;
 
 public class JobSurvivor extends JobBase {
 	
@@ -34,7 +34,7 @@ public class JobSurvivor extends JobBase {
 	
 	@Override
 	public boolean shouldContinue() {
-		return ent.entityToAttack == null;
+		return ai.entityToAttack == null;
 	}
 
 	@Override
@@ -43,10 +43,10 @@ public class JobSurvivor extends JobBase {
 		//if (this.name.equals("Makani")) {
 		
 		//}
-		if (hitAndRunDelay == 0 && ent.getDistanceToEntity(ent.lastFleeEnt) > 3F) {
+		if (hitAndRunDelay == 0 && ent.getDistanceToEntity(ai.lastFleeEnt) > 3F) {
 			//hitAndRunDelay = ent.cooldown_Ranged+1;
 			//ent.entityToAttack = ent.lastFleeEnt;
-			if (ent.entityToAttack != null) {
+			if (ai.entityToAttack != null) {
 				//ent.faceEntity(ent.entityToAttack, 180F, 180F);
 				//ent.rightClickItem();
 				//ent.attackEntity(ent.entityToAttack, ent.getDistanceToEntity(ent.entityToAttack));
@@ -58,21 +58,11 @@ public class JobSurvivor extends JobBase {
 	}
 	
 	@Override
-	public void hitHook(DamageSource ds, int damage) {
-		if (ent.isEnemy(ds.getEntity())) {
-			ent.entityToAttack = ds.getEntity();
+	public boolean hookHit(DamageSource ds, int damage) {
+		if (isEnemy(ds.getEntity())) {
+			ai.entityToAttack = ds.getEntity();
 		}
-		
-		if (ent.func_110143_aJ() < ent.func_110138_aP() / 2 && ds.getEntity() == c_CoroAIUtil.getFirstPlayer()) {
-			ent.dipl_hostilePlayer = true;
-			ent.getGroupInfo(EnumInfo.DIPL_WARN);
-		}
-		 
-		
-		//temp fun code
-		/*if (ds.getEntity() instanceof ZCSdkEntitySentry) {
-			ent.entityToAttack = ds.getEntity();
-		}*/
+		return super.hookHit(ds, damage);
 	}
 	
 	@Override
@@ -99,7 +89,7 @@ public class JobSurvivor extends JobBase {
 		}*/
 		
 		//huntRange = 24;
-		ent.maxDistanceFromHome = 48F;
+		ai.maxDistanceFromHome = 48F;
 		
 		
 		//if (true) return;
@@ -111,7 +101,7 @@ public class JobSurvivor extends JobBase {
 		} else {*/
 		setJobState(EnumJobState.IDLE);
 		
-		if (/*ent.getHealth() > ent.getMaxHealth() * 0.90F && */(ent.entityToAttack == null || ent.rand.nextInt(20) == 0)) {
+		if (/*ent.getHealth() > ent.getMaxHealth() * 0.90F && */(ai.entityToAttack == null || ent.worldObj.rand.nextInt(20) == 0)) {
 			boolean found = false;
 			Entity clEnt = null;
 			float closest = 9999F;
@@ -119,7 +109,7 @@ public class JobSurvivor extends JobBase {
 	        for(int j = 0; j < list.size(); j++)
 	        {
 	            Entity entity1 = (Entity)list.get(j);
-	            if(ent.isEnemy(entity1))
+	            if(isEnemy(entity1))
 	            {
 	            	if (xRay || ((EntityLivingBase) entity1).canEntityBeSeen(ent)) {
 	            		if (sanityCheck(entity1)/* && entity1 instanceof EntityPlayer*/) {
@@ -139,16 +129,16 @@ public class JobSurvivor extends JobBase {
 	        }
 	        if (clEnt != null) {
 	        	//ent.huntTarget(clEnt);
-	        	ent.entityToAttack = clEnt;
-	    		ent.setState(EnumActState.FIGHTING);
+	        	ai.entityToAttack = clEnt;
+	    		ai.setState(EnumActState.FIGHTING);
 	        }
 	        /*if (!found) {
 	        	setState(EnumKoaActivity.IDLE);
 	        }*/
 		} else {
 			
-			if (ent.entityToAttack != null) {
-				if (!ent.hasPath() && (ent.getDistanceToEntity(ent.entityToAttack) > 15F || !ent.canEntityBeSeen(ent.entityToAttack))) {
+			if (ai.entityToAttack != null) {
+				if (ent.getNavigator().noPath() && (ent.getDistanceToEntity(ai.entityToAttack) > 15F || !ent.canEntityBeSeen(ai.entityToAttack))) {
 					//PFQueue.getPath(ent, ent.entityToAttack, ent.maxPFRange);
 				}
 			}
@@ -156,11 +146,11 @@ public class JobSurvivor extends JobBase {
 		}
 		
 		//close proximity preventing code
-		if (ent.entityToAttack != null) {
+		if (ai.entityToAttack != null) {
 			
-			ent.getLookHelper().setLookPositionWithEntity(ent.entityToAttack, 10.0F, (float)ent.getVerticalFaceSpeed());
+			ent.getLookHelper().setLookPositionWithEntity(ai.entityToAttack, 10.0F, (float)ent.getVerticalFaceSpeed());
 			
-			if (ent.hasPath() && ent.getDistanceToEntity(ent.entityToAttack) < 15F) {
+			if (!ent.getNavigator().noPath() && ent.getDistanceToEntity(ai.entityToAttack) < 15F) {
 				//ent.getNavigator().setPath(null, 0F);
 			}
 		}
@@ -189,11 +179,11 @@ public class JobSurvivor extends JobBase {
 		}
 		
 		if (dontStray) {
-			if (target.getDistance(ent.homeX, ent.homeY, ent.homeZ) > ent.maxDistanceFromHome * 1.5) {
+			if (target.getDistance(ai.homeX, ai.homeY, ai.homeZ) > ai.maxDistanceFromHome * 1.5) {
 				return false;
 			}
 		}
-		if (ent.rand.nextInt(2) == 0) {
+		if (ent.worldObj.rand.nextInt(2) == 0) {
 			return true;
 		}
 		return false;
@@ -205,7 +195,7 @@ public class JobSurvivor extends JobBase {
 		}*/
 		
 		if (dontStray) {
-			if (target.getDistance(ent.homeX, ent.homeY, ent.homeZ) > ent.maxDistanceFromHome) {
+			if (target.getDistance(ai.homeX, ai.homeY, ai.homeZ) > ai.maxDistanceFromHome) {
 				return false;
 			}
 		}

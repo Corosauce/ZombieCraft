@@ -12,7 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.Items.ItemEditTool;
 import zombiecraft.Forge.ZCServerTicks;
+import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.tile.ITileInteraction;
 
 public class BlockMysteryBox extends BlockContainer
@@ -79,11 +82,18 @@ public class BlockMysteryBox extends BlockContainer
         if (tileEntity == null || player.isSneaking()) {
         	return false;
         }
-        if (tileEntity instanceof ITileInteraction) {
-        	((ITileInteraction) tileEntity).clickedRight();
-        }
-	    //player.openGui(ZombieCraftMod.instance, 2, world, x, y, z);
-        return true;
+        
+        if (!world.isRemote && ZCGame.instance().canEdit(player)) {
+        	player.openGui(ZombieCraftMod.instance, -1, world, x, y, z);
+    		return true;
+    	} else {
+    		
+    		if (tileEntity instanceof ITileInteraction) {
+            	((ITileInteraction) tileEntity).clickedRight();
+            }
+    		
+    		return false;
+    	}
     }
     
     @Override

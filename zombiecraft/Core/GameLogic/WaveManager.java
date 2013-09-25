@@ -12,9 +12,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import zombiecraft.Core.EnumDifficulty;
 import zombiecraft.Core.PacketTypes;
+import zombiecraft.Core.Entities.BaseEntAI;
+import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.entity.c_EnhAI;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
@@ -57,18 +58,19 @@ public class WaveManager {
 	public int wave_Kills = 0;
 	public int wave_Invaders_Count_Last = 0;
 	public int wave_MaxKills = 0;
-	public ArrayList<c_EnhAI> wave_Invaders = new ArrayList<c_EnhAI>();
+	public ArrayList<BaseEntAI> wave_Invaders = new ArrayList<BaseEntAI>();
 	public int wave_Invaders_Count = 0;
 	
-	public int killMaxBase = 10;
-	public int killMaxMultiplier = 3;
+	//public int killMaxBase = 10;
+	//public float killMaxMultiplier = 3;
 	
-	public float amp_KillMax = 0.5F;
-	public float amp_Exp = 0.1F;
-	public float amp_Health = 0.05F;
-	public float amp_Lunge = 0.005F;
-	public float amp_Lunge_Max = 1.25F;
-	public float amp_Speed_Max = 0.40F;
+	//public float amp_KillMax = 0.5F; //not used
+	//public float amp_Exp = 0.1F; //not used
+	//public float amp_Health = 0.05F;
+	//public float amp_Lunge = 0.005F; //not used
+	//public float amp_Lunge_Max = 1.25F; //not used
+	//public float amp_Speed_Max = 0.80F;
+	
 	
 	@Deprecated
 	public float expToPointsFactor = 20F;
@@ -132,10 +134,8 @@ public class WaveManager {
 				waitingToStart = true;
 			}
 			if (ZCGame.autoload) {
-				
 				System.out.println("FIX ME I ONLY WORK FOR SCHEMATIC AUTOLOADING - aka not folders or zips?");
 				ZCGame.instance().mapMan.curLevel = ZCGame.curLevelOverride;
-				
 			}
 			ZCGame.instance().mapMan.loadLevel();
 			ZCGame.instance().zcLevel.buildData.map_coord_minY = ZCGame.ZCWorldHeight;
@@ -257,6 +257,9 @@ public class WaveManager {
 		wave_Kills = 0;
 		wave_Invaders.clear();
 		
+		int killMaxBase = Integer.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpawnCountBase));
+		float killMaxMultiplier = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpawnCountMultiplier));
+		
 		wave_StartDelay += 10 * wave_Stage;
 		if (wave_StartDelay > 250) wave_StartDelay = 250;
 		
@@ -266,7 +269,7 @@ public class WaveManager {
 		
 		//wave_MaxKills = (int)(killMaxBase + (killMaxMultiplier * 1.3 * plCount * wave_Stage));
 		
-		wave_MaxKills = (int)(killMaxBase + (killMaxMultiplier * wave_Stage));
+		wave_MaxKills = (int)(killMaxBase + (killMaxMultiplier * (float)wave_Stage));
 		
 		if (plCount > 1) {
 			wave_MaxKills *= plCount * 0.8F;

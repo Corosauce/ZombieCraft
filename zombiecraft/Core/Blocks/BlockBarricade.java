@@ -21,6 +21,7 @@ import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -153,23 +154,28 @@ public class BlockBarricade extends BlockDoor
         //return super.getSelectedBoundingBoxFromPool(world, i, j, k);
     }
     
-    //better way to do this:
-    /*[22:37:56]->>| OvermindDL1 | 		override def addCollisionBoxesToList(world: World, x: Int, y: Int, z: Int, aabb: AxisAlignedBB, list: java.util.List[_], entity: Entity) = {
-    		[22:37:59]->>| OvermindDL1 | 			val data = world.getBlockMetadata(x, y, z)
-    		[22:38:02]->>| OvermindDL1 | 			if (entity == null || entity.motionY >= -0.041 || !filters(data).get.doesPassthrough(entity)) {
-    		[22:38:02]<<-| Corosus | woot babies works
-    		[22:38:05]->>| OvermindDL1 | 				// STUPID IDIOTS OF MOJANG! Why the *HELL* are items still trying to push themselves out of a block when there is no collision?!
-    		[22:38:07]<<-| Corosus | fell through
-    		[22:38:08]->>| OvermindDL1 | 				val axisalignedbb1 = AxisAlignedBB.getAABBPool().getAABB(x + this.minX, y + this.minY, z + this.minZ, x + this.maxX, y + this.maxY, z + this.maxZ);
-    		[22:38:11]->>| OvermindDL1 | 				if (axisalignedbb1 != null && aabb.intersectsWith(axisalignedbb1)) {
-    		[22:38:14]->>| OvermindDL1 | 					list.asInstanceOf[java.util.List[AxisAlignedBB]].add(axisalignedbb1);*/
+    //this is the new awesome entity specific way to do collision
+    @Override
+    public void addCollisionBoxesToList(World par1World, int par2, int par3,
+    		int par4, AxisAlignedBB par5AxisAlignedBB, List par6List,
+    		Entity par7Entity) {
+    	if ((state == 0 && par7Entity instanceof BaseEntAI) || (par7Entity instanceof EntityPlayer && ZCGame.instance().mapMan.doorNoClip)) {
+	    	
+    	} else {
+    		AxisAlignedBB axisalignedbb1 = this.getCollisionBoundingBoxFromPool(par1World, par2, par3, par4);
+	        if (axisalignedbb1 != null && par5AxisAlignedBB.intersectsWith(axisalignedbb1))
+	        {
+	            par6List.add(axisalignedbb1);
+	        }
+    	}
+    }
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int i, int j, int k)
     {
     	if (ZCGame.instance() == null) return null;
     	//if ((world.getBlockMetadata(i, j, k) & 8) != 0 || (state == 0 && (mod_EntAI.playerRef == null || (mod_EntAI.playerRef.barrierX != i && mod_EntAI.playerRef.barrierY != j && mod_EntAI.playerRef.barrierZ != k)))) return null;
-    	if ((world.getBlockMetadata(i, j, k) & 8) != 0 || (state == 0) || ZCGame.instance().mapMan.doorNoClip) return null;
+    	//if ((world.getBlockMetadata(i, j, k) & 8) != 0 || (state == 0) || ZCGame.instance().mapMan.doorNoClip) return null;
         setBlockBoundsBasedOnState(world, i, j, k);
     	//setBlockBounds(0.0F, 0.0F, 0.0F, 0.1F, 0.1F, 0.1F);
         return super.getCollisionBoundingBoxFromPool(world, i, j, k);
@@ -402,23 +408,19 @@ public class BlockBarricade extends BlockDoor
     	
     	int oldid = world.getBlockId(i, j - 1, k);
     	
-    	if (world.isRemote) {
+    	/*if (world.isRemote) {
     		if (entity instanceof EntityPlayer) {
-    			//if (!ZCGame.instance().canEdit((EntityPlayer)entity)) {
-    				if (/*((EntityPlayer)entity).pushDelay == 0 && */oldid == ZCBlocks.barricadeS0.blockID) {
-    					double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
-    					if (speed < 0.0001) speed = 0.1D;
-    					if (speed < 0.5) {
-    						entity.motionX = entity.motionX*-(1F/speed);
-    						entity.motionZ = entity.motionZ*-(1F/speed);
-    						//entity.attackEntityFrom(DamageSource.causeThrownDamage(entity, entity), 0);
-    					}
-    					
-    					//((EntityPlayer)entity).pushDelay = 5;
-    				}
+				if (oldid == ZCBlocks.barricadeS0.blockID) {
+					double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+					if (speed < 0.0001) speed = 0.1D;
+					if (speed < 0.5) {
+						entity.motionX = entity.motionX*-(1F/speed);
+						entity.motionZ = entity.motionZ*-(1F/speed);
+					}
+				}
     		}
     		return;
-    	}
+    	}*/
     	
     	
 		if (world.getBlockId(i, j, k) != ZCBlocks.barricadeS0.blockID && (oldid != ZCBlocks.barricadeS0.blockID && oldid != 1) && entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).func_110143_aJ() > 0)
@@ -453,9 +455,9 @@ public class BlockBarricade extends BlockDoor
 				
 				if (newid != oldid) {
 		            if(newid == ZCBlocks.barricadeS0.blockID) {
-		            	world.playSoundAtEntity(entity, "zc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, ZombieCraftMod.modID + ":" + "zc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            } else {
-		            	world.playSoundAtEntity(entity, "zc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, ZombieCraftMod.modID + ":" + "zc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            }
 				}
 				//if (success) {
@@ -467,27 +469,16 @@ public class BlockBarricade extends BlockDoor
 			}
 		}
 		
-		if (entity instanceof EntityPlayer) {
-			//if (!ZCGame.instance().canEdit((EntityPlayer)entity)) {
-				if (/*((EntityPlayer)entity).pushDelay == 0 && */oldid == ZCBlocks.barricadeS0.blockID) {
-					double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
-					if (speed < 0.0001) speed = 0.1D;
-					if (speed < 0.5) {
-						entity.motionX = entity.motionX*-(1F/speed);
-						entity.motionZ = entity.motionZ*-(1F/speed);
-						//entity.attackEntityFrom(DamageSource.causeThrownDamage(entity, entity), 0);
-					}
-					
-					//((EntityPlayer)entity).pushDelay = 5;
+		/*if (entity instanceof EntityPlayer) {
+			if (((EntityPlayer)entity).pushDelay == 0 && oldid == ZCBlocks.barricadeS0.blockID) {
+				double speed = Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+				if (speed < 0.0001) speed = 0.1D;
+				if (speed < 0.5) {
+					entity.motionX = entity.motionX*-(1F/speed);
+					entity.motionZ = entity.motionZ*-(1F/speed);
 				}
-			//}
-			//entity.prevPosX = entity.posX;
-			//entity.prevPosZ = entity.posZ;
-			//entity.posZ += entity.motionZ*-5F;
-			//entity.motionX = 0;
-			//entity.motionZ = 0;
-			//System.out.println("player collide");
-		}
+			}
+		}*/
     }
 
     @Override

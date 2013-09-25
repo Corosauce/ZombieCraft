@@ -8,6 +8,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.World.LevelConfig;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -60,6 +61,10 @@ public class ZCWorldProvider extends WorldProvider
     @Override
     public Vec3 getFogColor(float par1, float par2)
     {
+    	//TEMP!!!!!!!!!
+    	//generateLightBrightnessTable();
+    	
+    	
         int var3 = 10518688;
         
         var3 = 0x000000;
@@ -148,7 +153,7 @@ public class ZCWorldProvider extends WorldProvider
     @Override
     public boolean isSurfaceWorld()
     {
-        return false;
+        return true;
     }
     @SideOnly(Side.CLIENT)
 
@@ -169,6 +174,124 @@ public class ZCWorldProvider extends WorldProvider
     {
         int var3 = this.worldObj.getFirstUncoveredBlock(par1, par2);
         return var3 == 0 ? false : Block.blocksList[var3].blockMaterial.blocksMovement();
+    }
+    
+    public void generateLightBrightnessTableInt() {
+    	this.generateLightBrightnessTable();
+    }
+    
+    @Override
+    public float calculateCelestialAngle(long par1, float par3) {
+    	long newVal = par1;
+    	if (LevelConfig.nbtInfoClientMapConfig.getBoolean(LevelConfig.nbtStrCustomTimeUse)) {
+    		String time = LevelConfig.nbtInfoClientMapConfig.getString(LevelConfig.nbtStrCustomTimeVal);
+    		
+    		if (time.equals("noon")) {
+    			newVal = 6000;
+    			//6000?
+    		} else if (time.equals("midnight")) {
+    			newVal = 18000;
+    			//18000?
+    		} else {
+    			int val = Integer.valueOf(time);
+    			if (val < 0) val = 0;
+    			if (val > 24000) val = 24000;
+    			newVal = val;
+    			//parse number
+    		}
+    	} else {
+    		
+    	}
+    	return super.calculateCelestialAngle(newVal, par3);
+    }
+    
+    @Override
+    protected void generateLightBrightnessTable()
+    {
+    	System.out.println("Generating ZC Dim brightness table");
+    	String customLighting = LevelConfig.nbtInfoClientMapConfig.getString(LevelConfig.nbtStrCustomLightingMode);
+    	if (!LevelConfig.nbtInfoClientMapConfig.getBoolean(LevelConfig.nbtStrCustomLightingUse) || customLighting.equals("")) {
+    		//regular
+    		super.generateLightBrightnessTable();
+    		/*float f = 0.0F;
+
+            for (int i = 0; i <= 15; ++i)
+            {
+                float f1 = 1.0F - (float)i / 15.0F;
+                this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
+                
+                System.out.println(this.lightBrightnessTable[i]);
+            }*/
+    	} else if (customLighting.contains(",")) {
+    		try {
+	    		String strArray = LevelConfig.nbtInfoClientMapConfig.getString(LevelConfig.nbtStrCustomLightingMode);
+	    		
+	    		String strArrayVals[] = strArray.split(",");
+	    		for (int i = 0; i <= 15; ++i)
+	            {
+	    			this.lightBrightnessTable[i] = Float.valueOf(strArrayVals[i]);
+	            }
+    		} catch (Exception ex) {
+    			ex.printStackTrace();
+    		}
+    	} else if (customLighting.equals("what")) {
+	        float var1 = -0.05F;
+	
+	        worldObj.lastLightningBolt = 0;
+	        
+	        for (int var2 = 0; var2 <= 15; ++var2)
+	        {
+	            float var3 = /*1.0F - */(float)var2 / 15.0F;
+	            
+	            //normal
+	            this.lightBrightnessTable[var2] = (1.0F - var3) / (var3 * 3.0F + 1.0F) * (1.0F - var1) + var1;
+	            
+	            //nether
+	            lightBrightnessTable[var2] = (1.0F - var3) / (var3 * 3.0F + 1.0F) * (1.0F - var1) + var1;
+	            
+	            //negative light
+	            lightBrightnessTable[var2] = (1.0F - var3) / (var3 * 3.0F + 1.0F) * (1.0F + var1) + var1;
+	            
+	            float wat = this.worldObj.getWorldTime();
+	            
+	            
+	            
+	            float smooth = this.worldObj.getWorldTime() % 200 / 60F;
+	            
+	            //System.out.println(smooth + " - " + wat);
+	            
+	            //awesome
+	            //float smooth = System.currentTimeMillis() % 100000 / 10000F;
+	            
+	            
+	            
+	            //good control on darkening the torches
+	            lightBrightnessTable[var2] = 0.0F + (float)Math.sin(var2 * 0.02F);
+	            
+	            //wacky
+	            //lightBrightnessTable[var2] = -0.5F + (float)Math.sin(var2 * smooth);
+	            
+	            //System.out.println("FINAL: " + lightBrightnessTable[var2]);
+	            
+	            //lightBrightnessTable[var2] = (float)Math.cos(var2 * 0.11F);//var3 * 0.02F;
+	            
+	            //static negative light
+	            //lightBrightnessTable[var2] = 0.0F;
+	            
+	            //(float) Math.sin(System.currentTimeMillis());
+	        }
+    	} else if (customLighting.equals("nether")) {
+    		//nether way
+            float f = 0.1F;
+
+            for (int i = 0; i <= 15; ++i)
+            {
+                float f1 = 1.0F - (float)i / 15.0F;
+                this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
+            }
+    	} else {
+    		super.generateLightBrightnessTable();
+    	}
     }
 
     /**

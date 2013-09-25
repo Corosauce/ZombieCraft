@@ -7,8 +7,9 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import zombiecraft.Core.ZCItems;
+import CoroAI.diplomacy.DiplomacyHelper;
+import CoroAI.diplomacy.TeamTypes;
 import CoroAI.entity.EnumDiploType;
-import CoroAI.entity.c_EnhAI;
 
 public class BaseEntAI_Enemy extends BaseEntAI
 {
@@ -18,15 +19,10 @@ public class BaseEntAI_Enemy extends BaseEntAI
 	
 	public int pickupDropRarity = 30;
 	
-	public BaseEntAI_Enemy(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
-	
     public BaseEntAI_Enemy(World par1World)
     {
         super(par1World);
-        this.dipl_team = EnumDiploType.HOSTILES;
+        agent.dipl_info = TeamTypes.getType("hostile");
         
     }
     
@@ -63,7 +59,7 @@ public class BaseEntAI_Enemy extends BaseEntAI
     
     //@Override
     public boolean isEnemy2(Entity ent) {
-    	if (super.isEnemy(ent) && (ent instanceof EntityAnimal || ent instanceof EntityMob || (ent instanceof EntityPlayer && dipl_hostilePlayer))) {
+    	if (super.isEnemy(ent) && (ent instanceof EntityAnimal || ent instanceof EntityMob || (ent instanceof EntityPlayer))) {
     		return true;
     	} else {
     		return false;
@@ -71,7 +67,9 @@ public class BaseEntAI_Enemy extends BaseEntAI
     }
     
     public boolean isEnemy(Entity entity1) {
-		if (entity1 instanceof c_EnhAI) {
+    	if (entity1 instanceof EntityAnimal || entity1 instanceof EntityMob || entity1 instanceof EntityPlayer) return true;
+    	return DiplomacyHelper.shouldTargetEnt(this, entity1);
+		/*if (entity1 instanceof c_EnhAI) {
 			if (dipl_team != ((c_EnhAI) entity1).dipl_team) {
 				return true;
 			} else {
@@ -80,7 +78,7 @@ public class BaseEntAI_Enemy extends BaseEntAI
 		} else {
 			//return c_CoroAIUtil.isEnemy(this, entity1);
 			return (entity1 instanceof EntityAnimal || entity1 instanceof EntityMob || (entity1 instanceof EntityPlayer));
-		}
+		}*/
 	}
     
     @Override

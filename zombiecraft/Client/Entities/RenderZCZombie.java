@@ -65,9 +65,9 @@ public class RenderZCZombie extends RenderBiped
 			}
 		
 		
-			if (pe != null && z.job != null && z.job.getJobClass() != null/*par1Entity.currentAction != null*/) {
+			if (pe != null && z.agent.jobMan != null && z.agent.jobMan.getPrimaryJob() != null/*par1Entity.currentAction != null*/) {
 				//if () {
-					this.renderLivingLabel(par1Entity, String.valueOf(pe.getCurrentPathIndex() + " - " + z.job.getJobClass().state), par2, par4, par6, 999);
+					this.renderLivingLabel(par1Entity, String.valueOf(pe.getCurrentPathIndex() + " - " + z.agent.jobMan.getPrimaryJob().state), par2, par4, par6, 999);
 				//}
 			} else {
 				//this.renderLivingLabel(par1Entity, "wat", par2, par4, par6, 999);

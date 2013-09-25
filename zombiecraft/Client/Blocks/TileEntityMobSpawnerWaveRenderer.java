@@ -29,35 +29,18 @@ public class TileEntityMobSpawnerWaveRenderer extends TileEntitySpecialRenderer
     {
     	
     	if (ZCGame.instance() != null && ZCGame.instance().mapMan != null && ZCGame.instance().mapMan.editMode && ZCGame.instance().mapMan.infoOverlay) {
-	    	renderLivingLabel((par1TileEntityMobSpawner.act_Watch ? "Watch | " : "") + (par1TileEntityMobSpawner.act_Proximity ? "Proximity" : ""), par2+0.5F, par4, par6+0.5F, 0);
-	    	Overlays.renderLineFromToBlockCenter(par1TileEntityMobSpawner.xCoord, par1TileEntityMobSpawner.yCoord, par1TileEntityMobSpawner.zCoord, par1TileEntityMobSpawner.watchX, par1TileEntityMobSpawner.watchY, par1TileEntityMobSpawner.watchZ, 0x00AA00);
+	    	
+	    	if (par1TileEntityMobSpawner.act_Proximity) renderLivingLabel("Proximity: " + par1TileEntityMobSpawner.proxActRange + " blocks", par2+0.5F, par4-0.3, par6+0.5F, 0);
+	    	if (par1TileEntityMobSpawner.act_Wave) renderLivingLabel("Wave: " + par1TileEntityMobSpawner.waveMin + " - " + par1TileEntityMobSpawner.waveMax, par2+0.5F, par4-0.6, par6+0.5F, 0);
+	    	
+	    	if (par1TileEntityMobSpawner.act_Watch) {
+	    		renderLivingLabel("Watch: " + par1TileEntityMobSpawner.watchX + ", " + par1TileEntityMobSpawner.watchY + ", " + par1TileEntityMobSpawner.watchZ, par2+0.5F, par4, par6+0.5F, 0);
+	    		Overlays.renderLineFromToBlockCenter(par1TileEntityMobSpawner.xCoord, par1TileEntityMobSpawner.yCoord, par1TileEntityMobSpawner.zCoord, par1TileEntityMobSpawner.watchX, par1TileEntityMobSpawner.watchY, par1TileEntityMobSpawner.watchZ, 0x00AA00);
+	    	}
+	    	
     	}
     	
     	if (true) return;
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float)par2 + 0.5F, (float)par4, (float)par6 + 0.5F);
-        Entity var9 = (Entity)this.entityHashMap.get(par1TileEntityMobSpawner.getMobID());
-
-        if (var9 == null)
-        {
-            var9 = EntityList.createEntityByName(par1TileEntityMobSpawner.getMobID(), (World)null);
-            this.entityHashMap.put(par1TileEntityMobSpawner.getMobID(), var9);
-        }
-
-        if (var9 != null)
-        {
-            var9.setWorld(par1TileEntityMobSpawner.worldObj);
-            float var10 = 0.4375F;
-            GL11.glTranslatef(0.0F, 0.4F, 0.0F);
-            GL11.glRotatef((float)(par1TileEntityMobSpawner.yaw2 + (par1TileEntityMobSpawner.yaw - par1TileEntityMobSpawner.yaw2) * (double)par8) * 10.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
-            GL11.glTranslatef(0.0F, -0.4F, 0.0F);
-            GL11.glScalef(var10, var10, var10);
-            var9.setLocationAndAngles(par2, par4, par6, 0.0F, 0.0F);
-            RenderManager.instance.renderEntityWithPosYaw(var9, 0.0D, 0.0D, 0.0D, 0.0F, par8);
-        }
-
-        GL11.glPopMatrix();
     }
 
     public void renderTileEntityAt(TileEntity par1TileEntity, double par2, double par4, double par6, float par8)

@@ -1,10 +1,12 @@
 package zombiecraft.Core.Entities;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import CoroAI.componentAI.jobSystem.JobInvade;
 import CoroAI.entity.EnumJob;
 
 public class Imp extends BaseEntAI_Enemy
@@ -12,23 +14,20 @@ public class Imp extends BaseEntAI_Enemy
 	
 	//public static Entity owner = null;
 	
-	public Imp(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
-	
     public Imp(World par1World)
     {
         super(par1World);
         //this.texture = "/mods/ZombieCraft/textures/entities/imp.png";
         //this.moveSpeed = 0.23F;
         this.getNavigator().setBreakDoors(true);
-        
-        initJobAndStates(EnumJob.INVADER, false);
-        
-        cooldown_Ranged = 80;
+        agent.jobMan.addPrimaryJob(new JobZCInvade(agent.jobMan));
         
     }
+    
+    @Override
+	public int getCooldownRanged() {
+		return 80;
+	}
 
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
@@ -87,15 +86,12 @@ public class Imp extends BaseEntAI_Enemy
     }
     
     @Override
-    public void rightClickItem() {
+	public void attackRanged(Entity ent, float dist) {
+    	double var3 = ent.posX - this.posX;
+        double var5 = ent.boundingBox.minY + (double)(ent.height / 2.0F) - (this.posY + (double)(this.height / 2.0F));
+        double var7 = ent.posZ - this.posZ;
     	
-    	
-    	
-    	double var3 = entityToAttack.posX - this.posX;
-        double var5 = entityToAttack.boundingBox.minY + (double)(entityToAttack.height / 2.0F) - (this.posY + (double)(this.height / 2.0F));
-        double var7 = entityToAttack.posZ - this.posZ;
-    	
-    	float var9 = MathHelper.sqrt_float(this.getDistanceToEntity(entityToAttack)) * 0.1F;
+    	float var9 = MathHelper.sqrt_float(this.getDistanceToEntity(ent)) * 0.1F;
         this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1009, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
 
         for (int var10 = 0; var10 < 1; ++var10)
@@ -104,5 +100,5 @@ public class Imp extends BaseEntAI_Enemy
             var11.posY = this.posY + (double)(this.height / 2.0F) + 0.5D;
             this.worldObj.spawnEntityInWorld(var11);
         }
-    }
+	}
 }

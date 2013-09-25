@@ -9,13 +9,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCServerTicks;
 import CoroAI.ITilePacket;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.tile.PacketHelper;
 import CoroAI.tile.TileHandler;
+import CoroAI.util.CoroUtilNBT;
 import build.SchematicData;
 import build.world.Build;
 
@@ -28,12 +32,15 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     
     public int useDelayFixed = 200;
     public int useDelayRand = 600;
+    public boolean useDelayFirstSpawn = true;
 
     /**
      * The string ID of the mobs being spawned from this spawner. Defaults to pig, apparently.
      */
-    public String mobID = "ZombieCraftMod.EntityZCZombie";
+    public String mobID = ""; //loaded from config
     public String fixPrefix = "ZombieCraftMod.";
+    public boolean customSpawn = false;
+    public String customSpawnMob = "";
     public double yaw;
     public double yaw2 = 0.0D;
     
@@ -49,17 +56,49 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     public boolean watchBroken;
     
     //Activate method 1
-    public float proxActRange = 32F;
+    public int proxActRange = 32;
     
     //Activate method 2
-    public int waveMin = 0;
-    public int waveMax = 999;
+    public int waveMin;
+    public int waveMax;
 
     //GUI/Edit stuff
     public NBTTagCompound nbtInfoClient = new NBTTagCompound();
 	public NBTTagCompound nbtInfoServer = new NBTTagCompound(); //possibly unneeded because actual values are in tile entity, or use this nbt and write it out entirely, new tiles would have better use for it but sync existing vars to this
     
 	public static int CMD_SAVE = 1;
+	
+	public String CMD_GUIMODE_STR_PROXIMITY = "proximity";
+	public String CMD_GUIMODE_STR_WAVE = "wave";
+	public String CMD_GUIMODE_STR_WATCH = "watch";
+	
+	//main gui fields
+	public int CMD_BOOL_PROXIMITY = 2;
+	public int CMD_BOOL_WAVE = 3;
+	public int CMD_BOOL_WATCH = 4;
+	public int CMD_BOOL_CUSTOMSPAWNING = 8;
+	public int CMD_BOOL_USEDELAYFIRSTSPAWN = 9;
+	
+	public int CMD_CONF_PROXIMITY = 5;
+	public int CMD_CONF_WAVE = 6;
+	public int CMD_CONF_WATCH = 7;
+	
+	public String CMD_BOOL_CUSTOMSPAWNING_STR = "useCustomSpawn";
+	public String CMD_BOOL_ACTPROX = "act_Proximity";
+	public String CMD_BOOL_ACTWATCH = "act_Watch";
+	public String CMD_BOOL_ACTWAVE = "act_Wave";
+	public String CMD_BOOL_USEDELAYFIRSTSPAWN_STR = "useDelayFirstSpawn";
+	
+	public String nbtStrProxDist = "proximity_dist";
+	public String nbtStrCustomSpawn = "customSpawn";
+	public String nbtStrWatchX = "watchX";
+	public String nbtStrWatchY = "watchY";
+	public String nbtStrWatchZ = "watchZ";
+	public String nbtStrWaveMin = "waveMin";
+	public String nbtStrWaveMax = "waveMax";
+	public String nbtStrSpawnDelay = "spawnDelay";
+	public String nbtStrSpawnDelayRand = "spawnDelayRand";
+	
 	
     public TileEntityMobSpawnerWave()
     {
@@ -68,16 +107,86 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
 		watchY = yCoord+1;
 		watchZ = zCoord;
 		watchBroken = false;
+		
+		NBTTagCompound tileData = new NBTTagCompound();
+    	setDefaults(tileData);
+    	nbtInfoServer.setCompoundTag("tileData", tileData);
     }
+    
+	public void setDefaults(NBTTagCompound tileData) {
+		tileData.setString(nbtStrProxDist, "32");
+    	tileData.setString(nbtStrWatchX, "0");
+    	tileData.setString(nbtStrWatchY, "0");
+    	tileData.setString(nbtStrWatchZ, "0");
+    	tileData.setString(nbtStrWaveMin, "0");
+    	tileData.setString(nbtStrWaveMax, "999");
+    	tileData.setString(nbtStrSpawnDelay, "600");
+    	tileData.setString(nbtStrSpawnDelayRand, "200");
+    	tileData.setString(nbtStrCustomSpawn, customSpawnMob);
+    	
+    	tileData.setBoolean(CMD_BOOL_ACTPROX, false);
+    	tileData.setBoolean(CMD_BOOL_ACTWAVE, false);
+    	tileData.setBoolean(CMD_BOOL_ACTWATCH, false);
+    	tileData.setBoolean(CMD_BOOL_CUSTOMSPAWNING_STR, false);
+    	tileData.setBoolean(CMD_BOOL_USEDELAYFIRSTSPAWN_STR, true);
+    	
+    }
+    
+    public void updateReferences(NBTTagCompound tileData) {
+    	//NBTTagCompound tileData = nbt.getCompoundTag("tileData");
+
+    	act_Proximity = tileData.getBoolean(CMD_BOOL_ACTPROX);
+    	act_Watch = tileData.getBoolean(CMD_BOOL_ACTWATCH);
+    	act_Wave = tileData.getBoolean(CMD_BOOL_ACTWAVE);
+    	customSpawn = tileData.getBoolean(CMD_BOOL_CUSTOMSPAWNING_STR);
+    	useDelayFirstSpawn = tileData.getBoolean(CMD_BOOL_USEDELAYFIRSTSPAWN_STR);
+    	
+    	proxActRange = Integer.valueOf(tileData.getString(nbtStrProxDist));
+    	watchX = Integer.valueOf(tileData.getString(nbtStrWatchX));
+    	watchY = Integer.valueOf(tileData.getString(nbtStrWatchY));
+    	watchZ = Integer.valueOf(tileData.getString(nbtStrWatchZ));
+    	waveMin = Integer.valueOf(tileData.getString(nbtStrWaveMin));
+    	waveMax = Integer.valueOf(tileData.getString(nbtStrWaveMax));
+    	customSpawnMob = tileData.getString(nbtStrCustomSpawn);
+    	useDelayFixed = Integer.valueOf(tileData.getString(nbtStrSpawnDelay));
+    	useDelayRand = Integer.valueOf(tileData.getString(nbtStrSpawnDelayRand));
+    }
+	
+	public void updateServerNBTForSync() {
+		nbtInfoServer.setBoolean("markUpdated", true);
+		
+		NBTTagCompound tileData = new NBTTagCompound();
+		
+		tileData.setBoolean(CMD_BOOL_ACTPROX, act_Proximity);
+		tileData.setBoolean(CMD_BOOL_ACTWATCH, act_Watch);
+		tileData.setBoolean(CMD_BOOL_ACTWAVE, act_Wave);
+		tileData.setBoolean(CMD_BOOL_CUSTOMSPAWNING_STR, customSpawn);
+		tileData.setBoolean(CMD_BOOL_USEDELAYFIRSTSPAWN_STR, useDelayFirstSpawn);
+		
+		tileData.setString(nbtStrProxDist, String.valueOf(proxActRange));
+		tileData.setString(nbtStrWatchX, String.valueOf(this.watchX));
+		tileData.setString(nbtStrWatchY, String.valueOf(this.watchY));
+		tileData.setString(nbtStrWatchZ, String.valueOf(this.watchZ));
+		tileData.setString(nbtStrWaveMin, String.valueOf(this.waveMin));
+		tileData.setString(nbtStrWaveMax, String.valueOf(this.waveMax));
+		tileData.setString(nbtStrSpawnDelay, String.valueOf(this.useDelayFixed));
+		tileData.setString(nbtStrSpawnDelayRand, String.valueOf(this.useDelayRand));
+		tileData.setString(nbtStrCustomSpawn, customSpawnMob);
+		
+		nbtInfoServer.setCompoundTag("tileData", tileData);
+	}
 
     public String getMobID()
     {
         return this.mobID;
     }
-
-    public void setMobID(String par1Str)
-    {
-        this.mobID = par1Str;
+    
+    public void setWatchCoords(int x, int y, int z) {
+    	watchX = x;
+    	watchY = y;
+    	watchZ = z;
+    	act_Watch = true;
+    	sync();
     }
     
     public boolean isActive() {
@@ -106,7 +215,7 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
      */
     public boolean anyPlayerInRange()
     {
-        return this.worldObj.getClosestPlayer((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D, proxActRange) != null;
+        return this.worldObj.getClosestPlayer((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D, proxActRange+1) != null;
     }
     
     /**
@@ -175,15 +284,26 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
                 for (int var8 = 0; var8 < var7; ++var8)
                 {
                 	
-                	String mob = mobID;
+                	EntityLiving var9 = null;
                 	
-                	if (ZCServerTicks.zcGame.wMan.wave_Stage % 10 == 0 && this.worldObj.rand.nextInt(60) == 0) {
-                		mob = "ZombieCraftMod.EntityZCImp";
+                	if (customSpawn) {
+                		var9 = ((EntityLiving)EntityList.createEntityByName(customSpawnMob, this.worldObj));
+                		
+                		if (var9 == null) {
+                			System.out.println("ZC SPAWN ERROR: FAILED TO SPAWN CUSTOM MOB: " + customSpawnMob);
+                		}
+                	} else {
+                		mobID = LevelConfig.get(LevelConfig.nbtStrWaveDefaultMobSpawned);
+	                	String mob = mobID;
+	                	
+	                	if (ZCServerTicks.zcGame.wMan.wave_Stage % 10 == 0 && this.worldObj.rand.nextInt(60) == 0) {
+	                		mob = "ZombieCraftMod.EntityZCImp";
+	                	}
+	                	
+	                	var9 = ((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
+	                    
+	                    if (var9 == null) var9 = ((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
                 	}
-                	
-                	EntityLiving var9 = ((EntityLiving)EntityList.createEntityByName(mob, this.worldObj));
-                    
-                    if (var9 == null) var9 = ((EntityLiving)EntityList.createEntityByName(fixPrefix + mob, this.worldObj));
 
                     if (var9 == null)
                     {
@@ -207,8 +327,8 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
 
                         if (var9.getCanSpawnHere())
                         {
-                        	if (var9 instanceof c_EnhAI) {
-                        		ZCServerTicks.zcGame.spawnWaveEntity((c_EnhAI)var9);
+                        	if (var9 instanceof BaseEntAI) {
+                        		ZCServerTicks.zcGame.spawnWaveEntity((BaseEntAI)var9);
                         	} else {
                         		this.worldObj.spawnEntityInWorld(var9);
                         		this.worldObj.playAuxSFX(2004, this.xCoord, this.yCoord, this.zCoord, 0);
@@ -222,7 +342,11 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
 
             super.updateEntity();
         } else {
-        	this.updateDelay();
+        	if (useDelayFirstSpawn) {
+        		this.updateDelay();
+        	} else {
+        		delay = 1;
+        	}
         }
     }
 
@@ -242,27 +366,49 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     public void readFromNBT(NBTTagCompound par1NBTTagCompound, Build build)
     {
         super.readFromNBT(par1NBTTagCompound);
-        this.mobID = par1NBTTagCompound.getString("EntityId");
+        //this.mobID = par1NBTTagCompound.getString("EntityId");
         this.delay = par1NBTTagCompound.getShort("Delay");
         
 		if (build != null) {
-			watchX = build.map_coord_minX + par1NBTTagCompound.getShort("watchX");
-			watchY = build.map_coord_minY + par1NBTTagCompound.getShort("watchY");
-			watchZ = build.map_coord_minZ + par1NBTTagCompound.getShort("watchZ");
+			try {
+			watchX = build.map_coord_minX + par1NBTTagCompound.getInteger(nbtStrWatchX);
+			watchY = build.map_coord_minY + par1NBTTagCompound.getInteger(nbtStrWatchY);
+			watchZ = build.map_coord_minZ + par1NBTTagCompound.getInteger(nbtStrWatchZ);
+			} catch (Exception ex) {
+				//System.out.println("catching cast crash for spawner wave, switching datatype to Short");
+				watchX = build.map_coord_minX + par1NBTTagCompound.getShort(nbtStrWatchX);
+				watchY = build.map_coord_minY + par1NBTTagCompound.getShort(nbtStrWatchY);
+				watchZ = build.map_coord_minZ + par1NBTTagCompound.getShort(nbtStrWatchZ);
+			}
 		} else {
-			watchX = par1NBTTagCompound.getShort("watchX");
-			watchY = par1NBTTagCompound.getShort("watchY");
-			watchZ = par1NBTTagCompound.getShort("watchZ");
+			try {
+				watchX = par1NBTTagCompound.getInteger(nbtStrWatchX);
+				watchY = par1NBTTagCompound.getInteger(nbtStrWatchY);
+				watchZ = par1NBTTagCompound.getInteger(nbtStrWatchZ);
+			} catch (Exception ex) {
+				//System.out.println("catching cast crash for spawner wave, switching datatype to Short");
+				watchX = par1NBTTagCompound.getShort(nbtStrWatchX);
+				watchY = par1NBTTagCompound.getShort(nbtStrWatchY);
+				watchZ = par1NBTTagCompound.getShort(nbtStrWatchZ);
+			}
 		}
-		act_Proximity = par1NBTTagCompound.getBoolean("act_Proximity");
-		act_Watch = par1NBTTagCompound.getBoolean("act_Watch");
-		act_Wave = par1NBTTagCompound.getBoolean("act_Wave");
-		
+		act_Proximity = par1NBTTagCompound.getBoolean(CMD_BOOL_ACTPROX);
+		act_Watch = par1NBTTagCompound.getBoolean(CMD_BOOL_ACTWATCH);
+		act_Wave = par1NBTTagCompound.getBoolean(CMD_BOOL_ACTWAVE);
+		customSpawn = par1NBTTagCompound.getBoolean(CMD_BOOL_CUSTOMSPAWNING_STR);
+		customSpawnMob = par1NBTTagCompound.getString(nbtStrCustomSpawn);
+		proxActRange = par1NBTTagCompound.getInteger(nbtStrProxDist);
+		waveMin = par1NBTTagCompound.getInteger(nbtStrWaveMin);
+		waveMax = par1NBTTagCompound.getInteger(nbtStrWaveMax);
+		useDelayFixed = par1NBTTagCompound.getInteger(nbtStrSpawnDelay);
+		useDelayRand = par1NBTTagCompound.getInteger(nbtStrSpawnDelayRand);
+		useDelayFirstSpawn = par1NBTTagCompound.getBoolean(CMD_BOOL_USEDELAYFIRSTSPAWN_STR);
     }
     
     @Override
     public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
     	readFromNBT(par1NBTTagCompound, null);
+    	sync();
     }
 
     /**
@@ -272,21 +418,38 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     public void writeToNBT(NBTTagCompound par1NBTTagCompound, Build build)
     {
         super.writeToNBT(par1NBTTagCompound);
-        par1NBTTagCompound.setString("EntityId", this.mobID);
+        //par1NBTTagCompound.setString("EntityId", this.mobID);
         par1NBTTagCompound.setShort("Delay", (short)this.delay);
         if (build != null) {
-	        par1NBTTagCompound.setShort("watchX", (short)(this.watchX - build.map_coord_minX));
-	        par1NBTTagCompound.setShort("watchY", (short)(this.watchY - build.map_coord_minY));
-	        par1NBTTagCompound.setShort("watchZ", (short)(this.watchZ - build.map_coord_minZ));
+	        par1NBTTagCompound.setInteger(nbtStrWatchX, (short)(this.watchX - build.map_coord_minX));
+	        par1NBTTagCompound.setInteger(nbtStrWatchY, (short)(this.watchY - build.map_coord_minY));
+	        par1NBTTagCompound.setInteger(nbtStrWatchZ, (short)(this.watchZ - build.map_coord_minZ));
+        	
         } else {
-        	par1NBTTagCompound.setShort("watchX", (short)this.watchX);
-            par1NBTTagCompound.setShort("watchY", (short)this.watchY);
-            par1NBTTagCompound.setShort("watchZ", (short)this.watchZ);
+        	par1NBTTagCompound.setInteger(nbtStrWatchX, (short)this.watchX);
+            par1NBTTagCompound.setInteger(nbtStrWatchY, (short)this.watchY);
+            par1NBTTagCompound.setInteger(nbtStrWatchZ, (short)this.watchZ);
         }
-        par1NBTTagCompound.setBoolean("act_Proximity", act_Proximity);
-        par1NBTTagCompound.setBoolean("act_Watch", act_Watch);
-        par1NBTTagCompound.setBoolean("act_Wave", act_Wave);
+        par1NBTTagCompound.setBoolean(CMD_BOOL_ACTPROX, act_Proximity);
+        par1NBTTagCompound.setBoolean(CMD_BOOL_ACTWATCH, act_Watch);
+        par1NBTTagCompound.setBoolean(CMD_BOOL_ACTWAVE, act_Wave);
+        par1NBTTagCompound.setString(nbtStrCustomSpawn, customSpawnMob);
+        par1NBTTagCompound.setBoolean(CMD_BOOL_CUSTOMSPAWNING_STR, customSpawn);
+        par1NBTTagCompound.setInteger(nbtStrProxDist, proxActRange);
+        par1NBTTagCompound.setInteger(nbtStrWaveMin, waveMin);
+        par1NBTTagCompound.setInteger(nbtStrWaveMax, waveMax);
+        par1NBTTagCompound.setInteger(nbtStrSpawnDelay, useDelayFixed);
+        par1NBTTagCompound.setInteger(nbtStrSpawnDelayRand, useDelayRand);
+        par1NBTTagCompound.setBoolean(CMD_BOOL_USEDELAYFIRSTSPAWN_STR, useDelayFirstSpawn);
     }
+    
+    public String getData(String name) {
+    	if (worldObj.isRemote) {
+    		return nbtInfoClient.getCompoundTag("tileData").getString(name);
+    	} else {
+    		return nbtInfoServer.getCompoundTag("tileData").getString(name);
+    	}
+	}
     
     @Override
     public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
@@ -295,16 +458,18 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
     
     @Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
+    	updateServerNBTForSync();
     	nbtInfoClient = pkt.customParam1;
+    	updateReferences(nbtInfoClient.getCompoundTag("tileData"));
     	//this.readFromNBT();
     }
     
+    //this might actually be needed for this tile entity, since it has client side visual things to show and this automatic syncing way could help
     @Override
     public Packet getDescriptionPacket()
     {
-        NBTTagCompound var1 = new NBTTagCompound();
-        this.writeToNBT(var1);
-        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, var1);
+    	updateServerNBTForSync();
+        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, nbtInfoServer);
     }
 
 	@Override
@@ -313,26 +478,66 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
 	}
 
 	@Override
-	public void handleClientSentNBT(NBTTagCompound par1nbtTagCompound) {
-		//parse, dont do this
-		//nbtInfoServer = par1nbtTagCompound;
+	public void handleClientSentNBT(String parUsername, NBTTagCompound par1nbtTagCompound) {
+		if (!ZCGame.instance().isOp(parUsername)) return;
+		
+		NBTTagCompound nbtPartialClientData = par1nbtTagCompound.getCompoundTag("tileData");
+    	NBTTagCompound tempCopyOfServerNBT = nbtInfoServer.getCompoundTag("tileData");
+    	tempCopyOfServerNBT = CoroUtilNBT.copyOntoNBT(nbtPartialClientData, tempCopyOfServerNBT);
+    	nbtInfoServer.setCompoundTag("tileData", tempCopyOfServerNBT);
+    	
+    	//assumes data doesnt come in when sync request
 		if (par1nbtTagCompound.hasKey("sync")) {
 			sync();
-		} else if (par1nbtTagCompound.hasKey("cmdID")) {
+		} else {
+			updateReferences(nbtInfoServer.getCompoundTag("tileData"));
+		}
+		
+		
+		/*if (!ZCGame.instance().isOp(parUsername)) return;
+		
+		if (par1nbtTagCompound.hasKey("cmdID")) {
 			int cmdID = par1nbtTagCompound.getInteger("cmdID");
+			String guiCur = par1nbtTagCompound.getString("guiCur");
 			EntityPlayerMP entP = (EntityPlayerMP)worldObj.getPlayerEntityByName(par1nbtTagCompound.getString("username"));
 			
-			System.out.println("cmd! " + cmdID);
+			//issue with gui side sending packets without the data in it, due to it requiring the element to be used to have it set, work out a better solution instead of hasKey check...
+			if (guiCur.equals("main")) {
+				if (par1nbtTagCompound.hasKey(nbtStrCustomSpawn)) customSpawnMob = par1nbtTagCompound.getString(nbtStrCustomSpawn);
+				if (par1nbtTagCompound.hasKey("cmdBool_" + CMD_BOOL_CUSTOMSPAWNING)) customSpawn = par1nbtTagCompound.getBoolean("cmdBool_" + CMD_BOOL_CUSTOMSPAWNING);
+			} else if (guiCur.equals(this.CMD_GUIMODE_STR_PROXIMITY)) {
+				if (par1nbtTagCompound.hasKey("cmdBool_" + CMD_BOOL_PROXIMITY)) act_Proximity = par1nbtTagCompound.getBoolean("cmdBool_" + CMD_BOOL_PROXIMITY);
+				if (par1nbtTagCompound.hasKey(nbtStrProxDist)) proxActRange = Integer.valueOf("0" + par1nbtTagCompound.getString(nbtStrProxDist));
+			} else if (guiCur.equals(this.CMD_GUIMODE_STR_WATCH)) {
+				if (par1nbtTagCompound.hasKey("cmdBool_" + CMD_BOOL_WATCH)) act_Watch = par1nbtTagCompound.getBoolean("cmdBool_" + CMD_BOOL_WATCH);
+				if (par1nbtTagCompound.hasKey(nbtStrWatchX)) watchX = Integer.valueOf("0" + par1nbtTagCompound.getString(nbtStrWatchX));
+				if (par1nbtTagCompound.hasKey(nbtStrWatchY)) watchY = Integer.valueOf("0" + par1nbtTagCompound.getString(nbtStrWatchY));
+				if (par1nbtTagCompound.hasKey(nbtStrWatchZ)) watchZ = Integer.valueOf("0" + par1nbtTagCompound.getString(nbtStrWatchZ));
+			} else if (guiCur.equals(this.CMD_GUIMODE_STR_WAVE)) {
+				if (par1nbtTagCompound.hasKey("cmdBool_" + CMD_BOOL_WAVE)) act_Wave = par1nbtTagCompound.getBoolean("cmdBool_" + CMD_BOOL_WAVE);
+			}
+			
+			if (par1nbtTagCompound.hasKey("sync")) {
+				sync();
+			}
+			
+			//System.out.println("act_Watch! " + act_Watch);
 			
 			if (cmdID == CMD_SAVE) {
 				
 			}
-		}
+		}*/
+	}
+	
+	@Override
+	public void validate() {
+		super.validate();
+		
 	}
 	
 	public void sync() {
-		
-	}
+    	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(getDescriptionPacket());
+    }
 
 	@Override
 	public void handleServerSentDataWatcherList(List parList) {
@@ -340,7 +545,7 @@ public class TileEntityMobSpawnerWave extends TileEntity implements SchematicDat
 	}
 
 	@Override
-	public void handleClientSentDataWatcherList(List parList) {
+	public void handleClientSentDataWatcherList(String parUsername, List parList) {
 		
 	}
 }

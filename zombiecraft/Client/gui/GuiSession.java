@@ -68,7 +68,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 	
 	public boolean canUseMapSelect(String username) {
 		//should return true if lobby leader or if voting
-		if (username.equals(ZCGame.nbtInfoSessionClient.getString("lobbyLeader"))) return true;
+		if (username.equals(ZCGame.nbtInfoClientSession.getString("lobbyLeader"))) return true;
 		return false;
 	}
 
@@ -129,11 +129,11 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 		    fontRenderer.drawString(strTitleName, x1 + xSize/2 - strWidth/2 - leftRightDivide, y1 + 6 + (yTextSpacing * 1), 0xFFFF00);
 		    int strWidthScoreTitle = fontRenderer.getStringWidth(strTitleScore);
 		    fontRenderer.drawString(strTitleScore, x1 + xSize/2 - strWidthScoreTitle/2 + leftRightDivide, y1 + 6 + (yTextSpacing * 1), 0xFFFF00);
-		    int plCount = ZCGame.nbtInfoSessionClient.getInteger("lobbyPlayerCount");
+		    int plCount = ZCGame.nbtInfoClientSession.getInteger("lobbyPlayerCount");
 		    for (int i = 0; i < plCount; i++) {
-		    	String str = ZCGame.nbtInfoSessionClient.getString("lobbyPlayerName_" + i);
+		    	String str = ZCGame.nbtInfoClientSession.getString("lobbyPlayerName_" + i);
 		    	fontRenderer.drawString(str.substring(0, Math.min(13, str.length())), x1 + 6, y1 + 6 + (yTextSpacing * (i+2)), 0xAAAAAA);
-		    	String score = String.valueOf(ZCGame.nbtInfoSessionClient.getInteger("lobbyPlayerScore_" + i));
+		    	String score = String.valueOf(ZCGame.nbtInfoClientSession.getInteger("lobbyPlayerScore_" + i));
 		    	int scoreWidth = fontRenderer.getStringWidth(score);
 		    	fontRenderer.drawString(score, x1 + xSize/2 - scoreWidth/2 + leftRightDivide, y1 + 6 + (yTextSpacing * (i+2)), 0xAAAAAA);
 		    }
@@ -159,7 +159,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
     	if (gameState == 2) {
     		fontRenderer.drawString(waveString, x1 + 6/*xSize/2 - strWidth/2*/, y1 + 6 + (yTextSpacing * 2), 0xAAAAAA);
     	} else {
-    		fontRenderer.drawString("\u00A7" + '4' + "Leader: " + "\u00A7" + 'r' + ZCGame.nbtInfoSessionClient.getString("lobbyLeader"), x1 + 6, y1 + 6 + (yTextSpacing * 2), 0xAAAAAA);
+    		fontRenderer.drawString("\u00A7" + '4' + "Leader: " + "\u00A7" + 'r' + ZCGame.nbtInfoClientSession.getString("lobbyLeader"), x1 + 6, y1 + 6 + (yTextSpacing * 2), 0xAAAAAA);
     	}
     	
     	if (zcGame.mapMan.curBuildPercent > 0) {
@@ -187,9 +187,9 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
         }*/
 	    
 	    if (listElements.size() == 0) {
-		    int mapCount = ZCGame.nbtInfoSessionClient.getInteger("mapCount");
+		    int mapCount = ZCGame.nbtInfoClientSession.getInteger("mapCount");
 		    for (int i = 0; i < mapCount; i++) {
-		    	String mapName = ZCGame.nbtInfoSessionClient.getString("mapName_" + i);
+		    	String mapName = ZCGame.nbtInfoClientSession.getString("mapName_" + i);
 		    	if (mapName.equals(ZCGame.instance().mapMan.curLevel)) {
 		    		selectedWorld = i;
 		    	}
@@ -296,7 +296,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 		if (ZCGame.instance().gameActive) {
 			gameState = 2;
 		} else {
-			if (ZCGame.nbtInfoSessionClient.getBoolean("lobbyActive")) { //needs syncing
+			if (ZCGame.nbtInfoClientSession.getBoolean("lobbyActive")) { //needs syncing
 				gameState = 1;
 			} else {
 				gameState = 0;
@@ -307,14 +307,14 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
         if (gameState == 0) {
         	guibutton.displayString = "Setup Game";
         } else if (gameState == 1) {
-        	if (username.equals(ZCGame.nbtInfoSessionClient.getString("lobbyLeader"))) {
+        	if (username.equals(ZCGame.nbtInfoClientSession.getString("lobbyLeader"))) {
         		guibutton.displayString = "Leave Lobby";
         	} else {
         		//needs check if they are in lobby
         		guibutton.displayString = "Join Lobby";
         	}
         } else if (gameState == 2) {
-        	if (username.equals(ZCGame.nbtInfoSessionClient.getString("lobbyLeader"))) {
+        	if (username.equals(ZCGame.nbtInfoClientSession.getString("lobbyLeader"))) {
         		guibutton.displayString = "Leave Lobby";
         	} else {
         		guibutton.displayString = "Join Game";
@@ -326,7 +326,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
         GuiButton guibuttonStart = (GuiButton)this.buttonList.get(ZCPacketHandler.CMD_GAMESTART);
         GuiButton guibuttonSetMap = (GuiButton)this.buttonList.get(ZCPacketHandler.CMD_MAPSETNAME);
         GuiButton guibuttonGenerate = (GuiButton)this.buttonList.get(ZCPacketHandler.CMD_MAPGENERATE);
-		if (username.equals(ZCGame.nbtInfoSessionClient.getString("lobbyLeader"))) {
+		if (username.equals(ZCGame.nbtInfoClientSession.getString("lobbyLeader"))) {
 			guibuttonStart.drawButton = true;
 			guibuttonSetMap.drawButton = true;
 			guibuttonGenerate.drawButton = true;
@@ -357,7 +357,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
         if (mc.thePlayer != null) username = mc.thePlayer.username;
         
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("username", username);
+        //nbt.setString("username", username); //irrelevant, overriden server side for safety
         String mapName = "";
         if (listElements.size() > 0 && selectedWorld > -1) mapName = listElements.get(selectedWorld).getTitle();
         nbt.setString("mapName", mapName);

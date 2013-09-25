@@ -6,25 +6,35 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
+import CoroAI.componentAI.AIAgent;
+import CoroAI.diplomacy.DiplomacyHelper;
+import CoroAI.diplomacy.TeamTypes;
 import CoroAI.entity.EnumDiploType;
-import CoroAI.entity.c_EnhAI;
 
 public class BaseEntAI_Ally extends BaseEntAI
 {
 	
-	public BaseEntAI_Ally(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
-	
     public BaseEntAI_Ally(World par1World)
     {
         super(par1World);
-        this.dipl_team = EnumDiploType.COMRADE;
+        //this.dipl_team = EnumDiploType.COMRADE;
+        agent.dipl_info = TeamTypes.getType("comrade");
         //team = 1;
         
-        maxReach_Ranged = 32F;
+        agent.maxReach_Ranged = 16F;
     }
+    
+    @Override
+    protected void updateAITasks() {
+    	super.updateAITasks();
+    	//agent.maxReach_Ranged = 32F;
+    }
+    
+    @Override
+    public void checkAgent() {
+		if (agent == null) agent = new AIAgent(this, true);
+		agent.entInv.rangedInUseTicksMax = 0;
+	}
     
     @Override
     public boolean isBreaking() {
@@ -33,7 +43,8 @@ public class BaseEntAI_Ally extends BaseEntAI
     
     @Override
     public boolean isEnemy(Entity entity1) {
-    	if (entity1 instanceof c_EnhAI) {
+    	return DiplomacyHelper.shouldTargetEnt(this, entity1);
+    	/*if (entity1 instanceof c_EnhAI) {
 			if (dipl_team != ((c_EnhAI) entity1).dipl_team) {
 				return true;
 			} else {
@@ -45,7 +56,7 @@ public class BaseEntAI_Ally extends BaseEntAI
 			} else {
 				return false;
 			}
-		}
+		}*/
     }
     
     @Override

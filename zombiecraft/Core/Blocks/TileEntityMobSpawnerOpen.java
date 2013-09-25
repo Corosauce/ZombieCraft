@@ -9,9 +9,9 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.entity.c_EnhAI;
 import build.SchematicData;
 import build.world.Build;
 
@@ -191,8 +191,8 @@ public class TileEntityMobSpawnerOpen extends TileEntity implements SchematicDat
 
                         if (var9.getCanSpawnHere())
                         {
-                        	if (var9 instanceof c_EnhAI) {
-                        		ZCServerTicks.zcGame.spawnWaveEntity((c_EnhAI)var9);
+                        	if (var9 instanceof BaseEntAI) {
+                        		ZCServerTicks.zcGame.spawnWaveEntity((BaseEntAI)var9);
                         	} else {
                         		this.worldObj.spawnEntityInWorld(var9);
                         		this.worldObj.playAuxSFX(2004, this.xCoord, this.yCoord, this.zCoord, 0);

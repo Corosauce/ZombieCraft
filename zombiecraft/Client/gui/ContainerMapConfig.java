@@ -7,7 +7,7 @@ import net.minecraft.inventory.ICrafting;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ContainerSession extends Container {
+public class ContainerMapConfig extends Container {
 
 	//protected TileEntitySession tileEntity;
 	
@@ -17,7 +17,7 @@ public class ContainerSession extends Container {
 	public int lastShootRange = 0;
 	public boolean lastMeleeRightClick = false;
 
-    public ContainerSession (InventoryPlayer inventoryPlayer) {
+    public ContainerMapConfig (InventoryPlayer inventoryPlayer) {
     	
     }
 

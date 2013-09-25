@@ -1,4 +1,4 @@
-package zombiecraft.Client.gui;
+package zombiecraft.Client.gui.elements;
 
 import java.util.List;
 

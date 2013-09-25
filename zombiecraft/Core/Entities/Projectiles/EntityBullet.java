@@ -26,8 +26,8 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
+import CoroAI.componentAI.ICoroAI;
 import CoroAI.entity.EnumDiploType;
-import CoroAI.entity.c_EnhAI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -312,7 +312,7 @@ public class EntityBullet extends Entity
 		        {
 		            Entity var10 = (Entity)var5.get(var9);
 		
-		            if (var10.canBeCollidedWith() && !(var10 instanceof EntityPlayer) && (!(var10 instanceof c_EnhAI && ((c_EnhAI)var10).dipl_team == EnumDiploType.COMRADE) && var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
+		            if (var10.canBeCollidedWith() && !(var10 instanceof EntityPlayer) && (!(var10 instanceof ICoroAI && ((ICoroAI)var10).getAIAgent().dipl_info.type == "comrade") && var10 != this.owner && (this.owner == null || var10 != this.owner.ridingEntity) && (this.owner == null || var10 != this.owner.riddenByEntity) || this.timeInAir >= 5) && !this.worldObj.isRemote)
 		            {
 		                var11 = 0.3F;
 		                AxisAlignedBB var12 = var10.boundingBox.expand((double)var11, (double)var11, (double)var11);

@@ -104,7 +104,7 @@ public class TileEntityTower extends TileEntity implements ITilePacket
 	}
 	
 	@Override
-	public void handleClientSentDataWatcherList(List parList) {
+	public void handleClientSentDataWatcherList(String parUsername, List parList) {
 		//do sanity checking here with iteration usage, then manually update?
 		
 		//this new method works, note, it forces a server to all client in dim update even if the previous value the server had was the same, no biggie since its event based anyways? 
@@ -114,7 +114,7 @@ public class TileEntityTower extends TileEntity implements ITilePacket
 	}
 
 	@Override
-	public void handleClientSentNBT(NBTTagCompound par1nbtTagCompound) {
+	public void handleClientSentNBT(String parUsername, NBTTagCompound par1nbtTagCompound) {
 		
 	}
     

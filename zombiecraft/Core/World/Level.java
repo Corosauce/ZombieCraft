@@ -179,6 +179,8 @@ public class Level {
 		}
 		
 		if (player_spawnY == 0) player_spawnY = 999;
+		
+		LevelConfig.loadNBT(nbttagcompound.getCompoundTag("mapConfig"));
 	}
 	
 	public void writeNBT() {
@@ -209,6 +211,8 @@ public class Level {
 		buildData.levelData.setTag("camPoints", tag);
 		
 		if (texturePack != null && texturePack.length() > 0) buildData.levelData.setString("texturePack", texturePack);
+		
+		buildData.levelData.setCompoundTag("mapConfig", LevelConfig.saveNBT());
 		
 		buildData.scanWriteNBT();
 	}

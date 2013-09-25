@@ -14,8 +14,8 @@ import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.c_CoroAIUtil;
+import CoroAI.componentAI.ICoroAI;
 import CoroAI.entity.EnumDiploType;
-import CoroAI.entity.c_EnhAI;
 
 public class ZCUtil {
 	
@@ -66,17 +66,17 @@ public class ZCUtil {
 	
 	
 	public static boolean shouldBulletHurt(EntityBullet bullet, Entity ent) {
-    	if (ent instanceof c_EnhAI) {
-    		if (bullet.owner instanceof c_EnhAI) {
+    	if (ent instanceof ICoroAI) {
+    		if (bullet.owner instanceof ICoroAI) {
     			//AI to AI
-    			if (((c_EnhAI)bullet.owner).dipl_team != ((c_EnhAI)ent).dipl_team) {
+    			if (((ICoroAI)bullet.owner).getAIAgent().dipl_info.isEnemy(((ICoroAI)ent).getAIAgent().dipl_info)) {
     				return true;
     			} else {
     				return false;
     			}
     		} else {
-    			//Player to AI
-    			if (bullet.owner instanceof EntityPlayer && ((c_EnhAI)ent).dipl_team == EnumDiploType.COMRADE) {
+    			//Player to AI - cancel if comrade
+    			if (bullet.owner instanceof EntityPlayer && ((ICoroAI)ent).getAIAgent().dipl_info.type == "comrade") {
     				return false;
     			}
     			return true;
@@ -91,9 +91,9 @@ public class ZCUtil {
 	    		if (ZCGame.instance().zcLevel.playersInGame.contains(ent)) {
 	    			return ZCGame.instance().cfg_ff;
 	    		}
-	    	//AI to Player
-    		} else if (bullet.owner instanceof c_EnhAI) {
-    			if (ZCGame.instance().zcLevel.playersInGame.contains(ent)) {
+	    	//AI to Player - cancel if comrade
+    		} else if (bullet.owner instanceof ICoroAI) {
+    			if (((ICoroAI)bullet.owner).getAIAgent().dipl_info.type == "comrade" && ZCGame.instance().zcLevel.playersInGame.contains(ent)) {
 	    			return false;
 	    		}
     		}

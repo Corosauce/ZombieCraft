@@ -56,7 +56,7 @@ public class ItemAbility extends Item {
         			double z = par2World.rand.nextFloat() - 0.5F;
         			comrade.setPosition(par3EntityPlayer.posX + x, par3EntityPlayer.posY, par3EntityPlayer.posZ + z);
         			par2World.spawnEntityInWorld(comrade);
-        			comrade.initJobAndStates(EnumJob.PROTECT);
+        			comrade.agent.spawnedOrNBTReloadedInit();
     			} else {
     				//redeem points
     				ZCGame.instance().givePoints(par3EntityPlayer, Buyables.perkCostComrades, true);
@@ -74,17 +74,17 @@ public class ItemAbility extends Item {
     			ZCGame.instance().setData(par3EntityPlayer, DataTypes.juggTime, Buyables.perkLengthJugg);
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupDoublePoints).abilityID) {
     			ZCGame.instance().setData(par3EntityPlayer, DataTypes.doublePointsTime, Buyables.pickupLengthDoublePoints);
-    			par2World.playSoundAtEntity(par3EntityPlayer, "zc.doublepoints", 1.0F, 1.0F);
+    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.doublepoints", 1.0F, 1.0F);
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupInstaKill).abilityID) {
     			ZCGame.instance().setData(par3EntityPlayer, DataTypes.instaKillTime, Buyables.pickupLengthInstaKill);
-    			par2World.playSoundAtEntity(par3EntityPlayer, "zc.instakill", 1.0F, 1.0F);
+    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.instakill", 1.0F, 1.0F);
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupMaxAmmo).abilityID) {
     			ZCGame.instance().refillAmmo(par3EntityPlayer);
     			ZCGame.instance().syncPlayer(par3EntityPlayer);
     			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":" + "zc.ammo", 1.0F, 1.0F);
     		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupNuke).abilityID) {
     			ZCGame.instance().nukeInvaders(par3EntityPlayer);
-    			par2World.playSoundAtEntity(par3EntityPlayer, "zc.nuke", 1.0F, 1.0F);
+    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.nuke", 1.0F, 1.0F);
     		} else {
     			//par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
     		}

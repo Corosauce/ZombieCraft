@@ -12,7 +12,7 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.componentAI.ICoroAI;
 import build.render.Overlays;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -33,53 +33,12 @@ public class RenderZCComrade extends RenderBiped
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
     	
-    	doRenderComrade((c_EnhAI) par1Entity, par2, par4, par6, par8, par9);
-    	
     	super.doRender(par1Entity, par2, par4, par6, par8, par9);
     	
-		
     	boolean debug = MinecraftServer.getServer() != null && ZCGame.instance().mapMan != null && MinecraftServer.getServer().isSinglePlayer() && ZCGame.instance().mapMan.editMode;
     	
     	if (debug) renderDebug((BaseEntAI)par1Entity, par2, par4, par6, par8, par9);
     	
-    }
-    
-    public void doRenderComrade(c_EnhAI par1EntityPlayer, double par2, double par4, double par6, float par8, float par9)
-    {
-    	
-    	//renderEquippedItems(par1EntityPlayer, par9);
-    	
-        /*float var10 = 1.0F;
-        GL11.glColor3f(var10, var10, var10);
-        ItemStack var11 = par1EntityPlayer.getCurrentEquippedItem();
-        this.modelArmorChestplate.heldItemRight = this.modelArmor.heldItemRight = this.modelBipedMain.heldItemRight = var11 != null ? 1 : 0;
-
-        if (var11 != null && par1EntityPlayer.getItemInUseCount() > 0)
-        {
-            EnumAction var12 = var11.getItemUseAction();
-
-            if (var12 == EnumAction.block)
-            {
-                this.modelArmorChestplate.heldItemRight = this.modelArmor.heldItemRight = this.modelBipedMain.heldItemRight = 3;
-            }
-            else if (var12 == EnumAction.bow)
-            {
-                this.modelArmorChestplate.aimedBow = this.modelArmor.aimedBow = this.modelBipedMain.aimedBow = true;
-            }
-        }
-
-        this.modelArmorChestplate.isSneak = this.modelArmor.isSneak = this.modelBipedMain.isSneak = par1EntityPlayer.isSneaking();
-        double var14 = par4 - (double)par1EntityPlayer.yOffset;
-
-        if (par1EntityPlayer.isSneaking() && !(par1EntityPlayer instanceof EntityPlayerSP))
-        {
-            var14 -= 0.125D;
-        }
-
-        super.doRenderLiving(par1EntityPlayer, par2, var14, par6, par8, par9);
-        this.modelArmorChestplate.aimedBow = this.modelArmor.aimedBow = this.modelBipedMain.aimedBow = false;
-        this.modelArmorChestplate.isSneak = this.modelArmor.isSneak = this.modelBipedMain.isSneak = false;
-        this.modelArmorChestplate.heldItemRight = this.modelArmor.heldItemRight = this.modelBipedMain.heldItemRight = 0;*/
     }
     
     public void renderDebug(BaseEntAI par1Entity, double par2, double par4, double par6, float par8, float par9) {
@@ -101,7 +60,7 @@ public class RenderZCComrade extends RenderBiped
 		
 			if (pe != null/*par1Entity.currentAction != null*/) {
 				//if () {
-					this.renderLivingLabel(par1Entity, String.valueOf(pe.getCurrentPathIndex() + " - " + z.job.getJobClass().state), par2, par4, par6, 999);
+					this.renderLivingLabel(par1Entity, String.valueOf(pe.getCurrentPathIndex() + " - " + z.agent.jobMan.getPrimaryJob().state), par2, par4, par6, 999);
 				//}
 			} else {
 				//this.renderLivingLabel(par1Entity, "wat", par2, par4, par6, 999);

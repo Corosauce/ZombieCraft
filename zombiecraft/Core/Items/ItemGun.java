@@ -11,11 +11,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import zombiecraft.Core.EnumAmmo;
 import zombiecraft.Core.ZCUtil;
+import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.c_CoroAIUtil;
-import CoroAI.entity.c_EnhAI;
+import CoroAI.componentAI.ICoroAI;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -85,7 +86,7 @@ public class ItemGun extends Item
     
     public int getFireDelay(ItemStack stack, World var2, EntityPlayer var3) {
     	if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+    		BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curCooldown_FireGun;
@@ -105,7 +106,7 @@ public class ItemGun extends Item
     
 	public int getReloadDelay(ItemStack stack, World var2, EntityPlayer var3) {
 		if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curCooldown_Reload;
@@ -125,7 +126,7 @@ public class ItemGun extends Item
 	
 	public int getClipAmount(ItemStack stack, World var2, EntityPlayer var3) {
 		if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curClipAmount;
@@ -148,7 +149,7 @@ public class ItemGun extends Item
 	
 	public void setFireDelay(ItemStack stack, World var2, EntityPlayer var3, int val) {
     	if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+    		BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curCooldown_FireGun = val;
@@ -168,7 +169,7 @@ public class ItemGun extends Item
     
 	public void setReloadDelay(ItemStack stack, World var2, EntityPlayer var3, int val) {
 		if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curCooldown_Reload = val;
@@ -188,7 +189,7 @@ public class ItemGun extends Item
 	
 	public void setClipAmount(ItemStack stack, World var2, EntityPlayer var3, int val) {
 		if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curClipAmount = val;
@@ -232,50 +233,20 @@ public class ItemGun extends Item
     		}
     	}
     	
-    	//if (clipAmountClient == -1) clipAmountClient = magSize;
-    	
-    	//sync fix
-    	//if ()
-    	
     	int curFireDelay = this.getFireDelay(var1, var2, var3);
     	int curReloadDelay = this.getReloadDelay(var1, var2, var3);
     	int curClipAmount = this.getClipAmount(var1, var2, var3);
     	
-    	//INSTANCE HANDLING
-    	/*if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
-    		
-    		if (entAI != null) {
-    			curFireDelay = entAI.curCooldown_FireGun;
-	    		curReloadDelay = entAI.curCooldown_Reload;
-	    		curClipAmount = entAI.curClipAmount;
-    		} else {
-    			System.out.println("fail gun code, isRemote: " + var2.isRemote);
-    			return -3;
-    		}
-    	} else {
-	    	if (var2.isRemote) {
-	    		curFireDelay = fireDelayClient;
-	    		curReloadDelay = reloadDelayClient;
-	    		curClipAmount = clipAmountClient;
-	    		
-	    		
-	    		
-	    		
-	    		
-	    	} else {
-	    		curFireDelay = fireDelay;
-	    		curReloadDelay = reloadDelay;
-	    		curClipAmount = clipAmount;
-	    		
-	    		
-	    	}
-    	}*/
+    	//new anti mutli reload methods
+    	/*boolean needsReload = var1.stackTagCompound.getBoolean("needsReload");
     	
-    	/*System.out.println("PRE");
-    	System.out.println("isRemote: " + var2.isRemote + " - curFireDelay: " + curFireDelay + " - ");
-    	System.out.println("isRemote: " + var2.isRemote + " - curReloadDelay: " + curReloadDelay);
-    	System.out.println("isRemote: " + var2.isRemote + " - curClipAmount: " + curClipAmount);*/
+    	System.out.println("what: " + needsReload + " - " + curReloadDelay);
+    	
+    	//enforce a reload before they can use it
+    	if (needsReload && curReloadDelay <= 0) {
+    		System.out.println("triggering a forced reload for " + this);
+    		curReloadDelay = reloadTime;
+    	}*/
     	
     	//MAIN GUN LOGIC START \\
     	if (curFireDelay > 0 || curReloadDelay > 0) return -3;
@@ -289,10 +260,12 @@ public class ItemGun extends Item
     		useBulletResult = 1;
         }
     	
+    	//If fired
     	if (useBulletResult > 0) {
     		
     		curClipAmount--;
 	        
+    		//If needs reload
 	        if (curClipAmount <= 0) {
 	        	curReloadDelay = reloadTime;
 	        	curClipAmount = this.magSize;
@@ -301,7 +274,7 @@ public class ItemGun extends Item
 	        		curClipAmount = -1;
 	        	} else {
 		        	if (ammoCount < this.magSize) curClipAmount = ammoCount;
-		        	if (!var2.isRemote && ammoCount > 0) var2.playSoundAtEntity(var3, "zc.gun.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+		        	if (!var2.isRemote && ammoCount > 0) var2.playSoundAtEntity(var3, ZombieCraftMod.modID + ":" + "zc.gun.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        	}
 	        }
     		
@@ -309,12 +282,6 @@ public class ItemGun extends Item
 	        	
 	            //System.out.println("ammo: " + var10);
 	        	fireGun(var2, var3);
-	        	
-	        	/*if (useBulletResult == 2) {
-	        		var2.playSoundAtEntity(var3, "zc.gun.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
-		        }*/
-	        	
-	        	/*if (curReloadDelay == 0) */
 	        	var2.playSoundToNearExcept(var3, ZombieCraftMod.modID + ":" + firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        	//var2.func_85173_a(var3, firingSound, (double)var3.posX, (double)var3.posY, (double)var3.posZ, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        } else {
@@ -323,15 +290,9 @@ public class ItemGun extends Item
 	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_110158_av = 5;
 	        }
 	        
-	        
-	        
-	        /*if (useBulletResult == 2) {
-    			curReloadDelay = reloadTime;
-    		}*/
-	        
     	} else {
     		if (!var2.isRemote) {
-        		var2.playSoundAtEntity(var3, "zc.gun.gunempty", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        		var2.playSoundAtEntity(var3, ZombieCraftMod.modID + ":" + "zc.gun.gunempty", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
     		}
     		curClipAmount = -1;
     	}
@@ -341,49 +302,9 @@ public class ItemGun extends Item
     	
     	//INSTANCE HANDLING
     	
-    	/*System.out.println("POST");
-    	System.out.println("isRemote: " + var2.isRemote + " - curFireDelay: " + curFireDelay + " - ");
-    	System.out.println("isRemote: " + var2.isRemote + " - curReloadDelay: " + curReloadDelay);
-    	System.out.println("isRemote: " + var2.isRemote + " - curClipAmount: " + curClipAmount);*/
-    	
     	this.setFireDelay(var1, var2, var3, curFireDelay);
     	this.setReloadDelay(var1, var2, var3, curReloadDelay);
     	this.setClipAmount(var1, var2, var3, curClipAmount);
-    	
-    	/*if (var3.username.contains("fakePlayer")) {
-    		c_EnhAI entAI = (c_EnhAI)c_CoroAIUtil.playerToAILookup.get(var3.username);
-    		
-    		if (entAI != null) {
-    			entAI.curCooldown_FireGun = curFireDelay;
-	    		entAI.curCooldown_Reload = curReloadDelay;
-	    		entAI.curClipAmount = curClipAmount;
-    		} else {
-    			System.out.println("fail gun code, isRemote: " + var2.isRemote);
-    			return -3;
-    		}
-    	} else {
-	    	if (var2.isRemote) {
-	    		fireDelayClient = curFireDelay;
-	    		reloadDelayClient = curReloadDelay;
-	    		clipAmountClient = curClipAmount;
-	    		
-	    		int clipcount = var1.stackTagCompound.getInteger("curClipAmount");
-	    		
-	    		if (clipcount != curClipAmount) {
-	    			//curClipAmount = clipAmountClient = clipcount;
-	    		}
-	    	} else {
-	    		fireDelay = curFireDelay;
-	    		reloadDelay = curReloadDelay;
-	    		clipAmount = curClipAmount;
-	    		
-	    		var1.stackTagCompound.setInteger("curClipAmount", curClipAmount);
-	    	}
-    	}*/
-
-    	//System.out.println("isRemote: " + var2.isRemote + " - clipamount: " + curClipAmount);
-    	
-    	
     	
     	return useBulletResult;
     }
@@ -406,7 +327,7 @@ public class ItemGun extends Item
     	checkNBTStack(par1ItemStack);
     	
     	//INSTANCE HANDLING
-    	if (var3.username.contains("fakePlayer")) {
+    	if (var3 == null || var3.username.contains("fakePlayer")) {
     		//cooldown handled properly in c_PlayerProxy
     	} else {
 	    	if (par2World.isRemote) {
@@ -421,14 +342,41 @@ public class ItemGun extends Item
 	    		int tempFireDelay = par1ItemStack.stackTagCompound.getInteger("fireDelay");
 	    		if (tempFireDelay > 0) par1ItemStack.stackTagCompound.setInteger("fireDelay", --tempFireDelay);
 	    		int tempReloadDelay = par1ItemStack.stackTagCompound.getInteger("reloadDelay");
-	    		if (tempReloadDelay > 0) par1ItemStack.stackTagCompound.setInteger("reloadDelay", --tempReloadDelay);
+	    		if (tempReloadDelay > 0) {
+	    			//if held, tick reload, else reset it since its an incomplete reload cycle for non held weapon
+	    			if (par5) {
+	    				par1ItemStack.stackTagCompound.setInteger("reloadDelay", --tempReloadDelay);
+	    			} else {
+	    				par1ItemStack.stackTagCompound.setInteger("reloadDelay", reloadTime);
+	    			}
+	    			//mark reload cycle completed
+	    			/*if (tempReloadDelay == 0) {
+	    				System.out.println("mark reload complete for " + this);
+	    				par1ItemStack.stackTagCompound.setBoolean("needsReload", false);
+	    			} else {
+	    				
+	    			}*/
+	    		}
 	    		/*if (fireDelay > 0) fireDelay--;
 	    		if (reloadDelay > 0) reloadDelay--;*/
 	    	}
     	}
     	
     	if (!par2World.isRemote) {
-    		
+    		//this wasnt the best design, better would be to just check above: if active weapon then tick reload, else, reset it to max if wasnt at 0
+    		//reload resetting for weapon switches
+    		/*int lastSlotUsed = var3.getEntityData().getInteger("lastSlotUsed");
+    		if (lastSlotUsed != var3.inventory.currentItem) {
+    			ItemStack prevItem = var3.inventory.getStackInSlot(lastSlotUsed);
+    			if (prevItem != null && prevItem.stackTagCompound != null) {
+    				int prevGunReloadTime = prevItem.stackTagCompound.getInteger("reloadDelay");
+    				if (prevGunReloadTime > 0) {
+    					System.out.println("mark reload needed for " + this);
+    					prevItem.stackTagCompound.setBoolean("needsReload", true);
+    				}
+    			}
+    		}
+    		var3.getEntityData().setInteger("lastSlotUsed", var3.inventory.currentItem);*/
     	} else {
     		
     		Minecraft mc = FMLClientHandler.instance().getClient();
@@ -453,6 +401,8 @@ public class ItemGun extends Item
     			
     		}
     	}
+    	
+    	
     }
     
     @SideOnly(Side.CLIENT)
@@ -550,7 +500,7 @@ public class ItemGun extends Item
 		        if (var10 == 2) {
 		        	//reloadDelay = reloadTime;
 		        	var1.stackTagCompound.setInteger("reloadDelay", reloadTime);
-		        	var2.playSoundAtEntity(var3, "zc.gun.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+		        	var2.playSoundAtEntity(var3, ZombieCraftMod.modID + ":" + "zc.gun.reload", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 		        	
 		        }
 	
@@ -567,7 +517,7 @@ public class ItemGun extends Item
         	
         } else {
         	if (!var2.isRemote) {
-        		var2.playSoundAtEntity(var3, "zc.gun.gunempty", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        		var2.playSoundAtEntity(var3, ZombieCraftMod.modID + ":" + "zc.gun.gunempty", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
         		//var2.playSoundAtEntity(var3, "sdkzc.round_over", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
         	}
         }
@@ -690,7 +640,7 @@ public class ItemGun extends Item
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
-    	player.worldObj.playSoundAtEntity(player, "zc.meleehit", 1.0F, 1.0F);
+    	player.worldObj.playSoundAtEntity(player, ZombieCraftMod.modID + ":" + "zc.meleehit", 1.0F, 1.0F);
     	return false;
     }
 
