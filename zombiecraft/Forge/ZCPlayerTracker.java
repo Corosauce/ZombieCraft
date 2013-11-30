@@ -9,9 +9,13 @@ public class ZCPlayerTracker implements IPlayerTracker {
 	@Override
 	public void onPlayerLogin(EntityPlayer player) {
 
+		//commented out after reconnecting player being teleported to an unactive level
+		//modifying to only teleport to _lobby_ if game isnt active
 		if (player.dimension == ZCGame.ZCDimensionID) {
 			if (!player.capabilities.isCreativeMode) {
-				(ZCGame.instance()).mapMan.movePlayerToSpawn(player);
+				if (!(ZCGame.instance()).gameActive) {
+					(ZCGame.instance()).mapMan.movePlayerToLobby(player);
+				}
 			}
 		}
 	}

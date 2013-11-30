@@ -246,17 +246,17 @@ public abstract class InterfaceManager {
                 mc.setIngameFocus();
             }
 		} else if (mc.currentScreen == null && this.mc.gameSettings.keyBindPlayerList.pressed) {
-			mc.displayGuiScreen(new GuiLeaderboard());
+			/*mc.displayGuiScreen(new GuiLeaderboard());
 			
 			if (mc.currentScreen != null)
             {
                 mc.setIngameNotInFocus();
-            }
+            }*/
 		}
 		
 		//Fix for weird double gui game over display
 		if (mc.currentScreen instanceof GuiGameOverZC) {
-			if (mc.thePlayer != null && mc.thePlayer.func_110143_aJ() > 1) {
+			if (mc.thePlayer != null && mc.thePlayer.getHealth() > 1) {
 				mc.currentScreen = null;
 			}
 		}
@@ -553,6 +553,8 @@ public abstract class InterfaceManager {
 			ZCClientTicks.displayMessage(prefix + "break barrier for " + Buyables.barrierCost + " points");
 		} else if (buyID == -2) {
 			ZCClientTicks.displayMessage(prefix + "fix barricade");
+		} else if (buyID == -3) {
+			ZCClientTicks.displayMessage(prefix + "activate mystery box");
 		} else {
 			
 		}

@@ -360,7 +360,7 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public int getItemMaxStackSize(Item item) {
-		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_c_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
+		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_s_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override

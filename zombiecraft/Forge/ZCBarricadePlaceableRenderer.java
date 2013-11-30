@@ -49,7 +49,7 @@ public class ZCBarricadePlaceableRenderer implements ISimpleBlockRenderingHandle
         double var18 = (double)((float)var13 / 256.0F);
         double var20 = (double)(((float)var13 + 15.99F) / 256.0F);*/
         
-        Icon icon = par1Block.getIcon(0, par2);//ZCBlocks.barricadeTopTexIDs[5];////Minecraft.getMinecraft().renderGlobal.globalRenderBlocks.func_94165_a(par1Block, 0, par2);
+        Icon icon = par1Block.getIcon(0, par2);//ZCBlocks.barricadeTopTexIDs[5];////Minecraft.getMinecraft().renderGlobal.globalRenderBlocks.getBlockIconFromSideAndMetadata(par1Block, 0, par2);
 
         double var14 = (double)icon.getMinU();
         double var16 = (double)icon.getMaxU();

@@ -23,10 +23,9 @@ public class GuiMainMenuZC extends GuiMainMenu
     {
         super.initGui();
 
-        StringTranslate var2 = StringTranslate.getInstance();
         int var4 = this.height / 4 + 04;
         
-        this.buttonList.add(new GuiButton(66, this.width / 2 - 100, var4, 80, 20, var2.translateKey("ZombieCraft")));
+        this.buttonList.add(new GuiButton(66, this.width / 2 - 100, var4, 80, 20, "ZombieCraft"));
         
         
     }

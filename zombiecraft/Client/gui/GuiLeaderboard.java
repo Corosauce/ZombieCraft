@@ -48,7 +48,7 @@ public class GuiLeaderboard extends GuiScreen
         int startY = (this.height - this.ySize) / 2;
         
         //this.mc.renderEngine.bindTexture("/mods/ZombieCraft/textures/gui/gui256.png");
-        mc.func_110434_K().func_110577_a(resGUI);
+        mc.getTextureManager().bindTexture(resGUI);
         this.drawTexturedModalRect(startX, startY/* + 1 * 18 + 17*/, 0, 0, 256, 256);
     	
         List<String> players = new ArrayList();

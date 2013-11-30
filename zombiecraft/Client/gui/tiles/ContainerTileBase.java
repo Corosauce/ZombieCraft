@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerTileBase extends Container {
-
+	
     public ContainerTileBase (InventoryPlayer inventoryPlayer) {
     	
     }
@@ -38,5 +38,23 @@ public class ContainerTileBase extends Container {
     public void updateProgressBar(int par1, int par2)
     {
     	
+    }
+    
+    protected void bindPlayerInventory(InventoryPlayer inventoryPlayer, int offsetX, int offsetY) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 9; j++) {
+                addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9,
+                		offsetX + j * 18, offsetY + i * 18));
+            }
+        }
+
+        for (int i = 0; i < 9; i++) {
+            addSlotToContainer(new Slot(inventoryPlayer, i, offsetX + i * 18, offsetY + 58));
+        }
+    }
+    
+    @Override
+    public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
+    	return null;
     }
 }

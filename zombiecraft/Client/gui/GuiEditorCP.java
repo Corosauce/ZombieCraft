@@ -61,7 +61,7 @@ public class GuiEditorCP extends GuiScreen
         //int var4 = this.mc.renderEngine.getTexture("/mods/ZombieCraft/textures/textures/menus/editorCP.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         //this.mc.renderEngine.bindTexture("/mods/ZombieCraft/textures/menus/editorCP.png");
-        mc.func_110434_K().func_110577_a(resGUI);
+        mc.getTextureManager().bindTexture(resGUI);
         int var5 = (this.width - this.xSize) / 2;
         int var6 = (this.height - this.ySize) / 2 + 50;
         

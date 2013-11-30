@@ -30,7 +30,11 @@ public class RenderZCZombie extends RenderBiped
     }
 
 	@Override
-	protected ResourceLocation func_110775_a(Entity entity) {
+
+	/**
+	 * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
+	 */
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return new ResourceLocation(ZombieCraftMod.modID + ":textures/entities/zombie.png");
 	}
     
@@ -40,7 +44,7 @@ public class RenderZCZombie extends RenderBiped
 		
     	boolean debug = MinecraftServer.getServer() != null && ZCGame.instance().mapMan != null && MinecraftServer.getServer().isSinglePlayer() && ZCGame.instance().mapMan.editMode;
     	
-    	if (debug) renderDebug((Zombie)par1Entity, par2, par4, par6, par8, par9);
+    	//if (debug) renderDebug((Zombie)par1Entity, par2, par4, par6, par8, par9);
     	
     }
     

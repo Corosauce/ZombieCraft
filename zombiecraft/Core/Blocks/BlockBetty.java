@@ -64,7 +64,7 @@ public class BlockBetty extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int i, int j, int k3, Entity entity2)
     {
-		if (!world.isRemote && (entity2 instanceof EntityLivingBase && ((EntityLivingBase)entity2).func_110143_aJ() > 0 && (entity2 instanceof BaseEntAI_Enemy || (entity2 instanceof EntityLivingBase && !(entity2 instanceof EntityChicken || entity2 instanceof EntityBat || entity2 instanceof BaseEntAI_Ally || entity2 instanceof EntityPlayer))))) {
+		if (!world.isRemote && (entity2 instanceof EntityLivingBase && ((EntityLivingBase)entity2).getHealth() > 0 && (entity2 instanceof BaseEntAI_Enemy || (entity2 instanceof EntityLivingBase && !(entity2 instanceof EntityChicken || entity2 instanceof EntityBat || entity2 instanceof BaseEntAI_Ally || entity2 instanceof EntityPlayer))))) {
 			//make block gone to prevent weird LOS issues causing no damage on some zombies
 			world.setBlock(i, j, k3, 0);
 			explode(world, i, j, k3);

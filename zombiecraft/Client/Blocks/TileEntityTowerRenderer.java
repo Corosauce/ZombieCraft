@@ -25,7 +25,7 @@ public class TileEntityTowerRenderer extends TileEntitySpecialRenderer
     	GL11.glPushMatrix();
     	//model = new ModelTurret();
     	float var10 = 0.06F;
-    	Minecraft.getMinecraft().func_110434_K().func_110577_a(resTex);
+    	Minecraft.getMinecraft().getTextureManager().bindTexture(resTex);
     	//GL11.glEnable(GL11.GL_ALPHA_TEST);
     	GL11.glTranslatef((float)var2+0.5F, (float)var4+2.5F, (float)var6+0.5F);
     	GL11.glRotatef(180F, 0F, 0F, 1F);

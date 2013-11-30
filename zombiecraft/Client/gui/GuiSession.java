@@ -10,6 +10,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -20,7 +21,7 @@ import zombiecraft.Client.gui.scrollable.IScrollingGUI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCPacketHandler;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 
 public class GuiSession extends GuiContainer implements IScrollingGUI {
 
@@ -166,6 +167,19 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
     		fontRenderer.drawString("\u00A7" + '4' + "Map Gen % " + "\u00A7" + 'r' + (int)zcGame.mapMan.curBuildPercent, x1 + 6, y1 + 6 + (yTextSpacing * 3), 0xAAAAAA);
     	}
     	
+    	if (canUseMapSelect(mc.thePlayer.username)) {
+	    	fontRenderer.drawString("Map Commands", 12/*xSize/2 - strWidth/2*/, y1 + 6 + (yTextSpacing * 9), 0x000000);
+	    	fontRenderer.drawString("", 12/*xSize/2 - strWidth/2*/, y1 + 6 + (yTextSpacing * 9), 0x000000);
+    	}
+    	
+    	fontRenderer.drawString("Steps to play:", 12 + 220, y1 + 6 + (yTextSpacing * 9), 0x000000);
+    	fontRenderer.drawString("1. Click 'Setup Lobby'", 12 + 220, y1 + 6 + (yTextSpacing * 10), 0x000000);
+    	fontRenderer.drawString("2. Select a map", 12 + 220, y1 + 6 + (yTextSpacing * 11), 0x000000);
+    	fontRenderer.drawString("3. Click 'Set Map'", 12 + 220, y1 + 6 + (yTextSpacing * 12), 0x000000);
+    	fontRenderer.drawString("4. Click 'Generate Map'", 12 + 220, y1 + 6 + (yTextSpacing * 13), 0x000000);
+    	fontRenderer.drawString("5. Click 'Start Game' when", 12 + 220, y1 + 6 + (yTextSpacing * 14), 0x000000);
+    	fontRenderer.drawString("all players are ready", 12 + 220, y1 + 6 + (yTextSpacing * 15), 0x000000);
+    	
     	xSizePrev = xSize;
 	    xSize = 120;
 	    ySize = 120;
@@ -206,7 +220,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 		
 	    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	    //this.mc.renderEngine.bindTexture("/mods/ZombieCraft/textures/gui/gui512.png");
-	    mc.func_110434_K().func_110577_a(resGUI);
+	    mc.getTextureManager().bindTexture(resGUI);
 	    int x = (width - xSize) / 2;
 	    int y = (height - ySize) / 2;
 	    this.drawTexturedModalRect(x, y, 0, 0, 512, 512);
@@ -254,13 +268,13 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
         
         GuiButton button;
         this.buttonList.add(new GuiSmallButton(ZCPacketHandler.CMD_GAMESETUPJOINLEAVE, xStartPadded, yStartPadded, btnWidth, btnHeight, "Setup Game")); //gets auto renamed depending on game state
-        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_GAMESTART, xStartPadded, yStartPadded + (btnSpacing * 2), btnWidth, btnHeight, "Toggle Game")); //gets auto renamed depending on game state
+        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_GAMESTART, xStartPadded, yStartPadded + (btnSpacing * 1), btnWidth, btnHeight, "Toggle Game")); //gets auto renamed depending on game state
         button.drawButton = false;
-        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_TELEPORT, xStartPadded, yStartPadded + (btnSpacing * 1), btnWidth, btnHeight, "Teleport"));
+        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_TELEPORT, xStartPadded, yStartPadded + (int)(btnSpacing * 9.5F), btnWidth, btnHeight, "Dim. Teleport"));
         button.drawButton = false;
-        this.buttonList.add(guiSelectMap = new GuiSmallButton(ZCPacketHandler.CMD_MAPSETNAME, xStartPadded, yStartPadded + (btnSpacing * 3), btnWidth, btnHeight, "Set Map"));
+        this.buttonList.add(guiSelectMap = new GuiSmallButton(ZCPacketHandler.CMD_MAPSETNAME, xStartPadded, yStartPadded + (btnSpacing * 6), btnWidth, btnHeight, "Set Map"));
         guiSelectMap.drawButton = false;
-        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_MAPGENERATE, xStartPadded, yStartPadded + (btnSpacing * 4), btnWidth, btnHeight, "Regen Map"));
+        this.buttonList.add(button = new GuiSmallButton(ZCPacketHandler.CMD_MAPGENERATE, xStartPadded, yStartPadded + (btnSpacing * 7), btnWidth, btnHeight, "Generate Map"));
         button.drawButton = false;
         
         this.guiScrollable = new GuiSlotImpl(this, listElements, 180, this.height, 32, this.height - 32, 12);
@@ -305,7 +319,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 		
         GuiButton guibutton = (GuiButton)this.buttonList.get(0);
         if (gameState == 0) {
-        	guibutton.displayString = "Setup Game";
+        	guibutton.displayString = "Setup Lobby";
         } else if (gameState == 1) {
         	if (username.equals(ZCGame.nbtInfoClientSession.getString("lobbyLeader"))) {
         		guibutton.displayString = "Leave Lobby";
@@ -334,7 +348,7 @@ public class GuiSession extends GuiContainer implements IScrollingGUI {
 			if (gameState == 2) {
 				guibuttonStart.displayString = "Stop Game";
 			} else {
-				guibuttonStart.displayString = "Start Game";
+				guibuttonStart.displayString = EnumChatFormatting.DARK_GREEN.toString() + "Start Game";
 			}
 		} else {
 			guibuttonStart.drawButton = false;

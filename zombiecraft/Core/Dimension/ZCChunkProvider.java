@@ -187,7 +187,12 @@ public class ZCChunkProvider implements IChunkProvider
 	}
 	
 	@Override
-	public void func_104112_b()
+
+	/**
+	 * Save extra data not associated with any Chunk.  Not saved during autosave, only during world unload.  Currently
+	 * unimplemented.
+	 */
+	public void saveExtraData()
     {
         /*if (this.currentChunkLoader != null)
         {

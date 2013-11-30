@@ -69,7 +69,7 @@ public class EntityWorldHook extends Entity {
     	var1.setInteger("map_sizeZ", ZCGame.instance.zcLevel.buildData.map_sizeZ);*/
     	
     	ZCGame.instance().writeGameNBT();
-    	System.out.println("worldhook nbt write");
+    	//System.out.println("worldhook nbt write");
     	
     }
 
@@ -90,6 +90,6 @@ public class EntityWorldHook extends Entity {
     	
     	ZCGame.instance().readGameNBT(this.worldObj);
     	
-    	System.out.println("worldhook nbt read");
+    	//System.out.println("worldhook nbt read");
     }
 }

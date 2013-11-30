@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import zombiecraft.Core.Buyables;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemEditTool;
 import zombiecraft.Forge.ZCServerTicks;
@@ -65,8 +66,18 @@ public class BlockMysteryBox extends BlockContainer
 	    	if (par5Entity instanceof EntityPlayer) {
 	    		TileEntityMysteryBox pp = (TileEntityMysteryBox)par1World.getBlockTileEntity(par2, par3, par4);
 		    	
-		    	if (pp != null && pp.purchaseChanceTimeoutCur > 0) {
-		    		ZCServerTicks.zcGame.triggerBuyMenu(par5Entity, par2, par3, par4, pp.itemToRenderIndex);
+		    	if (pp != null) {
+		    		if (pp.purchaseChanceTimeoutCur > 0) {
+		    			ItemStack is = ((ItemStack)pp.tileHandler.getObject("renderItemStack"));
+		    			if (is != null && Buyables.itemToIndex != null) {
+		    				Integer obj = Buyables.itemToIndex.get(is.itemID);
+		    				if (obj != null) {
+		    					ZCServerTicks.zcGame.triggerBuyMenu(par5Entity, par2, par3, par4, (int)obj);
+		    				}
+		    			}
+		    		} else {
+		    			ZCServerTicks.zcGame.triggerBuyMenu(par5Entity, par2, par3, par4, -3);
+		    		}
 		    		//mod_ZombieCraft.zcGame.iMan.showMenuTimeout = 30;
 		    		//mod_ZombieCraft.zcGame.iMan.buyString = "Purchase: " + name;
 		    	}

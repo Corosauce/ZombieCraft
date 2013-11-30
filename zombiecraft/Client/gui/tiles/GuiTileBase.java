@@ -80,7 +80,7 @@ public class GuiTileBase extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-	    mc.func_110434_K().func_110577_a(resGUI);
+	    mc.getTextureManager().bindTexture(resGUI);
 	    int x = (width - xSize) / 2;
 	    int y = (height - ySize) / 2;
 	    this.drawTexturedModalRect(x, y, 0, 0, 512, 512);
@@ -126,7 +126,7 @@ public class GuiTileBase extends GuiContainer {
 	@Override
     public void initGui()
     {
-		super.initGui();
+		
 	
 		xSize = 372;
     	ySize = 250;
@@ -142,6 +142,8 @@ public class GuiTileBase extends GuiContainer {
         xStart = xCenter - xSize/2;
         yStart = yCenter - ySize/2;
 		
+        //this must be last as it depends on the xSize ySize values
+        super.initGui();
     }
 	
 	@Override
@@ -150,10 +152,9 @@ public class GuiTileBase extends GuiContainer {
 		//since you cant override return, handling of close button should go in child class of this
     }
 	
-	public void drawTexturedModalRect(int par1, int par2, int par3, int par4, int par5, int par6)
-    {
-        float f = 0.00390625F / 2F;
-        float f1 = 0.00390625F / 2F;
+	public void drawTexturedModalRect(int par1, int par2, int par3, int par4, int par5, int par6, int texSize) {
+		float f = 1F / (float)texSize;//0.00390625F / 2F;
+        float f1 = f;//0.00390625F / 2F;
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + par6), (double)this.zLevel, (double)((float)(par3 + 0) * f), (double)((float)(par4 + par6) * f1));
@@ -161,6 +162,11 @@ public class GuiTileBase extends GuiContainer {
         tessellator.addVertexWithUV((double)(par1 + par5), (double)(par2 + 0), (double)this.zLevel, (double)((float)(par3 + par5) * f), (double)((float)(par4 + 0) * f1));
         tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), (double)this.zLevel, (double)((float)(par3 + 0) * f), (double)((float)(par4 + 0) * f1));
         tessellator.draw();
+	}
+	
+	public void drawTexturedModalRect(int par1, int par2, int par3, int par4, int par5, int par6)
+    {
+		drawTexturedModalRect(par1, par2, par3, par4, par5, par6, 512);
     }
 	
 	public int sanitize(int val) {

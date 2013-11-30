@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet53BlockChange;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
@@ -516,7 +517,7 @@ public class ZCGameMP extends ZCGame {
 				//ig.reloadDelay = ig.reloadTime;
 				playSoundEffect("zc.gun.reload", player, 1.0F, 1.0F / (player.worldObj.rand.nextFloat() * 0.4F + 0.8F));
 			}
-		}  
+		}
 		
 		try {
 			
@@ -525,7 +526,7 @@ public class ZCGameMP extends ZCGame {
 				return;
 			}
 			
-			if (mc.getConfigurationManager().areCommandsAllowed(player.username)) {
+			if (mc.getConfigurationManager().isPlayerOpped(player.username)) {
 				if (dataInt[0] == CommandTypes.SET_WAVE) {
 					handleWaveSet(player, dataInt, true);
 				} else if (dataInt[0] == CommandTypes.TOGGLE_EDIT) {
@@ -757,7 +758,7 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	public boolean isOp(String parName) {
-		return this.lobbyLeader.equals(parName) || mc.getConfigurationManager().areCommandsAllowed(parName);
+		return this.lobbyLeader.equals(parName) || mc.getConfigurationManager().isPlayerOpped(parName);
 	}
 	
 	@Override

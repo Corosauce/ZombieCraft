@@ -1,22 +1,22 @@
 package zombiecraft.Client.gui.tiles;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Random;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiSmallButton;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import zombiecraft.Client.gui.elements.GuiButtonBoolean;
 import zombiecraft.Client.gui.elements.GuiTextFieldZC;
 import zombiecraft.Core.Blocks.TileEntityMysteryBox;
-import zombiecraft.Core.World.LevelConfig;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 
 public class GuiTileMysteryBox extends GuiTileBase {
-
+	
 	TileEntityMysteryBox tEnt;
+	public ResourceLocation resSlot = new ResourceLocation("zombiecraft:textures/gui/slot.png");
 	
 	public GuiTileMysteryBox (InventoryPlayer inventoryPlayer,
 			TileEntityMysteryBox tileEntity) {
@@ -33,11 +33,28 @@ public class GuiTileMysteryBox extends GuiTileBase {
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		super.drawGuiContainerBackgroundLayer(par1, par2, par3);
 		
+		int btnWidth = 80;
+		int guiPadding = 8;
+		int yDiv = 22;
+		int yStart2 = yStart - 9;
+		
+		//slots
+		mc.getTextureManager().bindTexture(resSlot);
+		for (int i = 0; i < inventorySlots.inventorySlots.size(); i++) {
+			Slot slot = (Slot)inventorySlots.inventorySlots.get(i);
+			drawTexturedModalRect(xStart+slot.xDisplayPosition-1, yStart+slot.yDisplayPosition-1, 0, 0, 18, 18, 18);
+			//slot.xDisplayPosition += (new Random()).nextInt(3)-1;
+			//slot.yDisplayPosition += (new Random()).nextInt(3)-1;
+		}
+		
 		this.drawString(this.fontRenderer, "Mystery Box" + (guiCur.equals("main") ? "" : " - SubGUI: " + guiCur), xStart+7, yStart-9, 16777215);
 		
 		if (guiCur.equals("main")) {
-			this.drawString(this.fontRenderer, "Custom Entity Spawning", xStart+7, yStart+6, 16777215);
-			this.drawString(this.fontRenderer, "Spawn Rules", xStart+7, yStart+8+130, 16777215);
+			this.drawStringRightAligned(this.fontRenderer, "Purchase time ticks", xStart+xSize/3, yStart2+yDiv, 16777215);
+			this.drawStringRightAligned(this.fontRenderer, "Cycle time ticks", xStart+xSize/3, yStart2+yDiv*2, 16777215);
+			
+			this.drawString(this.fontRenderer, "Items to Randomize", xStart+7, yStart+8+60, 16777215);
+			this.drawString(this.fontRenderer, "Inventory", xStart+7, yStart+8+148, 16777215);
 		}
 	}
 	
@@ -91,6 +108,8 @@ public class GuiTileMysteryBox extends GuiTileBase {
         int padding = 1;
         int btnSpacing = 22;
         
+        int rightStart = xSize/3;
+        
         if (guiCur.equals("main")) {
         	addButton("close", new GuiSmallButton(CMD_CLOSE, xStart + xSize - guiPadding - btnWidth, yStart + ySize - guiPadding - btnHeight, btnWidth, btnHeight, "Save & Close"));
         } else {
@@ -98,8 +117,8 @@ public class GuiTileMysteryBox extends GuiTileBase {
         }
         
         if (guiCur.equals("main")) {
-        	addTextBox(tEnt.nbtStrTimeoutPurchase, new GuiTextFieldZC(tEnt.nbtStrTimeoutPurchase, this.fontRenderer, xStartPadded + 55, yStartPadded+btnHeight-8, 220, 20));
-        	addTextBox(tEnt.nbtStrTimeoutRandomize, new GuiTextFieldZC(tEnt.nbtStrTimeoutRandomize, this.fontRenderer, xStartPadded + 55, yStartPadded+btnHeight*2-8, 220, 20));
+        	addTextBox(tEnt.nbtStrTimeoutPurchase, new GuiTextFieldZC(tEnt.nbtStrTimeoutPurchase, this.fontRenderer, xStartPadded + rightStart, yStartPadded, 80, 20));
+        	addTextBox(tEnt.nbtStrTimeoutRandomize, new GuiTextFieldZC(tEnt.nbtStrTimeoutRandomize, this.fontRenderer, xStartPadded + rightStart, yStartPadded+btnHeightAndPadding*1, 80, 20));
         }
         
         NBTTagCompound data = new NBTTagCompound();
@@ -124,11 +143,12 @@ public class GuiTileMysteryBox extends GuiTileBase {
         if (var1.id == CMD_CLOSE) {
         	sendPacket = true;
         	if (guiCur.equals("main")) {
-        		mc.displayGuiScreen(null);
+        		//mc.displayGuiScreen(null);
+        		mc.thePlayer.closeScreen();
         	}/* else if (guiCur.equals(tEnt.CMD_GUIMODE_STR_PROXIMITY) || guiCur.equals(tEnt.CMD_GUIMODE_STR_WAVE) || guiCur.equals(tEnt.CMD_GUIMODE_STR_WATCH)) {
         		guiCur = guiPrev;
             }*/
-        	initGui();
+        	//initGui();
         }
         
         //plan:

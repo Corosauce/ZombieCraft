@@ -17,6 +17,7 @@ import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.BaseEntAI_Ally;
 import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Forge.ZombieCraftMod;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -77,7 +78,7 @@ public class BlockBarricadePlaceable extends Block
     	
     	
     	
-    	if (entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).func_110143_aJ() > 0)
+    	if (entity instanceof BaseEntAI && !(entity instanceof BaseEntAI_Ally) && ((BaseEntAI)entity).getHealth() > 0)
 		{
 			//System.out.println(oldid);
 			BaseEntAI ent = (BaseEntAI)entity;
@@ -123,9 +124,9 @@ public class BlockBarricadePlaceable extends Block
 				
 				//if (newid != oldid) {
 		            if(meta == 0) {
-		            	world.playSoundAtEntity(entity, "zc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, ZombieCraftMod.modID + ":" + "zc.barricadecollapse", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            } else {
-		            	world.playSoundAtEntity(entity, "zc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
+		            	world.playSoundAtEntity(entity, ZombieCraftMod.modID + ":" + "zc.woodbreak", 1.0F, 1.0F / rand.nextFloat() * 0.1F + 0.95F);
 		            }
 				//}
 			}

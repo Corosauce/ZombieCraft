@@ -112,7 +112,7 @@ public class TileEntityPurchasePlateRenderer extends TileEntitySpecialRenderer
         GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
         GL11.glRotatef(RenderManager.instance.playerViewY, 0.0F, 1.0F, 0.0F);
         //ZCClientTicks.mc.renderEngine.bindTexture("/misc/mapbg.png");
-        ZCClientTicks.mc.func_110434_K().func_110577_a(resGUI);
+        ZCClientTicks.mc.getTextureManager().bindTexture(resGUI);
         Tessellator tessellator = Tessellator.instance;
         GL11.glNormal3f(0.0F, 0.0F, -1.0F);
         tessellator.startDrawingQuads();

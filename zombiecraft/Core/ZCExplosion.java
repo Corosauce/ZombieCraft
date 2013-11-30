@@ -264,7 +264,11 @@ public class ZCExplosion extends Explosion
     }
 
     @Override
-    public EntityLivingBase func_94613_c()
+
+    /**
+     * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
+     */
+    public EntityLivingBase getExplosivePlacedBy()
     {
         return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));
     }

@@ -22,7 +22,7 @@ import zombiecraft.Client.gui.elements.GuiTextFieldZC;
 import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCPacketHandler;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 
 public class GuiMapConfig extends GuiContainer {
 
@@ -77,6 +77,14 @@ public class GuiMapConfig extends GuiContainer {
 		nbtSendCache.setCompoundTag("mapData", new NBTTagCompound());
 	}
 	
+	@Override
+	public void onGuiClosed() {
+		// TODO Auto-generated method stub
+		super.onGuiClosed();
+		//a fix for container using gui opening on client side that doesnt need slot manip - might not have been needed, below was doing initGui on main gui close
+		Minecraft.getMinecraft().thePlayer.openContainer = Minecraft.getMinecraft().thePlayer.inventoryContainer;
+	}
+	
 	public void addButton(String lookupName, GuiButton btn) {
 		buttonsLookup.put(lookupName, btn);
 		buttonsLookupInt.put(btn.id, lookupName);
@@ -105,7 +113,7 @@ public class GuiMapConfig extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-	    mc.func_110434_K().func_110577_a(resGUI);
+	    mc.getTextureManager().bindTexture(resGUI);
 	    int x = (width - xSize) / 2;
 	    int y = (height - ySize) / 2;
 	    this.drawTexturedModalRect(x, y, 0, 0, 512, 512);
@@ -324,11 +332,13 @@ public class GuiMapConfig extends GuiContainer {
         if (var1.id == CMD_CLOSE) {
         	if (guiCur.equals("main")) {
         		sendPacket = true;
-        		mc.displayGuiScreen(null);
+        		//mc.displayGuiScreen(null);
+        		mc.thePlayer.closeScreen();
         	} else if (guiCur.equals(GUI_SUBGUI_WAVE)/* || */) {
         		guiCur = guiPrev;
+        		initGui();
             }
-        	initGui();
+        	
         }
         
         if (sendPacket) {

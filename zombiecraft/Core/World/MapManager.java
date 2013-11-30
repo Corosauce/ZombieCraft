@@ -5,6 +5,7 @@ import java.io.File;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -68,6 +69,16 @@ public class MapManager {
 				
 			//}
 			if (zcLevel != null) zcLevel.tick();
+		}
+		
+		if (zcGame.lobbyActive) {
+			World world = DimensionManager.getWorld(ZCGame.ZCDimensionID);
+			if (world != null) {
+				if (world.getPlayerEntityByName(zcGame.lobbyLeader) == null) {
+					zcGame.lobbyActive = false;
+					zcGame.lobbyLeader = "";
+				}
+			}
 		}
 		
 		//buildMan.updateTick();

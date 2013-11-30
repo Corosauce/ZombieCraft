@@ -30,7 +30,7 @@ public class ItemAbility extends Item {
     public ItemAbility(int par1, int parPotionID, boolean parUseOnPickup)
     {
         super(par1);
-        this.maxStackSize = 1;
+        this.maxStackSize = 64;
         abilityID = parPotionID;
         useOnPickup = parUseOnPickup;
         //potionLength = length;
@@ -111,7 +111,7 @@ public class ItemAbility extends Item {
     
     @Override
     public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
-    	if (useOnPickup && par3Entity instanceof EntityPlayer) {
+    	if (useOnPickup && par3Entity instanceof EntityPlayer && !((EntityPlayer) par3Entity).capabilities.isCreativeMode) {
     		EntityPlayer entP = (EntityPlayer)par3Entity;
     		entP.inventory.mainInventory[par4] = this.onItemRightClick(par1ItemStack, par2World, entP);
     	}

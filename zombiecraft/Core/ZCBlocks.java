@@ -61,7 +61,7 @@ public class ZCBlocks {
 	//ALWAYS ADD IDS TO END!!!! THINK OF THE SCHEMATICS!
 	public static void load(ZombieCraftMod pMod) {
 		b_mobSpawnerWave  = (new BlockMobSpawnerWave(ConfigIDs.ID_B_WAVEMOBSPAWNER)).setUnlocalizedName("z_spawnblock").setCreativeTab(ZombieCraftMod.tabBlock);
-    	b_buyBlock = (new BlockPurchasePlate(ConfigIDs.ID_B_PURCHASEPLATE, EnumMobType.players, Material.circuits)).setUnlocalizedName("z_purchaseBlock").setCreativeTab(ZombieCraftMod.tabBlock);
+		setUnlocalizedNameAndTexture(b_buyBlock = (new BlockPurchasePlate(ConfigIDs.ID_B_PURCHASEPLATE, EnumMobType.players, Material.circuits)).setCreativeTab(ZombieCraftMod.tabBlock), "z_purchaseBlock");
     	
     	int stateToBlockID[] = {ConfigIDs.ID_B_BARRICADE0, ConfigIDs.ID_B_BARRICADE1, ConfigIDs.ID_B_BARRICADE2, ConfigIDs.ID_B_BARRICADE3, ConfigIDs.ID_B_BARRICADE4, ConfigIDs.ID_B_BARRICADE5};
     	barricadeS0 = (new BlockBarricade(stateToBlockID, Material.circuits, 0)).setUnlocalizedName("barricadeBroken");
@@ -103,7 +103,7 @@ public class ZCBlocks {
 	
 	public static Block setUnlocalizedNameAndTexture(Block block, String nameTex) {
 		block.setUnlocalizedName(nameTex);
-		block.func_111022_d(nameTex);
+		block.setTextureName(nameTex);
     	return block;
     }
 	

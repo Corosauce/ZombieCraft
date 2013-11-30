@@ -3,17 +3,19 @@ package zombiecraft.Core.World;
 import java.util.ArrayList;
 import java.util.List;
 
-import CoroAI.util.CoroUtilNBT;
-
-import zombiecraft.Core.Dimension.ZCWorldProvider;
-import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZCPacketHandler;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import zombiecraft.Core.Buyables;
+import zombiecraft.Core.Dimension.ZCWorldProvider;
+import zombiecraft.Core.Items.ItemAbility;
+import zombiecraft.Forge.ZCPacketHandler;
+import CoroAI.util.CoroUtilNBT;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LevelConfig {
 
@@ -92,6 +94,7 @@ public class LevelConfig {
 	public static String nbtStrWaveSpeedAmp = "spawnSpeedAmp";
 	public static String nbtStrWaveSpeedAmpMax = "spawnSpeedAmpMax";
 	public static String nbtStrWaveMoveLeadDist = "moveLeadDist";
+	public static String nbtStrComradeMaxPerPlayer = "comradeMaxPerPlayer";
 	
 	//public static String nbtStrCustomLightingVals = "customLighting_CustomVals";
 	
@@ -104,11 +107,13 @@ public class LevelConfig {
 	}
 	
 	public static void loadNBT(NBTTagCompound data) {
+		if (data == null) data = new NBTTagCompound();
+		
 		nbtInfoServerMapConfig = data;
 		
 		//defaults here! - FYI i dont think nbt can return a null value, just a default blank
 		NBTTagCompound mapData = nbtInfoServerMapConfig.getCompoundTag("mapData");
-		
+		if (mapData == null) mapData = new NBTTagCompound();
 		try {
 			String str = mapData.getString(nbtStrWaveDefaultMobSpawned);
 			if (str == null || str.equals("")) {
@@ -152,6 +157,14 @@ public class LevelConfig {
 	}
 	
 	public static void updateCallback() {
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			updateCallbackClient();
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void updateCallbackClient() {
+
 		World world = Minecraft.getMinecraft().theWorld;
 		if (world != null && world.provider instanceof ZCWorldProvider) {
 			((ZCWorldProvider)world.provider).generateLightBrightnessTableInt();
@@ -182,14 +195,20 @@ public class LevelConfig {
     	MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(ZCPacketHandler.getNBTPacket(nbtForClient, "MapConfig"));
     }
     
-    //not needed, client does most of the setting
-    public void updateServerNBTForSync(NBTTagCompound data) {
-		ZCGame zcg = ZCGame.instance();
-		
-		/////// THINK!
-		//should we just make client get a copy of the server nbt? and make the naming checks match up? might save a lot of time if client basically needs most of that data....
-		//or if not much is needed for client, toss the client needed stuff in an extra tag, so its already grouped and ready to be sent
-		
-		
+    public static ItemStack[] getMysteryBoxDefaultItems(int bufferSize) {
+    	
+    	//until we have a global default to copy, just use all items minus abilities for now
+    	
+    	ItemStack[] defStacks = new ItemStack[bufferSize];
+    	int placeIndex = 0;
+    	for (int i = 0; i < Buyables.items.size(); i++) {
+    		if (Buyables.getBuyItem(i) != null && !(Buyables.getBuyItem(i).getItem() instanceof ItemAbility)) {
+    			defStacks[placeIndex] = Buyables.getBuyItem(i);
+    			placeIndex++;
+    		}
+    		
+    	}
+    	return defStacks;
     }
+    
 }

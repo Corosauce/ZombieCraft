@@ -52,6 +52,7 @@ import CoroAI.Persister;
 import CoroAI.c_CoroAIUtil;
 import CoroAI.componentAI.jobSystem.JobBase;
 import CoroAI.componentAI.jobSystem.JobProtect;
+import CoroAI.tile.ITileInteraction;
 import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -625,6 +626,8 @@ public abstract class ZCGame {
 			} else if (itemIndex == -2) {
 				triggerBarricadeRepair(player);
 				resetBuyState(player, Buyables.barricadeRepairCooldown);
+			} else if (itemIndex == -3) {
+				triggerMysteryBox(player);
 			}
 			
 			//player.inventory.addItemStackToInventory(ItemStack.copyItemStack(this.buyableItems.get(itemIndex)));
@@ -781,6 +784,18 @@ public abstract class ZCGame {
 			player.worldObj.setBlock(x, y, z, 0, 0, 2);
 			
 			this.playSound("zc.barrierbreak", x, y, z, 1, 1);
+		}
+	}
+	
+	public void triggerMysteryBox(EntityPlayer player) {
+		int x = (Integer)this.getData(player, DataTypes.purchaseCoordX);
+		int y = (Integer)this.getData(player, DataTypes.purchaseCoordY);
+		int z = (Integer)this.getData(player, DataTypes.purchaseCoordZ);
+		
+		TileEntity tEnt = player.worldObj.getBlockTileEntity(x, y, z);
+		
+		if (tEnt instanceof ITileInteraction) {
+			((ITileInteraction) tEnt).clickedLeft();
 		}
 	}
     

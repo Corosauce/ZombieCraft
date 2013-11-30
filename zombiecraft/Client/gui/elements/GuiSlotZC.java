@@ -478,7 +478,7 @@ public abstract class GuiSlotZC
     {
         Tessellator var5 = Tessellator.instance;
         //GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture(BACKGROUND_IMAGE));
-        this.mc.func_110434_K().func_110577_a(Gui.field_110325_k);
+        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var6 = 32.0F;
         var5.startDrawingQuads();
@@ -494,7 +494,7 @@ public abstract class GuiSlotZC
     protected void drawContainerBackgroundFull(Tessellator tess)
     {
         //GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture(BACKGROUND_IMAGE));
-    	this.mc.func_110434_K().func_110577_a(Gui.field_110325_k);
+    	this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float height = 32.0F;
         tess.startDrawingQuads();
@@ -509,7 +509,7 @@ public abstract class GuiSlotZC
     protected void drawContainerBackground(Tessellator tess)
     {
         //GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture(BACKGROUND_IMAGE));
-        this.mc.func_110434_K().func_110577_a(Gui.field_110325_k);
+        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float height = 32.0F;
         tess.startDrawingQuads();

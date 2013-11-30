@@ -10,7 +10,7 @@ import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import CoroAI.ITilePacket;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 import CoroAI.tile.TileHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -101,7 +101,7 @@ public class TileEntityPacketTester extends TileEntity implements ITilePacket
 	
 	@Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-    	this.readFromNBTPacket(pkt.customParam1);
+    	this.readFromNBTPacket(pkt.data);
     }
     
     @Override

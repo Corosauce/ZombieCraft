@@ -306,7 +306,7 @@ public class WaveManager {
 		boolean allDead = true;
 		List<EntityPlayer> players = zcGame.getPlayers();
 		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).func_110143_aJ() > 0) {
+			if (players.get(i).getHealth() > 0) {
 				allDead = false;
 			}
 		}

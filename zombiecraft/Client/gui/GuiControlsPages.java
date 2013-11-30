@@ -58,7 +58,6 @@ public class GuiControlsPages extends GuiScreen
      */
     public void initGui()
     {
-        StringTranslate var1 = StringTranslate.getInstance();
         int var2 = this.func_20080_j();
 
         elementStart = page * elementsPerPage;
@@ -90,7 +89,7 @@ public class GuiControlsPages extends GuiScreen
         this.buttonList.add(new GuiButton(201, this.width / 2 - 35 - 50 - 70, this.height / 6 + 168, 70, 20, page > 0 ? "Prev Page" : "\u00a77Prev Page"));
         this.buttonList.add(new GuiButton(202, this.width / 2 + 35 + 50, this.height / 6 + 168, 70, 20, !hitEnd ? "Next Page" : "\u00a77Next Page"));
         
-        this.buttonList.add(new GuiButton(200, this.width / 2 - 35, this.height / 6 + 168, 70, 20, var1.translateKey("gui.done")));
+        this.buttonList.add(new GuiButton(200, this.width / 2 - 35, this.height / 6 + 168, 70, 20, "Done"));
         //this.screenTitle = var1.translateKey("controls.title");
     }
 

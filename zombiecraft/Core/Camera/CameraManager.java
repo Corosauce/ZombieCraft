@@ -360,7 +360,7 @@ public class CameraManager {
 			//TEMP!!!!!!!!! - remove the import too
 			for (int i = 0; i < mc.theWorld.loadedEntityList.size(); i++) {
 				Entity ent = (Entity)mc.theWorld.loadedEntityList.get(i);
-				if (ent instanceof ICoroAI && ((EntityLivingBase)ent).func_110138_aP() == 50 && ent.worldObj.rand.nextInt(10) == 0) {
+				if (ent instanceof ICoroAI && ((EntityLivingBase)ent).getMaxHealth() == 50 && ent.worldObj.rand.nextInt(10) == 0) {
 					spectate((EntityLivingBase)ent);
 					spectateTargetIndex = i;
 					return;
@@ -374,8 +374,8 @@ public class CameraManager {
 					if (safetyBreak++ > 100) return;
 					if (i >= mc.theWorld.playerEntities.size()) i = 0;
 					EntityPlayer entP = (EntityPlayer)mc.theWorld.playerEntities.get(i);
-					System.out.println("what: " + i + " - " + entP + " - h: " + entP.func_110143_aJ());
-					if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.func_110143_aJ() > 1) {
+					System.out.println("what: " + i + " - " + entP + " - h: " + entP.getHealth());
+					if (!((EntityPlayer)spectateTarget).username.equals(entP.username) && !entP.isDead && entP.deathTime == 0 && entP.getHealth() > 1) {
 						System.out.println("Spectating: " + entP.username);
 						spectate(entP);
 						spectateTargetIndex = i;

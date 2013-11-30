@@ -13,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import zombiecraft.Client.gui.elements.GuiButtonBoolean;
 import zombiecraft.Client.gui.elements.GuiTextFieldZC;
 import zombiecraft.Core.Blocks.TileEntityMobSpawnerWave;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 
 public class GuiTileMobSpawnerWave extends GuiTileBase {
 
@@ -219,11 +219,13 @@ public class GuiTileMobSpawnerWave extends GuiTileBase {
         if (var1.id == CMD_CLOSE) {
         	sendPacket = true;
         	if (guiCur.equals("main")) {
-        		mc.displayGuiScreen(null);
+        		//mc.displayGuiScreen(null);
+        		mc.thePlayer.closeScreen();
         	} else if (guiCur.equals(tEnt.CMD_GUIMODE_STR_PROXIMITY) || guiCur.equals(tEnt.CMD_GUIMODE_STR_WAVE) || guiCur.equals(tEnt.CMD_GUIMODE_STR_WATCH)) {
         		guiCur = guiPrev;
+        		initGui();
             }
-        	initGui();
+        	
         }
         
         //plan:

@@ -306,7 +306,7 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
     }
     
     public float getMoveSpeed() {
-    	return (float) this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111126_e();
+    	return (float) this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue();
     }
     
     
@@ -354,13 +354,14 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
     }
 
 	@Override
-	protected void func_110147_ax() {
-		super.func_110147_ax();
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
 		float speed = 0.5F;
 		float health = 20;
+		float healthAmp = 0;
 		try {
 			health = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveHealth));
-			float healthAmp = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveHealthAmp));
+			healthAmp = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveHealthAmp));
 			float entBaseSpeed = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedBase));
 			float entRandSpeedAdd = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedRand));
 			float amp_Speed = Float.valueOf(LevelConfig.get(LevelConfig.nbtStrWaveSpeedAmp));
@@ -370,8 +371,8 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
 				WaveManager wMan = ZCServerTicks.zcGame.wMan;
 				speed = entBaseSpeed + (entRandSpeedAdd * worldObj.rand.nextFloat()) + (amp_Speed * wMan.wave_Stage);
 				if (speed > speedMax) speed = speedMax;
-				health = (int)(health + (health * (healthAmp * wMan.wave_Stage)));
-				setEntityHealth(health);
+				health = (int)(health + (health * (healthAmp * (float)wMan.wave_Stage)));
+				setHealth(health);
 			} else {
 				speed = 0.55F;
 			}
@@ -382,8 +383,8 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
 		agent.setSpeedFleeAdditive(0.1F);
 		agent.setSpeedNormalBase(speed);
 		agent.applyEntityAttributes();
-		//System.out.println("setting ZC zombie health/speed to: " + health + "/" + speed);
-        this.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(health);
+		//System.out.println("ZC Ent spawn, health: " + health + ", speed: " + speed + ", healthAmp: " + healthAmp * (float)ZCServerTicks.zcGame.wMan.wave_Stage);
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute(health);
 	}
     
     /**
@@ -506,15 +507,18 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
     @Override
 	public void setDead() {
     	
-    	JobBase jb = agent.jobMan.getPrimaryJob();
-		if (jb instanceof JobProtect) {
-			String name = ((JobProtect) jb).playerName;
-			ZCGame.instance().check(name);
-			int count = (Integer)ZCGame.instance().getData(name, zombiecraft.Core.DataTypes.comrades);
-			if (count > 0) {
-				ZCGame.instance().setData(name, zombiecraft.Core.DataTypes.comrades, count - 1);
+    	
+    	if (agent != null) {
+	    	JobBase jb = agent.jobMan.getPrimaryJob();
+			if (jb instanceof JobProtect) {
+				String name = ((JobProtect) jb).playerName;
+				ZCGame.instance().check(name);
+				int count = (Integer)ZCGame.instance().getData(name, zombiecraft.Core.DataTypes.comrades);
+				if (count > 0) {
+					ZCGame.instance().setData(name, zombiecraft.Core.DataTypes.comrades, count - 1);
+				}
 			}
-		}
+    	}
     	
 		super.setDead();
     }

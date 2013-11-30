@@ -15,7 +15,7 @@ public class RenderBullet extends Render
 {
     public void renderArrow(EntityBullet var1, double var2, double var4, double var6, float var8, float var9)
     {
-    	this.func_110777_b(var1);
+    	this.bindEntityTexture(var1);
         GL11.glPushMatrix();
         GL11.glTranslatef((float)var2, (float)var4, (float)var6);
         GL11.glRotatef(var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var9 - 90.0F, 0.0F, 1.0F, 0.0F);
@@ -78,7 +78,11 @@ public class RenderBullet extends Render
     }
 
 	@Override
-	protected ResourceLocation func_110775_a(Entity entity) {
+
+	/**
+	 * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
+	 */
+	protected ResourceLocation getEntityTexture(Entity entity) {
 		return new ResourceLocation(ZombieCraftMod.modID + ":textures/entities/projectiles/itemBullets.png");
 	}
 }

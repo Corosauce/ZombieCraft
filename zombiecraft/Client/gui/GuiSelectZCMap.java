@@ -19,9 +19,9 @@ import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.src.ModLoader;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.StringTranslate;
 import net.minecraft.world.EnumGameType;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
@@ -87,7 +87,7 @@ public class GuiSelectZCMap extends GuiScreen
 
     /** the delete button in the world selection gui */
     private GuiButton buttonDelete;
-    private GuiButton field_82316_w;
+    private GuiButton buttonRecreate;
     
     public Minecraft mc;
     
@@ -105,13 +105,12 @@ public class GuiSelectZCMap extends GuiScreen
      */
     public void initGui()
     {
-        StringTranslate var1 = StringTranslate.getInstance();
         //this.screenTitle = var1.translateKey("selectWorld.title");
-        this.localizedWorldText = var1.translateKey("selectWorld.world");
+        /*this.localizedWorldText = var1.translateKey("selectWorld.world");
         this.localizedMustConvertText = var1.translateKey("selectWorld.conversion");
         this.localizedGameModeText[EnumGameType.SURVIVAL.getID()] = var1.translateKey("gameMode.survival");
         this.localizedGameModeText[EnumGameType.CREATIVE.getID()] = var1.translateKey("gameMode.creative");
-        this.localizedGameModeText[EnumGameType.ADVENTURE.getID()] = var1.translateKey("gameMode.adventure");
+        this.localizedGameModeText[EnumGameType.ADVENTURE.getID()] = var1.translateKey("gameMode.adventure");*/
         //this.loadSaves();
         this.loadList();
         this.worldSlotContainer = new GuiMapSlot(this);
@@ -153,8 +152,7 @@ public class GuiSelectZCMap extends GuiScreen
 
         if (var2 == null || MathHelper.stringNullOrLengthZero(var2))
         {
-            StringTranslate var3 = StringTranslate.getInstance();
-            var2 = var3.translateKey("selectWorld.world") + " " + (par1 + 1);
+            var2 = /*var3.translateKey("selectWorld.world")*/"World " + (par1 + 1);
         }
 
         return var2;
@@ -165,18 +163,17 @@ public class GuiSelectZCMap extends GuiScreen
      */
     public void initButtons()
     {
-        StringTranslate var1 = StringTranslate.getInstance();
-        this.buttonList.add(this.buttonSelect = new GuiButton(1, this.width / 2 - 154 - 42, this.height - 28, 72, 20, var1.translateKey("Play Map")));
-        this.buttonList.add(this.buttonSelect = new GuiButton(6, this.width / 2 - 154 + 42, this.height - 28, 72, 20, var1.translateKey("Edit Map")));
+        this.buttonList.add(this.buttonSelect = new GuiButton(1, this.width / 2 - 154 - 42, this.height - 28, 72, 20, "Play Map"));
+        this.buttonList.add(this.buttonSelect = new GuiButton(6, this.width / 2 - 154 + 42, this.height - 28, 72, 20, "Edit Map"));
         //this.buttonList.add(new GuiButton(3, this.width / 2 + 4, this.height - 52, 150, 20, var1.translateKey("selectWorld.create")));
         //this.buttonList.add(this.buttonDelete = new GuiButton(6, this.width / 2 - 154, this.height - 28, 72, 20, var1.translateKey("selectWorld.rename")));
         //this.buttonList.add(this.buttonRename = new GuiButton(2, this.width / 2 - 76, this.height - 28, 72, 20, var1.translateKey("selectWorld.delete")));
-        //this.buttonList.add(this.field_82316_w = new GuiButton(7, this.width / 2 + 4, this.height - 28, 72, 20, var1.translateKey("selectWorld.recreate")));
-        this.buttonList.add(new GuiButton(0, this.width / 2 + 82 - 36 - 56, this.height - 28, 72, 20, var1.translateKey("gui.cancel")));
+        //this.buttonList.add(this.buttonRecreate = new GuiButton(7, this.width / 2 + 4, this.height - 28, 72, 20, var1.translateKey("selectWorld.recreate")));
+        this.buttonList.add(new GuiButton(0, this.width / 2 + 82 - 36 - 56, this.height - 28, 72, 20, "Cancel"));
         //this.buttonSelect.enabled = false;
         //this.buttonRename.enabled = false;
         //this.buttonDelete.enabled = false;
-        //this.field_82316_w.enabled = false;
+        //this.buttonRecreate.enabled = false;
     }
     
     public void loadList()
@@ -449,11 +446,10 @@ public class GuiSelectZCMap extends GuiScreen
      */
     public static GuiYesNo getDeleteWorldScreen(GuiScreen par0GuiScreen, String par1Str, int par2)
     {
-        StringTranslate var3 = StringTranslate.getInstance();
-        String var4 = var3.translateKey("selectWorld.deleteQuestion");
-        String var5 = "\'" + par1Str + "\' " + var3.translateKey("selectWorld.deleteWarning");
-        String var6 = var3.translateKey("selectWorld.deleteButton");
-        String var7 = var3.translateKey("gui.cancel");
+        String var4 = I18n.getString("selectWorld.deleteQuestion");
+        String var5 = "\'" + par1Str + "\' " + I18n.getString("selectWorld.deleteWarning");
+        String var6 = I18n.getString("selectWorld.deleteButton");
+        String var7 = I18n.getString("gui.cancel");
         GuiYesNo var8 = new GuiYesNo(par0GuiScreen, var4, var5, var6, var7, par2);
         return var8;
     }
@@ -505,7 +501,7 @@ public class GuiSelectZCMap extends GuiScreen
 
     public static GuiButton func_82312_f(GuiSelectZCMap par0GuiSelectWorld)
     {
-        return par0GuiSelectWorld.field_82316_w;
+        return par0GuiSelectWorld.buttonRecreate;
     }
 
     public static String func_82313_g(GuiSelectZCMap par0GuiSelectWorld)

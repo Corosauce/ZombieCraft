@@ -69,7 +69,7 @@ public class ItemGun extends Item
     
     public Item setUnlocalizedNameAndTexture(String nameTex) {
     	this.setUnlocalizedName(nameTex);
-    	this.func_111206_d(nameTex);
+    	this.setTextureName(nameTex);
     	return this;
     }
     
@@ -283,11 +283,11 @@ public class ItemGun extends Item
 	            //System.out.println("ammo: " + var10);
 	        	fireGun(var2, var3);
 	        	var2.playSoundToNearExcept(var3, ZombieCraftMod.modID + ":" + firingSound, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
-	        	//var2.func_85173_a(var3, firingSound, (double)var3.posX, (double)var3.posY, (double)var3.posZ, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	        	//var2.playSoundToNearExcept(var3, firingSound, (double)var3.posX, (double)var3.posY, (double)var3.posZ, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
 	        } else {
 	        	var2.playSound(var3.posX, var3.posY, var3.posZ, ZombieCraftMod.modID + ":" + firingSound, 1F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F), false);
 	        	recoil();
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_110158_av = 5;
+	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
 	        }
 	        
     	} else {
@@ -510,7 +510,7 @@ public class ItemGun extends Item
 		        	var1.stackTagCompound.setInteger("reloadDelay", reloadTime);
 	        	}
 	        	//if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingItem();
-	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).field_110158_av = 5;
+	        	if (var3 instanceof EntityPlayer) ((EntityPlayer)var3).swingProgressInt = 5;
 	        }
 	        
 	        

@@ -156,7 +156,7 @@ public class JobSurvivor extends JobBase {
 		}
 		
 		//}
-		ent.prevHealth = ent.func_110143_aJ();
+		ent.prevHealth = ent.getHealth();
 	}
 	
 	
@@ -174,7 +174,7 @@ public class JobSurvivor extends JobBase {
 	}
 	
 	public boolean sanityCheckHelp(Entity caller, Entity target) {
-		if (ent.func_110143_aJ() < 10) {
+		if (ent.getHealth() < 10) {
 			return false;
 		}
 		

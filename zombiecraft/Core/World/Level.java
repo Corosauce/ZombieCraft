@@ -173,14 +173,14 @@ public class Level {
     				//System.out.println("failed to load texturepack");
     			//}
     		}
+    		
+    		LevelConfig.loadNBT(nbttagcompound.getCompoundTag("mapConfig"));
 			
 		} else {
 			System.out.println("Error loading level build data, non existing schematic file");
 		}
 		
 		if (player_spawnY == 0) player_spawnY = 999;
-		
-		LevelConfig.loadNBT(nbttagcompound.getCompoundTag("mapConfig"));
 	}
 	
 	public void writeNBT() {

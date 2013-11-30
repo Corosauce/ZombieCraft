@@ -403,7 +403,7 @@ public class EntityBullet extends Entity
         {
             int var9 = this.worldObj.getBlockId(var3.blockX, var3.blockY, var3.blockZ);
 
-            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && (var3.entityHit instanceof EntityLivingBase) && ((EntityLivingBase)var3.entityHit).func_110143_aJ() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
+            if ((var3.entityHit != null && var3.entityHit != lastHit && !var3.entityHit.isDead && (var3.entityHit instanceof EntityLivingBase) && ((EntityLivingBase)var3.entityHit).getHealth() > 0) || (var9 != Block.tallGrass.blockID && !ZCUtil.shouldBulletPassThrough(this, var9)))
             {
                 if (var3.entityHit != null)
                 {
@@ -448,7 +448,7 @@ public class EntityBullet extends Entity
 	                    	lastHit = var3.entityHit;
 		                    if (var3.entityHit instanceof EntityLivingBase)
 		                    {
-		                    	if (wasHeadshot && var3.entityHit instanceof BaseEntAI && var20 >= ((BaseEntAI)var3.entityHit).func_110143_aJ()) {
+		                    	if (wasHeadshot && var3.entityHit instanceof BaseEntAI && var20 >= ((BaseEntAI)var3.entityHit).getHealth()) {
 		                    		//((BaseEntAI)var3.entityHit).wasHeadshot = wasHeadshot;
 		                    		((BaseEntAI)var3.entityHit).headshot();
 		                    		

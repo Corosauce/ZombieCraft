@@ -1,5 +1,6 @@
 package zombiecraft.Core;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,10 +11,12 @@ public class Buyables {
 	//Static managers
 	public static boolean hasInit = false;
 	public static List<Buyables> items = new LinkedList();
+	public static HashMap<Integer, Integer> itemToIndex;
 	public static int priceBase = 50;
 	public static int barrierCost = 500;
-	public static int barricadeRepairRedeem = 5;
+	public static int unknownItemCost = 500;
 	
+	public static int barricadeRepairRedeem = 5;
 	public static int barricadeRepairCooldown = 20;
 	
 	public static int perkLengthJugg = 20 * 30;
@@ -33,6 +36,10 @@ public class Buyables {
 	public ItemStack item;
 	public int cost;
 	
+	static {
+		itemToIndex = new HashMap<Integer, Integer>();
+	}
+	
 	public Buyables(ItemStack parItem, int parCost) {
 		this.item = parItem;
 		this.cost = parCost;
@@ -44,6 +51,7 @@ public class Buyables {
 	
 	public static void addBuyItem(ItemStack parItem, int parCost) {
 		items.add(new Buyables(parItem, parCost));
+		itemToIndex.put(parItem.itemID, items.size()-1);
 	}
 	
 	public static ItemStack getBuyItem(int index) {

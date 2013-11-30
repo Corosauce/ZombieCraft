@@ -52,7 +52,7 @@ public class TileEntitySession extends TileEntity implements ITilePacket
 	
 	@Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-		setClientNBT(pkt.customParam1);
+		setClientNBT(pkt.data);
     	//this.readFromNBTPacket(pkt.customParam1);
     }
 	

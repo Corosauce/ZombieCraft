@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.Blocks.TileEntityPacketTester;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.tile.PacketHelper;
+import CoroAI.packet.PacketHelper;
 
 public class GuiPacketTester extends GuiContainer {
 
@@ -66,7 +66,7 @@ public class GuiPacketTester extends GuiContainer {
 	    //int texture = mc.renderEngine.getTexture("/gui/trap.png");
 	    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	    //this.mc.renderEngine.bindTexture("/mods/ZombieCraft/textures/gui/gui512.png");
-	    mc.func_110434_K().func_110577_a(resGUI);
+	    mc.getTextureManager().bindTexture(resGUI);
 	    int x = (width - xSize) / 2;
 	    int y = (height - ySize) / 2;
 	    this.drawTexturedModalRect(x, y, 0, 0, xSize, ySize);

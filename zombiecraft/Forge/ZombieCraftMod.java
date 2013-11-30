@@ -28,7 +28,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input", "Session", "MapConfig" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class/*, versionBounds = "[2.0.0,2.1.0)"*/)
-@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "3.3")
+@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "3.3.2")
 
 
 public class ZombieCraftMod
@@ -54,9 +54,7 @@ public class ZombieCraftMod
 	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-    	
     	ConfigMod.addConfigFile(event, "zcids", new ConfigIDs(), false);
-    	
         proxy.loadSounds();
     }
     

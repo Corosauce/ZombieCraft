@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import zombiecraft.Client.gui.InventoryWrapper;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.GameLogic.ZCGame;
-import zombiecraft.Forge.ZCPacketHandler;
+import zombiecraft.Core.World.LevelConfig;
+import zombiecraft.Forge.ZombieCraftMod;
 import CoroAI.ITilePacket;
 import CoroAI.tile.ITileInteraction;
 import CoroAI.tile.TileHandler;
@@ -40,7 +43,9 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	//configuration vars
 	
 	//item string list..... needs mapping?
-	public List<ItemStack> items = new ArrayList<ItemStack>();
+	//this is to be repurposed as the list used for runtime
+	//public List<ItemStack> items = new ArrayList<ItemStack>();
+	public InventoryWrapper invHandler = new InventoryWrapper();
 	
 	//runtime vars
 	public boolean cycling = false;
@@ -61,11 +66,11 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	//GUI Elements
 	public String nbtStrTimeoutPurchase = "nbtStrTimeoutPurchase";
 	public String nbtStrTimeoutRandomize = "nbtStrTimeoutRandomize";
+	public String nbtStrInventory = "invItems";
+	public int maxInvSlots = 9*4;
 	
     public TileEntityMysteryBox() {
-    	for (int i = 0; i < Buyables.items.size(); i++) {
-    		items.add(Buyables.getBuyItem(i));
-    	}
+    	
     	tileHandler = new TileHandler(this);
     	tileHandler.addObject("renderItemStack", (ItemStack)Buyables.getBuyItem(0));
     	tileHandler.addObject("cycling", Integer.valueOf(0));
@@ -75,6 +80,7 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     	NBTTagCompound tileData = new NBTTagCompound();
     	setDefaults(tileData);
     	nbtInfoServer.setCompoundTag("tileData", tileData);
+    	updateReferences();
     	//sync(); //needed? getdescpacket might be auto called for whom needs it
     	
     }
@@ -82,6 +88,12 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     public void setDefaults(NBTTagCompound tileData) {
     	tileData.setString(nbtStrTimeoutPurchase, "100");
     	tileData.setString(nbtStrTimeoutRandomize, "80");
+    	
+    	ItemStack[] defStacks = LevelConfig.getMysteryBoxDefaultItems(maxInvSlots);
+    	
+    	invHandler.invInitData(defStacks);
+    	
+    	tileData.setTag(nbtStrInventory, invHandler.invWriteTagList());
     }
     
     public void updateReferences() {
@@ -89,6 +101,8 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     	
     	purchaseChanceTimeoutMax = Integer.valueOf(tileData.getString(nbtStrTimeoutPurchase));
     	timeRandomizeMax = Integer.valueOf(tileData.getString(nbtStrTimeoutRandomize));
+    	
+    	//invHandler.invInitData(tileData.getTagList(nbtStrInventory));
     }
     
     public String getData(String name) {
@@ -110,9 +124,15 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 				
 				if (worldObj.getWorldTime() % ticksPerCycleCur == 0) {
 					itemToRenderIndex++;
-					if (itemToRenderIndex >= items.size()) itemToRenderIndex = 0;
+					if (itemToRenderIndex >= invHandler.getSizeInventory()) itemToRenderIndex = 0;
+					int bailCur = 0;
+					while (bailCur++ < 100 && invHandler.getStackInSlot(itemToRenderIndex) == null) {
+						itemToRenderIndex++;
+						if (itemToRenderIndex >= invHandler.getSizeInventory()) itemToRenderIndex = 0;
+					}
+					
 					//System.out.println("itemToRenderIndex: " + itemToRenderIndex);
-					tileHandler.updateObject("renderItemStack", items.get(itemToRenderIndex));
+					tileHandler.updateObject("renderItemStack", invHandler.getStackInSlot(itemToRenderIndex));
 				}
 				
 				if (timeRandomizeCur > 40 && timeRandomizeCur % 10 == 0) {
@@ -145,14 +165,17 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
-        nbtInfoServer.setCompoundTag("tileData", tagCompound.getCompoundTag("tileData"));
+        nbtInfoServer.setCompoundTag("tileData", CoroUtilNBT.copyOntoNBT(nbtInfoServer.getCompoundTag("tileData"), tagCompound.getCompoundTag("tileData")));
+        invHandler.invInitData(tagCompound.getTagList(nbtStrInventory), maxInvSlots);
         //readFromNBTPacket(tagCompound);
+        updateReferences();
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         tagCompound.setCompoundTag("tileData", nbtInfoServer.getCompoundTag("tileData"));
+        tagCompound.setTag(nbtStrInventory, invHandler.invWriteTagList());
         //writeToNBTPacket(tagCompound);
     }
 
@@ -164,6 +187,8 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     	NBTTagCompound tempCopyOfServerNBT = nbtInfoServer.getCompoundTag("tileData");
     	tempCopyOfServerNBT = CoroUtilNBT.copyOntoNBT(nbtPartialClientData, tempCopyOfServerNBT);
     	nbtInfoServer.setCompoundTag("tileData", tempCopyOfServerNBT);
+    	
+    	//nbtInfoServer.setTag(nbtStrInventory, par2NBTBase)
     	
     	//assumes data doesnt come in when sync request
 		if (par1nbtTagCompound.hasKey("sync")) {
@@ -182,7 +207,7 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	
 	@Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-		setClientNBT(pkt.customParam1);
+		setClientNBT(pkt.data);
     	//this.readFromNBTPacket(pkt.customParam1);
     }
 	
@@ -262,9 +287,10 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 		Random rand = new Random();
 		cycling = true;
 		timeRandomizeCur = timeRandomizeMax;
-		itemToRenderIndex = rand.nextInt(items.size()); //this is where the random is, the end result can be predicted if you are trained enough
+		itemToRenderIndex = rand.nextInt(invHandler.getSizeInventory()); //this is where the random is, the end result can be predicted if you are trained enough
 		ticksPerCycleCur = 1;
 		purchaseChanceTimeoutCur = 0;
+		worldObj.playSoundEffect(xCoord, yCoord, zCoord, ZombieCraftMod.modID + ":zc.mysterybox", 1, 1);
 	}
 	
 	public void cyclingStop() {

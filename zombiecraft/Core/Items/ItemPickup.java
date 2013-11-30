@@ -20,7 +20,7 @@ public class ItemPickup extends Item {
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
     	
-    	System.out.println("Pickup used");
+    	//System.out.println("Pickup used");
     	
     	if (!par2World.isRemote) {
     		if (pickupID == 0) {
@@ -53,7 +53,7 @@ public class ItemPickup extends Item {
     @Override
     public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
     	//Automatic usage on first tick after pickup (assumed space in inventory)
-    	if (par3Entity instanceof EntityPlayer) {
+    	if (par3Entity instanceof EntityPlayer && !((EntityPlayer) par3Entity).capabilities.isCreativeMode) {
     		onItemRightClick(par1ItemStack, par2World, (EntityPlayer)par3Entity);
     	} else {
     		System.out.println("doesnt support non player use");

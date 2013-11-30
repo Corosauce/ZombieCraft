@@ -67,9 +67,9 @@ public class ZCSoundManager {
 						
 						//music playing code
 						if (var1 != null) {
-							System.out.println("start playing -> " + var1.func_110458_a());
+							System.out.println("start playing -> " + var1.getSoundName());
 			                //var1 = ModCompatibilityClient.audioModPickBackgroundMusic(ZCClientTicks.mc.sndManager, var1);
-							ModLoader.getMinecraftInstance().sndManager.sndSystem.backgroundMusic("BgMusic", var1.func_110457_b(), var1.func_110458_a(), false);
+							ModLoader.getMinecraftInstance().sndManager.sndSystem.backgroundMusic("BgMusic", var1.getSoundUrl(), var1.getSoundName(), false);
 							ModLoader.getMinecraftInstance().sndManager.sndSystem.setVolume("BgMusic", ZCClientTicks.mc.gameSettings.musicVolume);
 							ModLoader.getMinecraftInstance().sndManager.sndSystem.play("BgMusic");
 							//SoundManager.sndSystem.play("music.zc");

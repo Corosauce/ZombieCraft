@@ -192,15 +192,15 @@ public class ZCWorldProvider extends WorldProvider
     		} else if (time.equals("midnight")) {
     			newVal = 18000;
     			//18000?
-    		} else {
+    		} else if (!time.equals("")) {
     			int val = Integer.valueOf(time);
     			if (val < 0) val = 0;
     			if (val > 24000) val = 24000;
     			newVal = val;
     			//parse number
+    		} else {
+    			return super.calculateCelestialAngle(par1, par3);
     		}
-    	} else {
-    		
     	}
     	return super.calculateCelestialAngle(newVal, par3);
     }
