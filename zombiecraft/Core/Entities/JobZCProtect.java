@@ -3,9 +3,9 @@ package zombiecraft.Core.Entities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import zombiecraft.Core.World.LevelConfig;
-import CoroAI.componentAI.jobSystem.JobManager;
-import CoroAI.componentAI.jobSystem.JobProtect;
-import CoroAI.entity.EnumJobState;
+import CoroUtil.componentAI.jobSystem.JobManager;
+import CoroUtil.componentAI.jobSystem.JobProtect;
+import CoroUtil.entity.EnumJobState;
 
 public class JobZCProtect extends JobProtect {
 	
@@ -41,7 +41,7 @@ public class JobZCProtect extends JobProtect {
 	}*/
 	
 	@Override
-	public void onIdleTick() {
+	public void onIdleTickAct() {
 		if(((ent.getNavigator().getPath() == null || ent.getNavigator().getPath().isFinished()) && ent.worldObj.rand.nextInt(5) == 0/* || ent.rand.nextInt(80) == 0*/))
         {
         	

@@ -12,7 +12,7 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Zombie;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.componentAI.ICoroAI;
+import CoroUtil.componentAI.ICoroAI;
 import build.render.Overlays;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

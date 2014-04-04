@@ -21,7 +21,7 @@ import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.Blocks.TileEntitySession;
 import zombiecraft.Core.config.ConfigIDs;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.util.CoroUtilBlock;
+import CoroUtil.util.CoroUtilBlock;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 

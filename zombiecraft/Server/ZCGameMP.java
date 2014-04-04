@@ -36,8 +36,8 @@ import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.entity.c_EntityPlayerMPExt;
+import CoroUtil.OldUtil;
+import CoroUtil.entity.c_EntityPlayerMPExt;
 import build.world.Build;
 import cpw.mods.fml.common.FMLCommonHandler;
 
@@ -618,7 +618,7 @@ public class ZCGameMP extends ZCGame {
 	
 	@Override
 	public int getItemMaxStackSize(Item item) {
-		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_s_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
+		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, OldUtil.refl_s_Item_maxStackSize, OldUtil.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override

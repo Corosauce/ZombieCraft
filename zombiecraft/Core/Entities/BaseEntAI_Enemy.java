@@ -7,9 +7,9 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import zombiecraft.Core.ZCItems;
-import CoroAI.diplomacy.DiplomacyHelper;
-import CoroAI.diplomacy.TeamTypes;
-import CoroAI.entity.EnumDiploType;
+import CoroUtil.diplomacy.DiplomacyHelper;
+import CoroUtil.diplomacy.TeamTypes;
+import CoroUtil.entity.EnumDiploType;
 
 public class BaseEntAI_Enemy extends BaseEntAI
 {

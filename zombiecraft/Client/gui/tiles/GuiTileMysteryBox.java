@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import zombiecraft.Client.gui.elements.GuiButtonBoolean;
 import zombiecraft.Client.gui.elements.GuiTextFieldZC;
 import zombiecraft.Core.Blocks.TileEntityMysteryBox;
-import CoroAI.packet.PacketHelper;
+import CoroUtil.packet.PacketHelper;
 
 public class GuiTileMysteryBox extends GuiTileBase {
 	

@@ -13,9 +13,9 @@ import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.componentAI.ICoroAI;
-import CoroAI.entity.EnumDiploType;
+import CoroUtil.OldUtil;
+import CoroUtil.componentAI.ICoroAI;
+import CoroUtil.entity.EnumDiploType;
 
 public class ZCUtil {
 	
@@ -306,12 +306,12 @@ public class ZCUtil {
     }
 	
 	public static void setPrivateValueBoth(Class var0, Object var1, String srg, String mcp, Object var3) {
-		c_CoroAIUtil.setPrivateValueSRGMCP(var0, var1, srg, mcp, var3);
+		OldUtil.setPrivateValueSRGMCP(var0, var1, srg, mcp, var3);
 		//c_CoroAIUtil.setPrivateValueBoth(var0, var1, obf, mcp, var3);
     }
     
     public static Object getPrivateValueBoth(Class var0, Object var1, String srg, String mcp) {
-    	return c_CoroAIUtil.getPrivateValueSRGMCP(var0, var1, srg, mcp);
+    	return OldUtil.getPrivateValueSRGMCP(var0, var1, srg, mcp);
     	//return c_CoroAIUtil.getPrivateValueBoth(var0, var1, obf, mcp);
     }
     

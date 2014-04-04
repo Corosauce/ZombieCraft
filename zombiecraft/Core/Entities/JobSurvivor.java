@@ -5,12 +5,12 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.componentAI.jobSystem.JobBase;
-import CoroAI.componentAI.jobSystem.JobManager;
-import CoroAI.entity.EnumActState;
-import CoroAI.entity.EnumInfo;
-import CoroAI.entity.EnumJobState;
+import CoroUtil.OldUtil;
+import CoroUtil.componentAI.jobSystem.JobBase;
+import CoroUtil.componentAI.jobSystem.JobManager;
+import CoroUtil.entity.EnumActState;
+import CoroUtil.entity.EnumInfo;
+import CoroUtil.entity.EnumJobState;
 
 public class JobSurvivor extends JobBase {
 	

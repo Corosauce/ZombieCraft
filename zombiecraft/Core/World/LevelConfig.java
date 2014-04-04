@@ -12,7 +12,7 @@ import zombiecraft.Core.Buyables;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.Items.ItemAbility;
 import zombiecraft.Forge.ZCPacketHandler;
-import CoroAI.util.CoroUtilNBT;
+import CoroUtil.util.CoroUtilNBT;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

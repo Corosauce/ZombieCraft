@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import zombiecraft.Core.Blocks.TileEntityPacketTester;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.packet.PacketHelper;
+import CoroUtil.packet.PacketHelper;
 
 public class GuiPacketTester extends GuiContainer {
 

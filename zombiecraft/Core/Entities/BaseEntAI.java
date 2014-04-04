@@ -32,11 +32,11 @@ import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.componentAI.AIAgent;
-import CoroAI.componentAI.IAdvPF;
-import CoroAI.componentAI.ICoroAI;
-import CoroAI.componentAI.jobSystem.JobBase;
-import CoroAI.componentAI.jobSystem.JobProtect;
+import CoroUtil.componentAI.AIAgent;
+import CoroUtil.componentAI.IAdvPF;
+import CoroUtil.componentAI.ICoroAI;
+import CoroUtil.componentAI.jobSystem.JobBase;
+import CoroUtil.componentAI.jobSystem.JobProtect;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -651,14 +651,12 @@ public class BaseEntAI extends EntityLiving implements ICoroAI, IAdvPF
 
 	@Override
 	public boolean canClimbLadders() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public int getDropSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 4;
 	}
 	
     @Override

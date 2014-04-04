@@ -15,8 +15,8 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.componentAI.ICoroAI;
+import CoroUtil.OldUtil;
+import CoroUtil.componentAI.ICoroAI;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -86,7 +86,7 @@ public class ItemGun extends Item
     
     public int getFireDelay(ItemStack stack, World var2, EntityPlayer var3) {
     	if (var3.username.contains("fakePlayer")) {
-    		BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+    		BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curCooldown_FireGun;
@@ -106,7 +106,7 @@ public class ItemGun extends Item
     
 	public int getReloadDelay(ItemStack stack, World var2, EntityPlayer var3) {
 		if (var3.username.contains("fakePlayer")) {
-			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curCooldown_Reload;
@@ -126,7 +126,7 @@ public class ItemGun extends Item
 	
 	public int getClipAmount(ItemStack stack, World var2, EntityPlayer var3) {
 		if (var3.username.contains("fakePlayer")) {
-			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			return entAI.curClipAmount;
@@ -149,7 +149,7 @@ public class ItemGun extends Item
 	
 	public void setFireDelay(ItemStack stack, World var2, EntityPlayer var3, int val) {
     	if (var3.username.contains("fakePlayer")) {
-    		BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+    		BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curCooldown_FireGun = val;
@@ -169,7 +169,7 @@ public class ItemGun extends Item
     
 	public void setReloadDelay(ItemStack stack, World var2, EntityPlayer var3, int val) {
 		if (var3.username.contains("fakePlayer")) {
-			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curCooldown_Reload = val;
@@ -189,7 +189,7 @@ public class ItemGun extends Item
 	
 	public void setClipAmount(ItemStack stack, World var2, EntityPlayer var3, int val) {
 		if (var3.username.contains("fakePlayer")) {
-			BaseEntAI entAI = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(var3.username);
+			BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(var3.username);
     		
     		if (entAI != null) {
     			entAI.curClipAmount = val;

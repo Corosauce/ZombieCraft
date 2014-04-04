@@ -8,9 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import CoroAI.PFQueue;
-import CoroAI.componentAI.jobSystem.JobBase;
-import CoroAI.componentAI.jobSystem.JobManager;
+import CoroUtil.componentAI.jobSystem.JobBase;
+import CoroUtil.componentAI.jobSystem.JobManager;
+import CoroUtil.pathfinding.PFQueue;
 
 /* JobInvade: For Omnipotent focused invasions */
 

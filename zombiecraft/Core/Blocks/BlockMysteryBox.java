@@ -17,7 +17,7 @@ import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemEditTool;
 import zombiecraft.Forge.ZCServerTicks;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.tile.ITileInteraction;
+import CoroUtil.tile.ITileInteraction;
 
 public class BlockMysteryBox extends BlockContainer
 {
@@ -88,23 +88,18 @@ public class BlockMysteryBox extends BlockContainer
     
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z,
-                    EntityPlayer player, int idk, float what, float these, float are) {
+                    EntityPlayer player, int face, float localVecX, float localVecY, float localVecZ) {
         TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
         if (tileEntity == null || player.isSneaking()) {
         	return false;
         }
-        
-        if (!world.isRemote && ZCGame.instance().canEdit(player)) {
-        	player.openGui(ZombieCraftMod.instance, -1, world, x, y, z);
-    		return true;
-    	} else {
     		
-    		if (tileEntity instanceof ITileInteraction) {
-            	((ITileInteraction) tileEntity).clickedRight();
-            }
-    		
-    		return false;
-    	}
+		if (tileEntity instanceof ITileInteraction) {
+        	((ITileInteraction) tileEntity).clickedRight(player, face, localVecX, localVecY, localVecZ);
+        }
+		
+		return false;
+    	
     }
     
     @Override

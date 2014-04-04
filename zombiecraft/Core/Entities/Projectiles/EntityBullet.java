@@ -26,8 +26,8 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.Items.ItemGun;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.componentAI.ICoroAI;
-import CoroAI.entity.EnumDiploType;
+import CoroUtil.componentAI.ICoroAI;
+import CoroUtil.entity.EnumDiploType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

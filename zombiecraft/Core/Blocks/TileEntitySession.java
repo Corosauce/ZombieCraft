@@ -8,8 +8,8 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import zombiecraft.Core.GameLogic.ZCGame;
-import CoroAI.ITilePacket;
-import CoroAI.tile.TileHandler;
+import CoroUtil.tile.ITilePacket;
+import CoroUtil.tile.TileHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

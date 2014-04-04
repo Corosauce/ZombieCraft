@@ -15,10 +15,8 @@ import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.config.ConfigIDs;
+import zombiecraft.Core.config.ConfigMisc;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.PostInit;
-import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -28,7 +26,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @NetworkMod(channels = { "MLMP", "TileEnt", "Data", "Input", "Session", "MapConfig" }, clientSideRequired = true, serverSideRequired = true, packetHandler = ZCPacketHandler.class/*, versionBounds = "[2.0.0,2.1.0)"*/)
-@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "3.3.2")
+@Mod(modid = "ZombieCraftMod", name = "ZombieCraft Mod", version = "3.3.3")
 
 
 public class ZombieCraftMod
@@ -55,6 +53,7 @@ public class ZombieCraftMod
     public void preInit(FMLPreInitializationEvent event)
     {
     	ConfigMod.addConfigFile(event, "zcids", new ConfigIDs(), false);
+    	ConfigMod.addConfigFile(event, "zcmisc", new ConfigMisc(), true);
         proxy.loadSounds();
     }
     

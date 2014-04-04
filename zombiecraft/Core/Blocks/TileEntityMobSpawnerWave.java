@@ -19,10 +19,10 @@ import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.ITilePacket;
-import CoroAI.packet.PacketHelper;
-import CoroAI.tile.TileHandler;
-import CoroAI.util.CoroUtilNBT;
+import CoroUtil.packet.PacketHelper;
+import CoroUtil.tile.ITilePacket;
+import CoroUtil.tile.TileHandler;
+import CoroUtil.util.CoroUtilNBT;
 import build.SchematicData;
 import build.world.Build;
 

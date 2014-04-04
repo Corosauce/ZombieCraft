@@ -22,7 +22,7 @@ import zombiecraft.Client.gui.elements.GuiTextFieldZC;
 import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZCPacketHandler;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.packet.PacketHelper;
+import CoroUtil.packet.PacketHelper;
 
 public class GuiMapConfig extends GuiContainer {
 

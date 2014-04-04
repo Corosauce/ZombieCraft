@@ -21,7 +21,7 @@ import zombiecraft.Client.gui.scrollable.IScrollingGUI;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCPacketHandler;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.packet.PacketHelper;
+import CoroUtil.packet.PacketHelper;
 
 public class GuiSession extends GuiContainer implements IScrollingGUI {
 

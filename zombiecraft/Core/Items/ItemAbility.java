@@ -14,7 +14,7 @@ import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.Comrade;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.entity.EnumJob;
+import CoroUtil.entity.EnumJob;
 
 public class ItemAbility extends Item {
 	

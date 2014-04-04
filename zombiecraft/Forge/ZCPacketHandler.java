@@ -19,7 +19,7 @@ import zombiecraft.Core.ZombieSaveRecord;
 import zombiecraft.Core.Blocks.TileEntityPurchasePlate;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.World.LevelConfig;
-import CoroAI.packet.PacketHelper;
+import CoroUtil.packet.PacketHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;

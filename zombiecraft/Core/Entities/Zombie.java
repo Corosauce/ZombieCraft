@@ -3,8 +3,8 @@ package zombiecraft.Core.Entities;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import CoroAI.componentAI.jobSystem.JobInvade;
-import CoroAI.entity.EnumJob;
+import CoroUtil.componentAI.jobSystem.JobInvade;
+import CoroUtil.entity.EnumJob;
 
 public class Zombie extends BaseEntAI_Enemy
 {

@@ -23,7 +23,7 @@ import zombiecraft.Core.Items.ItemGunUzi;
 import zombiecraft.Core.Items.ItemSwordZC;
 import zombiecraft.Core.config.ConfigIDs;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.util.CoroUtilItem;
+import CoroUtil.util.CoroUtilItem;
 
 public class ZCItems {
 	

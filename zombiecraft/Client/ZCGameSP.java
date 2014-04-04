@@ -29,8 +29,8 @@ import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.c_IEnhPF;
+import CoroUtil.OldUtil;
+import CoroUtil.pathfinding.c_IEnhPF;
 import build.render.Overlays;
 import cpw.mods.fml.common.FMLCommonHandler;
 
@@ -360,7 +360,7 @@ public class ZCGameSP extends ZCGame {
 	
 	@Override
 	public int getItemMaxStackSize(Item item) {
-		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, c_CoroAIUtil.refl_s_Item_maxStackSize, c_CoroAIUtil.refl_mcp_Item_maxStackSize);
+		return (Integer)ZCUtil.getPrivateValueBoth(Item.class, item, OldUtil.refl_s_Item_maxStackSize, OldUtil.refl_mcp_Item_maxStackSize);
 	}
 	
 	@Override

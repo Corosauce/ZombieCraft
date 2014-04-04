@@ -6,10 +6,10 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
-import CoroAI.componentAI.AIAgent;
-import CoroAI.diplomacy.DiplomacyHelper;
-import CoroAI.diplomacy.TeamTypes;
-import CoroAI.entity.EnumDiploType;
+import CoroUtil.componentAI.AIAgent;
+import CoroUtil.diplomacy.DiplomacyHelper;
+import CoroUtil.diplomacy.TeamTypes;
+import CoroUtil.entity.EnumDiploType;
 
 public class BaseEntAI_Ally extends BaseEntAI
 {

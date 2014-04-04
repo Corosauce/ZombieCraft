@@ -6,8 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import CoroAI.componentAI.jobSystem.JobInvade;
-import CoroAI.entity.EnumJob;
+import CoroUtil.componentAI.jobSystem.JobInvade;
+import CoroUtil.entity.EnumJob;
 
 public class Imp extends BaseEntAI_Enemy
 {

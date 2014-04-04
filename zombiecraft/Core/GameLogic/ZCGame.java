@@ -48,11 +48,10 @@ import zombiecraft.Core.World.MapManager;
 import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
-import CoroAI.Persister;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.componentAI.jobSystem.JobBase;
-import CoroAI.componentAI.jobSystem.JobProtect;
-import CoroAI.tile.ITileInteraction;
+import CoroUtil.OldUtil;
+import CoroUtil.componentAI.jobSystem.JobBase;
+import CoroUtil.componentAI.jobSystem.JobProtect;
+import CoroUtil.tile.ITileInteraction;
 import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -134,7 +133,7 @@ public abstract class ZCGame {
 		mapMan.updateEditState();
 		ZCUtil.setBlocksMineable(true);
 		
-		new Persister();
+		//new Persister();
 	}
 	
 	public void resetDimensionID() {
@@ -360,7 +359,7 @@ public abstract class ZCGame {
         //}
 
 		wMan.tick();
-		Persister.tick(world);
+		//Persister.tick(world);
         //iMan.tick();
 	}
 	
@@ -461,7 +460,7 @@ public abstract class ZCGame {
 			//System.out.println("comrade ammo: " + ZCUtil.getAmmoData(player.username, ammoID));
 			
 			
-			BaseEntAI ent = (BaseEntAI)c_CoroAIUtil.playerToCompAILookup.get(player.username);
+			BaseEntAI ent = (BaseEntAI)OldUtil.playerToCompAILookup.get(player.username);
 			if (ent != null) {
 				JobBase jb = ent.agent.jobMan.getPrimaryJob();
 				if (jb instanceof JobProtect) {

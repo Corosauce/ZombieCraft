@@ -17,7 +17,7 @@ import net.minecraftforge.event.world.WorldEvent.Unload;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
-import CoroAI.componentAI.ICoroAI;
+import CoroUtil.componentAI.ICoroAI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

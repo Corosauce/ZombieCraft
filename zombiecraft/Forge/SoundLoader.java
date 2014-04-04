@@ -10,8 +10,8 @@ import java.util.zip.ZipInputStream;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.event.ForgeSubscribe;
-import CoroAI.c_CoroAIUtil;
-import CoroAI.util.CoroUtilFile;
+import CoroUtil.OldUtil;
+import CoroUtil.util.CoroUtilFile;
 
 public class SoundLoader {
 	
@@ -34,7 +34,7 @@ public class SoundLoader {
 		//System.out.println(ZombieCraftMod.modID+":zc/gun/deagle.ogg");
 		
 		try {
-			c_CoroAIUtil.check();
+			OldUtil.check();
 			File modsPath;
 			//was going to do code for mcp sounds but they still arent loaded in
 			//but instead, take ZC 3 zip, strip down to just resources folder, add into mcp/jars/mods - sounds will then work

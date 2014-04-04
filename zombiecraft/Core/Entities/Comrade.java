@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import zombiecraft.Core.ZCItems;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Items.ItemGun;
-import CoroAI.componentAI.IInvUser;
+import CoroUtil.componentAI.IInvUser;
 
 public class Comrade extends BaseEntAI_Ally implements IInvUser
 {

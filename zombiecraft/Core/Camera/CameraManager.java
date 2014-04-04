@@ -9,12 +9,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovementInputFromOptions;
 
 import org.lwjgl.input.Keyboard;
 
+import zombiecraft.Core.GameLogic.ZCGame;
+import zombiecraft.Core.config.ConfigMisc;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCKeybindHandler;
-import CoroAI.componentAI.ICoroAI;
+import zombiecraft.Forge.ZombieCraftMod;
+import CoroUtil.componentAI.ICoroAI;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class CameraManager {
@@ -80,56 +84,75 @@ public class CameraManager {
 	}
 	
 	public void renderTick() {
-		if (mc.thePlayer != null && !(mc.thePlayer.movementInput instanceof MovementInputProxy)) {
-			 mip = new MovementInputProxy(mc.gameSettings);
-			 mc.thePlayer.movementInput = mip;
-		}
+
+		if (mc.theWorld == null) return; 
 		
-		if (camState != EnumCameraState.OFF) {
-			float var2 = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
-	        float var3 = var2 * var2 * var2 * 8.0F;
-	        float var4 = (float)this.mc.mouseHelper.deltaX * var3;
-	        float var5 = (float)this.mc.mouseHelper.deltaY * var3;
-	        byte var6 = 1;
-	        activeCamera.setAngles(var4, var5 * (float)var6);
+		if (ConfigMisc.zcCamOutsideDim || mc.theWorld.provider.dimensionId == ZCGame.ZCDimensionID) {
+			if (mc.thePlayer != null && !(mc.thePlayer.movementInput instanceof MovementInputProxy)) {
+				 mip = new MovementInputProxy(mc.gameSettings);
+				 mc.thePlayer.movementInput = mip;
+			}
+			
+			if (camState != EnumCameraState.OFF) {
+				
+				activeCamera.fallDistance = 0;
+				activeCamera.motionY = 0;
+				
+				float var2 = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
+		        float var3 = var2 * var2 * var2 * 8.0F;
+		        float var4 = (float)this.mc.mouseHelper.deltaX * var3;
+		        float var5 = (float)this.mc.mouseHelper.deltaY * var3;
+		        byte var6 = 1;
+		        activeCamera.setAngles(var4, var5 * (float)var6);
+			} else {
+				
+				
+				
+			}
 		} else {
-			
-			
-			
+			if (mc.thePlayer != null && (mc.thePlayer.movementInput instanceof MovementInputProxy)) {
+				 mip = null;//new MovementInputProxy(mc.gameSettings);
+				 mc.thePlayer.movementInput = new MovementInputFromOptions(mc.gameSettings);
+			}
 		}
 	}
 	
 	boolean isPressed = false;
 	
 	public void gameTick() {
+		
+		//if (mc.theWorld == null) return;
+		
 		//test code
-		if (mc.currentScreen == null && Keyboard.isKeyDown(ZCKeybindHandler.cameraKey.keyCode)) {
-			if (!isPressed) {
-				if (camState == EnumCameraState.OFF) {
-					freeCam();
-				} else if (camState == EnumCameraState.FREE) {
-					spectate(mc.thePlayer);
-				} else if (camState == EnumCameraState.FOLLOW) {
-					disableCamera();
+		if (mc.theWorld != null/* && mc.theWorld.provider.dimensionId == ZCGame.ZCDimensionID*/) {
+			if (mc.currentScreen == null && Keyboard.isKeyDown(ZCKeybindHandler.cameraKey.keyCode)) {
+				if (!isPressed) {
+					if (camState == EnumCameraState.OFF) {
+						freeCam();
+					} else if (camState == EnumCameraState.FREE) {
+						spectate(mc.thePlayer);
+					} else if (camState == EnumCameraState.FOLLOW) {
+						disableCamera();
+					}
+					/*if (camState == EnumCameraState.OFF) {
+						spectate(mc.thePlayer);
+					} else if (camState == EnumCameraState.FOLLOW) {
+						freeCam();
+					} else if (camState == EnumCameraState.FREE) {
+						startScript();
+					} else if (camState == EnumCameraState.SCRIPT) {
+						disableCamera();
+					}*/
 				}
-				/*if (camState == EnumCameraState.OFF) {
-					spectate(mc.thePlayer);
-				} else if (camState == EnumCameraState.FOLLOW) {
-					freeCam();
-				} else if (camState == EnumCameraState.FREE) {
-					startScript();
-				} else if (camState == EnumCameraState.SCRIPT) {
-					disableCamera();
-				}*/
+				isPressed = true;
+			} else if (mc.currentScreen == null && camState == EnumCameraState.FOLLOW && Keyboard.isKeyDown(ZCKeybindHandler.chargeKey.keyCode)) {
+				if (!isPressed) {
+					spectateNext();
+				}
+				isPressed = true;		
+			} else {
+				isPressed = false;
 			}
-			isPressed = true;
-		} else if (mc.currentScreen == null && camState == EnumCameraState.FOLLOW && Keyboard.isKeyDown(ZCKeybindHandler.chargeKey.keyCode)) {
-			if (!isPressed) {
-				spectateNext();
-			}
-			isPressed = true;		
-		} else {
-			isPressed = false;
 		}
 		
 		checkCamera(false);
@@ -326,6 +349,11 @@ public class CameraManager {
 			activeCamera.worldObj = mc.thePlayer.worldObj;
 			activeCamera.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.2F, mc.thePlayer.posZ);
 			activeCamera.setAngles(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+			
+		}
+		
+		if (activeCamera != null) {
+			activeCamera.fallDistance = 0;
 		}
 	}
 	

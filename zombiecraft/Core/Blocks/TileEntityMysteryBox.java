@@ -17,10 +17,10 @@ import zombiecraft.Core.Buyables;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.World.LevelConfig;
 import zombiecraft.Forge.ZombieCraftMod;
-import CoroAI.ITilePacket;
-import CoroAI.tile.ITileInteraction;
-import CoroAI.tile.TileHandler;
-import CoroAI.util.CoroUtilNBT;
+import CoroUtil.tile.ITileInteraction;
+import CoroUtil.tile.ITilePacket;
+import CoroUtil.tile.TileHandler;
+import CoroUtil.util.CoroUtilNBT;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -271,7 +271,7 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
 	}
 
 	@Override
-	public void clickedRight() {
+	public void clickedRight(EntityPlayer player, int face, float localVecX, float localVecY, float localVecZ) {
 		if (!worldObj.isRemote) {
 			if (canPurchase()) {
 				callbackPurchase();
