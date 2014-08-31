@@ -7,6 +7,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -23,7 +24,7 @@ public class BlockMobSpawnerWave extends BlockContainer
         super(Material.circuits);
         
         setHardness(0.1F);
-        setStepSound(Block.soundMetalFootstep);
+        //setStepSound(Block.soundMetalFootstep);
         
         float var5 = 0.0625F;
         this.setBlockBounds(var5, 0.0F, var5, 1.0F - var5, 0.03125F, 1.0F - var5);
@@ -32,7 +33,7 @@ public class BlockMobSpawnerWave extends BlockContainer
     
     public IIcon getIcon(int par1, int par2)
     {
-        return Block.mobSpawner.getIcon(par1, par2);
+        return Blocks.mob_spawner.getIcon(par1, par2);
     }
     
     @Override

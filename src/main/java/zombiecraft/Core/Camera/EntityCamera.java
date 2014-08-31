@@ -2,12 +2,14 @@ package zombiecraft.Core.Camera;
 
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
 public class EntityCamera extends EntityPlayer {
 
+	//why am i extending EntityPlayer? there was a reason...
+	
 	public EntityCamera(World par1World) {
 		super(par1World, "camera");
 		//username = "Camera";
@@ -50,7 +52,7 @@ public class EntityCamera extends EntityPlayer {
 	}
 
 	@Override
-	public void sendChatToPlayer(ChatMessageComponent chatmessagecomponent) {
+	public void addChatMessage(IChatComponent p_145747_1_) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -94,7 +94,7 @@ public class DataLatcher {
 	    			NBTTagCompound adl = new NBTTagCompound();
 	    			((AmmoDataLatcher)values.get(DataTypes.ammoAmounts)).writeToNBT(adl);
 	    			//System.out.println("writing AmmoDataLatcher compoundtag");
-	    			par1NBTTagCompound.setCompoundTag("AmmoDataLatcher", adl);
+	    			par1NBTTagCompound.setTag("AmmoDataLatcher", adl);
 		        	/*AmmoDataLatcher adl = new AmmoDataLatcher();
 		        	NBTTagCompound adlNBT = par1NBTTagCompound.getCompoundTag("AmmoDataLatcher");
 		        	adl.readFromNBT(adlNBT);

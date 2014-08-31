@@ -2,7 +2,6 @@ package zombiecraft.Core.Dimension;
 
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.SpawnListEntry;
 
 public class ZCBiomeGen extends BiomeGenBase
 {

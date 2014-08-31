@@ -231,11 +231,6 @@ public class BlockBarricadePlaceable extends Block
         }
     }
 
-    public static boolean isIdAFence(int par0)
-    {
-        return par0 == Block.fence.blockID || par0 == Block.netherFence.blockID;
-    }
-
     @SideOnly(Side.CLIENT)
 
     /**

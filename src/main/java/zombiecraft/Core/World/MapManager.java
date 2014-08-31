@@ -3,6 +3,7 @@ package zombiecraft.Core.World;
 import java.io.File;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -13,6 +14,7 @@ import zombiecraft.Core.config.ConfigMisc;
 import CoroUtil.util.CoroUtilBlock;
 import build.BuildServerTicks;
 import build.world.BuildJob;
+import build.world.BuildManager;
 
 /* I guess this class is for map specific stuff I felt I didn't want to clutter ZCGame with */
 public class MapManager {
@@ -104,7 +106,9 @@ public class MapManager {
 			if (ent != null) {
 				clearStartArea(ent);
 			}
-			BuildServerTicks.buildMan.newBuild(zcLevel.buildData);
+			
+			zcLevel.buildJob = new BuildJob(BuildServerTicks.buildMan.nextBuildID++, zcLevel.buildData);
+			BuildServerTicks.buildMan.addBuild(zcLevel.buildJob);
 		}
 	}
 	
@@ -117,7 +121,7 @@ public class MapManager {
 					for (int xx = 0; xx < 16; xx++) {
 						for (int zz = 0; zz < 16; zz++) {
 							for (int y = Level.lobby_coord_minY-1; y > 51; y--) {
-								ent.worldObj.setBlock((x*16)+xx, y, (z*16)+zz, 0);
+								ent.worldObj.setBlock((x*16)+xx, y, (z*16)+zz, Blocks.air);
 							}
 						}
 					}

@@ -94,8 +94,8 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
 
 	@Override
 	public int getCooldownRanged() {
-		if (this.getAIAgent() != null && this.getAIAgent().entInv.fakePlayer != null) {
-			ItemStack is = this.getAIAgent().entInv.getCurrentEquippedItem();
+		if (this.getAIAgent() != null/* && this.getAIAgent().entInv.fakePlayer != null*/) {
+			ItemStack is = this.getAIAgent().entInv.getActiveItem();
 	    	if (is != null && is.getItem() instanceof ItemGun) {
 	    		return ((ItemGun)is.getItem()).useDelay;
 	    	}
@@ -125,14 +125,6 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
     protected String getDeathSound()
     {
         return "";
-    }
-
-    /**
-     * Returns the item ID for the item the mob drops on death.
-     */
-    protected int getDropItemId()
-    {
-        return 0;
     }
 
     /**
@@ -175,7 +167,7 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
 
 					//real method
 					agent.entInv.inventory.setInventorySlotContents(agent.entInv.slot_Ranged, is.copy());
-					agent.entInv.setCurrentSlot(agent.entInv.slot_Ranged);
+					agent.entInv.setSlotActive(agent.entInv.slot_Ranged);
 					
 					//sync method
 					setCurrentItemOrArmor(agent.entInv.slot_Ranged, is.copy());
@@ -192,7 +184,7 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
 					
 					entP.inventory.setInventorySlotContents(entP.inventory.currentItem, null);
 		
-					agent.entInv.syncClientItems();
+					agent.entInv.syncToClient();
 					
 					return false;
 				}
@@ -206,7 +198,6 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
     @Override
     public void checkAgent() {
     	super.checkAgent();
-    	agent.entInv.rangedInUseTicksMax = 0;
     }
     
     @Override

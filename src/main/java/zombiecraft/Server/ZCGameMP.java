@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
@@ -139,16 +140,23 @@ public class ZCGameMP extends ZCGame {
 		if (mapMan.buildActive()) {
 			
 			//System.out.println(zcLevel.buildData.curTick + " - " + zcLevel.buildData.maxTicks);
-			float percent = ((float)zcLevel.buildData.curTick + 1) / ((float)zcLevel.buildData.maxTicks) * 100F;
+			float percent = 0;
+			if (zcLevel.buildJob != null) {
+				percent = ((float)zcLevel.buildJob.curTick + 1) / ((float)zcLevel.buildJob.maxTicks) * 100F;
+			}
 			//System.out.println("build percent: " + percent);
 			updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {(int)percent});
 			if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
 				//mapMan.curBuildPercent = (int) percent;
 			}
 		} else {
-			if (zcLevel.buildData.curTick != -1) {
-				zcLevel.buildData.curTick = -1; //mark that the build is done after observing a finished state
-				updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {-1}); //tell client
+			if (zcLevel.buildJob != null) {
+				if (zcLevel.buildJob.curTick != -1) {
+					zcLevel.buildJob.curTick = -1; //mark that the build is done after observing a finished state
+					updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {-1}); //tell client
+				}
+			} else {
+				System.out.println("buildJob is null, just letting you know, this might not matter, but if running into build state issues, find me!");
 			}
 		}
 		
@@ -280,7 +288,7 @@ public class ZCGameMP extends ZCGame {
 		int juggTime = (Integer)getData(player, DataTypes.juggTime);
 		if (juggTime > 0) {
 			if (player.inventory.armorInventory[2] == null) {
-				player.inventory.armorInventory[2] = new ItemStack(Item.plateIron);
+				player.inventory.armorInventory[2] = new ItemStack(Items.iron_chestplate);
         	}
 			if (juggTime == 1) {
 				player.inventory.armorInventory[2] = null;
@@ -524,7 +532,7 @@ public class ZCGameMP extends ZCGame {
 				return;
 			}
 			
-			if (mc.getConfigurationManager().isPlayerOpped(CoroUtilEntity.getName(player))) {
+			if (mc.getConfigurationManager().func_152596_g(player.getGameProfile())) {
 				if (dataInt[0] == CommandTypes.SET_WAVE) {
 					handleWaveSet(player, dataInt, true);
 				} else if (dataInt[0] == CommandTypes.TOGGLE_EDIT) {
@@ -756,7 +764,12 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	public boolean isOp(String parName) {
-		return this.lobbyLeader.equals(parName) || mc.getConfigurationManager().isPlayerOpped(parName);
+		EntityPlayer entP = mc.getConfigurationManager().func_152612_a(parName);
+		if (entP == null) {
+			System.out.println("ZC: couldnt find player from username");
+			return false;
+		}
+		return this.lobbyLeader.equals(parName) || mc.getConfigurationManager().func_152596_g(entP.getGameProfile());
 	}
 	
 	@Override

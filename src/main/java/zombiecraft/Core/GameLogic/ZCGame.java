@@ -905,7 +905,7 @@ public abstract class ZCGame {
 					
 					DataLatcher dl = new DataLatcher();
 	            	dl.readFromNBT(var16);
-	    			entFields.put(var16.getName(), dl);
+	    			entFields.put(name, dl);
 				}
 			}
 			

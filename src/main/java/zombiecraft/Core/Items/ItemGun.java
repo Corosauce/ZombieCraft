@@ -567,12 +567,6 @@ public class ItemGun extends Item
     }
     
     @Override
-    public void onUsingItemTick(ItemStack stack, EntityPlayer player, int count) 
-    {
-    	
-    }
-    
-    @Override
     public boolean onBlockStartBreak(ItemStack itemstack, int X, int Y, int Z, EntityPlayer player) 
     {
         return true;

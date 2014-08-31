@@ -1,23 +1,19 @@
 package zombiecraft.Client.gui;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.Property;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 import zombiecraft.Client.gui.elements.GuiButtonZC;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
+import cpw.mods.fml.client.FMLClientHandler;
 
 public class GuiEditorCP extends GuiScreen
 {
@@ -145,7 +141,7 @@ public class GuiEditorCP extends GuiScreen
 	        this.buttonList.add(new GuiButton(G_DOORNOCLIP, startX2, startY + div*6 + var1, 90, 20, (ZCGame.instance().mapMan.doorNoClip ? "\u00A74" : "") + "Door No-Clip"));
         }
 	    
-	    if (false) {
+	    /*if (false) {
 		    System.out.println("DEBUG CONFIG DUMP");
 	    	
 		    try {
@@ -179,7 +175,7 @@ public class GuiEditorCP extends GuiScreen
 		    } catch (Exception ex) {
 		    	ex.printStackTrace();
 		    }
-	    }
+	    }*/
         
     }
     

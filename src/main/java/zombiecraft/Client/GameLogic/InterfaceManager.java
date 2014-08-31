@@ -12,16 +12,12 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
-
-import CoroUtil.util.CoroUtilEntity;
 
 import zombiecraft.Client.ZCGameSP;
 import zombiecraft.Client.gui.GuiEditorCP;
 import zombiecraft.Client.gui.GuiGameOverZC;
-import zombiecraft.Client.gui.GuiLeaderboard;
 import zombiecraft.Core.Buyables;
 import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
@@ -35,6 +31,7 @@ import zombiecraft.Forge.RenderPlayerZC;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCKeybindHandler;
 import zombiecraft.Forge.ZCServerTicks;
+import CoroUtil.util.CoroUtilEntity;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -330,8 +327,8 @@ public abstract class InterfaceManager {
 	}
 	
 	@SideOnly(Side.CLIENT)
-    public boolean isPaused() {
-    	if (FMLClientHandler.instance().getClient().getIntegratedServer() != null && FMLClientHandler.instance().getClient().getIntegratedServer().getServerListeningThread() != null && FMLClientHandler.instance().getClient().getIntegratedServer().getServerListeningThread().isGamePaused()) return true;
+	public static boolean isPaused() {
+    	if (FMLClientHandler.instance().getClient().isGamePaused()) return true;
     	return false;
     }
 	
@@ -431,8 +428,8 @@ public abstract class InterfaceManager {
         
         if (per != -1 || (FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer())) {
         	
-        	if ((FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) && ZCServerTicks.zcGame.zcLevel != null && ZCServerTicks.zcGame.zcLevel.buildData != null) {
-        		per = ((float)ZCServerTicks.zcGame.zcLevel.buildData.curTick + 1) / ((float)ZCServerTicks.zcGame.zcLevel.buildData.maxTicks) * 100F;
+        	if (ZCServerTicks.zcGame.zcLevel.buildJob != null && (FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) && ZCServerTicks.zcGame.zcLevel != null && ZCServerTicks.zcGame.zcLevel.buildData != null) {
+        		per = ((float)ZCServerTicks.zcGame.zcLevel.buildJob.curTick + 1) / ((float)ZCServerTicks.zcGame.zcLevel.buildJob.maxTicks) * 100F;
         		per = (float)Math.floor(per * 100) / 100;
         		
         	}
@@ -550,7 +547,7 @@ public abstract class InterfaceManager {
 		
 		//this also has a display timeout
 		if (buyID >= 0) {
-			ZCClientTicks.displayMessage(prefix + "purchase " + Buyables.getBuyItem(buyID).getItem().getItemDisplayName(Buyables.getBuyItem(buyID)) + " for " + Buyables.getBuyItemCost(buyID) + " points");
+			ZCClientTicks.displayMessage(prefix + "purchase " + Buyables.getBuyItem(buyID).getDisplayName()/*.getItem().getItemDisplayName(Buyables.getBuyItem(buyID))*/ + " for " + Buyables.getBuyItemCost(buyID) + " points");
 		} else if (buyID == -1) {
 			ZCClientTicks.displayMessage(prefix + "break barrier for " + Buyables.barrierCost + " points");
 		} else if (buyID == -2) {

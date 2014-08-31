@@ -10,6 +10,7 @@ import zombiecraft.Core.Camera.CameraPoint;
 import zombiecraft.Core.GameLogic.ZCGame;
 import CoroUtil.util.CoroUtilEntity;
 import build.world.Build;
+import build.world.BuildJob;
 
 /* This class should mainly be for stuff thats used on top of the buildmod schematic spec */
 public class Level {
@@ -22,6 +23,7 @@ public class Level {
 	//NBT Loaded stuff
 	public String levelName = "";
 	public Build buildData;
+	public BuildJob buildJob;
 	
 	//lets reuse this for the statically set lobby room coordinates - adjust these for the min x y z corner of lobby room for generation
 	public static int lobby_coord_minX = -36;

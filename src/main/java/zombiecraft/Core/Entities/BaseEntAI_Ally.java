@@ -33,7 +33,7 @@ public class BaseEntAI_Ally extends BaseEntAI
     @Override
     public void checkAgent() {
 		if (agent == null) agent = new AIAgent(this, true);
-		agent.entInv.rangedInUseTicksMax = 0;
+		//agent.entInv.rangedInUseTicksMax = 0;
 	}
     
     @Override
@@ -115,14 +115,6 @@ public class BaseEntAI_Ally extends BaseEntAI
     protected String getDeathSound()
     {
         return "";
-    }
-
-    /**
-     * Returns the item ID for the item the mob drops on death.
-     */
-    protected int getDropItemId()
-    {
-        return 0;
     }
 
     /**

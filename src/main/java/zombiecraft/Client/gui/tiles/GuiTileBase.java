@@ -43,7 +43,7 @@ public class GuiTileBase extends GuiContainer {
 	
 	public GuiTileBase (ContainerTileBase parContainer) {
 		super(parContainer);
-		nbtSendCache.setCompoundTag("tileData", new NBTTagCompound());
+		nbtSendCache.setTag("tileData", new NBTTagCompound());
 	}
 	
 	public void addButton(String lookupName, GuiButton btn) {
@@ -130,7 +130,7 @@ public class GuiTileBase extends GuiContainer {
 	
 		xSize = 372;
     	ySize = 250;
-		ScaledResolution var8 = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+		ScaledResolution var8 = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
         int scaledWidth = var8.getScaledWidth();
         int scaledHeight = var8.getScaledHeight();
         

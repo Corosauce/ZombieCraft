@@ -46,7 +46,7 @@ public class ItemPlacerWall extends Item
             	//how will we translate itemdamage/meta to building names? damage num -> name mapping i guess, dont need nbt
             	
                 int var9 = MathHelper.floor_double((double)((par2EntityPlayer.rotationYaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
-                par3World.setBlock(par4, par5, par6, var8.blockID, var9, 2);
+                par3World.setBlock(par4, par5, par6, var8, var9, 2);
                 --par1ItemStack.stackSize;
                 return true;
             }

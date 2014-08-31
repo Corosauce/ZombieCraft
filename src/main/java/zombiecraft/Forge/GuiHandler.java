@@ -5,7 +5,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import zombiecraft.Client.gui.ContainerPacketTester;
 import zombiecraft.Client.gui.ContainerSession;
-import zombiecraft.Client.gui.GuiPacketTester;
 import zombiecraft.Client.gui.GuiSession;
 import zombiecraft.Client.gui.tiles.ContainerTileMobSpawnerWave;
 import zombiecraft.Client.gui.tiles.ContainerTileMysteryBox;
@@ -49,7 +48,7 @@ public class GuiHandler implements IGuiHandler {
 		} else if (tileEntity instanceof TileEntityMysteryBox) {
 			return new GuiTileMysteryBox(player.inventory, (TileEntityMysteryBox) tileEntity);
 		} else if (tileEntity instanceof TileEntityPacketTester){
-            return new GuiPacketTester(player.inventory, (TileEntityPacketTester) tileEntity);
+            return null;//GuiPacketTester(player.inventory, (TileEntityPacketTester) tileEntity);
 		} else if (ID == 1) {
 	        return new GuiSession(player.inventory);
 		}

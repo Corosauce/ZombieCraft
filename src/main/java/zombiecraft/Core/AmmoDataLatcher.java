@@ -25,14 +25,13 @@ public class AmmoDataLatcher {
 		
 		try { 
 			
-			Collection playerDataCl = par1NBTTagCompound.getTags();
-			Iterator it = playerDataCl.iterator();
+			Iterator it = par1NBTTagCompound.func_150296_c().iterator();
 			
 			while (it.hasNext()) {
+				String name = (String) it.next();
+				int val = par1NBTTagCompound.getInteger(name);
 				
-				NBTTagInt var16 = (NBTTagInt)it.next();
-				
-				values.put(Integer.valueOf(var16.getName()), var16.data);
+				values.put(Integer.valueOf(name), val);
 		        
 		        //System.out.println("reading: " + var16.getName());
 				

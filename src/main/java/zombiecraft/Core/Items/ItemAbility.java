@@ -2,6 +2,7 @@ package zombiecraft.Core.Items;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -36,7 +37,7 @@ public class ItemAbility extends Item {
     }
     
     public IIcon getIconFromDamage(int par1) {
-    	return useOnPickup ? this.itemIcon : Item.potion.getIconFromDamage(0);
+    	return useOnPickup ? this.itemIcon : Items.potionitem.getIconFromDamage(0);
     }
     
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)

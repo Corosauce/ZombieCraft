@@ -11,7 +11,7 @@ import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.packet.Packet60Explosion;
+import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -96,7 +96,7 @@ public class BlockBetty extends Block {
 
             if (var13.getDistanceSq(x, y, z) < 4096.0D)
             {
-                ((EntityPlayerMP)var13).playerNetServerHandler.sendPacketToPlayer(new Packet60Explosion(x, y, z, size, var11.affectedBlockPositions, (Vec3)var11.func_77277_b().get(var13)));
+                ((EntityPlayerMP)var13).playerNetServerHandler.sendPacket((new S27PacketExplosion(x, y, z, size, var11.affectedBlockPositions, (Vec3)var11.func_77277_b().get(var13))));
             }
         }
     }
