@@ -126,7 +126,7 @@ public class ZCClientProxy extends ZCCommonProxy
     
     @Override
 	public void loadSounds() {
-		MinecraftForge.EVENT_BUS.register(new SoundLoader());
+		//MinecraftForge.EVENT_BUS.register(new SoundLoader());
 	}
     
 	@Override

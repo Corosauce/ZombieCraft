@@ -128,7 +128,7 @@ public class ZCItems {
 		CoroUtilItem.setUnlocalizedNameAndTexture(editTool = (new ItemEditTool(0)).setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":editTool");
 		
         //Items \\
-		CoroUtilItem.setUnlocalizedNameAndTexture(itemSword = (new ItemSwordZC(EnumToolMaterial.IRON))/*.setIconCoord(2, 4)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":swordIronZC");
+		CoroUtilItem.setUnlocalizedNameAndTexture(itemSword = (new ItemSwordZC(Item.ToolMaterial.IRON))/*.setIconCoord(2, 4)*/.setCreativeTab(ZombieCraftMod.tabBlock), ZombieCraftMod.modID + ":swordIronZC");
         itemDEagle = (new ItemGunDEagle()).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunDeagle").setCreativeTab(ZombieCraftMod.tabBlock);
         itemAk47 = (new ItemGunAk47()).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunAk47").setCreativeTab(ZombieCraftMod.tabBlock);
         itemShotgun = (new ItemGunShotgun()).setUnlocalizedNameAndTexture(ZombieCraftMod.modID + ":guns/itemGunShotgun").setCreativeTab(ZombieCraftMod.tabBlock);

@@ -154,10 +154,11 @@ public class BlockPurchasePlate extends BlockContainer
     {
         if (!par1World.isRemote)
         {
-            if (par1World.getBlockMetadata(par2, par3, par4) != 0)
+        	System.out.println("disabled setStateIfMobInteractsWithPlate in PurchasePlate, do we need it?");
+            /*if (par1World.getBlockMetadata(par2, par3, par4) != 0)
             {
                 this.setStateIfMobInteractsWithPlate(par1World, par2, par3, par4);
-            }
+            }*/
         }
     }
     

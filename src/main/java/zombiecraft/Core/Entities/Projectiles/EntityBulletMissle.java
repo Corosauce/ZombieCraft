@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -229,7 +230,7 @@ public class EntityBulletMissle extends EntityBullet
 
             if (var13.getDistanceSq(posX, posY, posZ) < 4096.0D)
             {
-                ((EntityPlayerMP)var13).playerNetServerHandler.sendPacketToPlayer(new Packet60Explosion(posX, posY, posZ, size, var11.affectedBlockPositions, (Vec3)var11.func_77277_b().get(var13)));
+                ((EntityPlayerMP)var13).playerNetServerHandler.sendPacket(new S27PacketExplosion(posX, posY, posZ, size, var11.affectedBlockPositions, (Vec3)var11.func_77277_b().get(var13)));
             }
         }
     }

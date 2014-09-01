@@ -1,17 +1,18 @@
 package zombiecraft.Core.Camera;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
-public class EntityCamera extends EntityPlayer {
+public class EntityCamera extends EntityLivingBase {
 
 	//why am i extending EntityPlayer? there was a reason...
 	
 	public EntityCamera(World par1World) {
-		super(par1World, "camera");
+		super(par1World/*, "camera"*/);
 		//username = "Camera";
 		// TODO Auto-generated constructor stub
 		this.setSize(0.000F, 0.000F);
@@ -39,7 +40,7 @@ public class EntityCamera extends EntityPlayer {
 		//System.out.println(this.rotationPitch);
 	}
 
-	@Override
+	/*@Override
 	public boolean canCommandSenderUseCommand(int var1, String var2) {
 		// TODO Auto-generated method stub
 		return false;
@@ -55,6 +56,30 @@ public class EntityCamera extends EntityPlayer {
 	public void addChatMessage(IChatComponent p_145747_1_) {
 		// TODO Auto-generated method stub
 		
+	}*/
+
+	@Override
+	public ItemStack getHeldItem() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack getEquipmentInSlot(int p_71124_1_) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCurrentItemOrArmor(int p_70062_1_, ItemStack p_70062_2_) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ItemStack[] getLastActiveItems() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

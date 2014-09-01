@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,10 +49,14 @@ import zombiecraft.Forge.PacketMLMP;
 import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZCServerTicks;
 import CoroUtil.OldUtil;
+import CoroUtil.componentAI.AIAgent;
+import CoroUtil.componentAI.ICoroAI;
 import CoroUtil.componentAI.jobSystem.JobBase;
 import CoroUtil.componentAI.jobSystem.JobProtect;
+import CoroUtil.inventory.AIInventory;
 import CoroUtil.tile.ITileInteraction;
 import CoroUtil.util.CoroUtilEntity;
+import CoroUtil.util.CoroUtilItem;
 import build.world.Build;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -435,23 +438,32 @@ public abstract class ZCGame {
 		
 	}
 	
-	public void playerKillEvent(EntityPlayer player, Entity killed) {
+	//handles real players and comrades
+	public void playerKillEvent(EntityLivingBase player, Entity killed) {
 		
 		int points = 20;
 		
-		if (CoroUtilEntity.getName(player).contains("fakePlayer")) {
+		//this should match to players name or comrades fakePlayer name
+		String username = CoroUtilEntity.getName(player);
+		
+		if (username.contains("fakePlayer")) {
 			int ammoID = 0;
 			int giveAmount = 0;
-			if (player.inventory.mainInventory[1] != null && player.inventory.mainInventory[1].getItem() instanceof ItemGun) {
-				ammoID = ((ItemGun)player.inventory.mainInventory[1].getItem()).ammoType.ordinal();
+			
+			AIInventory inv = AIInventory.getInventory(player);
+			
+			ItemStack itemStack = inv.inventory.getStackInSlot(1);
+			
+			if (itemStack != null &&itemStack.getItem() instanceof ItemGun) {
+				ammoID = ((ItemGun)itemStack.getItem()).ammoType.ordinal();
 				
-				int curPoints = Integer.valueOf((ZCUtil.getData(player, DataTypes.zcPoints)).toString());
+				int curPoints = Integer.valueOf((ZCUtil.getData(username, DataTypes.zcPoints)).toString());
 				
 				int spend = 50;
 				
 				if (curPoints > spend) {
-					giveAmount = ((ItemGun)player.inventory.mainInventory[1].getItem()).magSize / 4 * (spend / 20);
-					ZCUtil.setData(player, DataTypes.zcPoints, curPoints - 50);
+					giveAmount = ((ItemGun)itemStack.getItem()).magSize / 4 * (spend / 20);
+					ZCUtil.setData(username, DataTypes.zcPoints, curPoints - 50);
 				}
 				
 				//System.out.println("comrade points: " + curPoints);
@@ -462,43 +474,51 @@ public abstract class ZCGame {
 			//System.out.println("comrade ammo: " + ZCUtil.getAmmoData(player.username, ammoID));
 			
 			
-			BaseEntAI ent = (BaseEntAI)OldUtil.playerToCompAILookup.get(CoroUtilEntity.getName(player));
-			if (ent != null) {
-				JobBase jb = ent.agent.jobMan.getPrimaryJob();
-				if (jb instanceof JobProtect) {
-					String owner = ((JobProtect)jb).playerName;
-					if (owner != null && owner.length() > 0) {
-						EntityPlayer ownerPlayer = player.worldObj.getPlayerEntityByName(owner);
-						if (ownerPlayer != null) {
-							givePoints(ownerPlayer, points / 2);
+			//BaseEntAI ent = (BaseEntAI)OldUtil.playerToCompAILookup.get(CoroUtilEntity.getName(player));
+			if (player instanceof BaseEntAI) {
+				BaseEntAI ent = (BaseEntAI)player;
+				if (ent != null) {
+					JobBase jb = ent.agent.jobMan.getPrimaryJob();
+					if (jb instanceof JobProtect) {
+						String owner = ((JobProtect)jb).playerName;
+						if (owner != null && owner.length() > 0) {
+							EntityPlayer ownerPlayer = player.worldObj.getPlayerEntityByName(owner);
+							if (ownerPlayer != null) {
+								givePoints(ownerPlayer, points / 2);
+							}
 						}
 					}
 				}
 			}
 			givePoints(player, points / 2);
 		} else {
-			givePoints(player, points);
+			if (player instanceof EntityPlayer) {
+				givePoints((EntityPlayer)player, points);
+			}
 		}
 	}
 	
-	public void givePoints(EntityPlayer player, int amount) {
+	public void givePoints(EntityLivingBase player, int amount) {
 		givePoints(player, amount, false);
 	}
 	
-	public void givePoints(EntityPlayer player, int amount, boolean noBonus) {
+	public void givePoints(EntityLivingBase player, int amount, boolean noBonus) {
 		
-		check(player);
+		//this should match to players name or comrades fakePlayer name
+		String username = CoroUtilEntity.getName(player);
+		
+		check(username);
 		
 		int zcPoints = 0;
 		int zcPointsTotal = 0;
 		int zcPointsTotalExtra = 0;
 		try {
-			zcPointsTotal = (Integer)this.getData(player, DataTypes.zcPointsTotal);
+			zcPointsTotal = (Integer)this.getData(username, DataTypes.zcPointsTotal);
 			int extra = 0;
 			if (!noBonus) {
-				extra = (Integer)this.getData(player, DataTypes.doublePointsTime) > 0 ? amount : 0;
+				extra = (Integer)this.getData(username, DataTypes.doublePointsTime) > 0 ? amount : 0;
 			}
-			zcPoints = (Integer)this.getData(player, DataTypes.zcPoints) + (int)(amount + extra);
+			zcPoints = (Integer)this.getData(username, DataTypes.zcPoints) + (int)(amount + extra);
 			zcPointsTotalExtra = (int)(amount + extra);
 		} catch (Exception ex) {
 			System.out.println("Something horrible has happened! username - " + (player != null ? CoroUtilEntity.getName(player) : "??"));
@@ -508,9 +528,13 @@ public abstract class ZCGame {
 		//System.out.println("zcPoints " + zcPoints);
 		
 		//this.setData(player, DataTypes.lastPoints, lastPoints);
-		this.setData(player, DataTypes.zcPoints, zcPoints);
-		this.setData(player, DataTypes.zcPointsTotal, zcPointsTotal + zcPointsTotalExtra);
-		if (!CoroUtilEntity.getName(player).contains("fakePlayer")) this.updateInfo(player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
+		this.setData(username, DataTypes.zcPoints, zcPoints);
+		this.setData(username, DataTypes.zcPointsTotal, zcPointsTotal + zcPointsTotalExtra);
+		if (player instanceof EntityPlayer) {
+			if (!CoroUtilEntity.getName(player).contains("fakePlayer")) {
+				this.updateInfo((EntityPlayer)player, PacketTypes.PLAYER_POINTS, new int[] {zcPoints});
+			}
+		}
 	}
 	
 	public void entTick(BaseEntAI ent) {
@@ -691,8 +715,8 @@ public abstract class ZCGame {
 			}
 			//inventory.setInventorySlotContents(tryID, new ItemStack(blocktype, count));
 			
-			
-			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {newItem.itemID, newPoints});
+			//replacing itemID with unused -1 val to preserve logic in handler from having to change, less chance of bugs
+			updateInfo(player, PacketTypes.MENU_BUY_TRANSACTCONFIRM, new int[] {-1, /*newItem.itemID, */newPoints}, new String[] {CoroUtilItem.getNameByItem(newItem.getItem())});
 			
 		}
 		

@@ -156,7 +156,7 @@ public class ZCGameMP extends ZCGame {
 					updateInfo(null, PacketTypes.EDITOR_BUILDSTATE, new int[] {-1}); //tell client
 				}
 			} else {
-				System.out.println("buildJob is null, just letting you know, this might not matter, but if running into build state issues, find me!");
+				//System.out.println("buildJob is null, just letting you know, this might not matter, but if running into build state issues, find me!");
 			}
 		}
 		
@@ -274,9 +274,9 @@ public class ZCGameMP extends ZCGame {
 		super.playerTick(player);
 		if (this.gameActive) {
 			player.getFoodStats().addStats(20, 1F);
-			if (player instanceof c_EntityPlayerMPExt) {
+			/*if (player instanceof c_EntityPlayerMPExt) {
 				((c_EntityPlayerMPExt)player).setFoodLevel(20);
-			}
+			}*/
 		}
 	}
 	
@@ -460,7 +460,9 @@ public class ZCGameMP extends ZCGame {
 	
 	@Override
 	public void notifyBlockUpdates(int x, int y, int z) {
-		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y, z, getWorld()));
+		
+		System.out.println("notifyBlockUpdates needs a proper fix!!!");
+		/*ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y, z, getWorld()));
 		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y+1, z, getWorld()));
 		
 		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x+1, y, z, getWorld()));
@@ -473,7 +475,7 @@ public class ZCGameMP extends ZCGame {
 		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x-1, y+1, z, getWorld()));
 		
 		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y, z-1, getWorld()));
-		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y+1, z-1, getWorld()));
+		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y+1, z-1, getWorld()));*/
 	}
 	
 	

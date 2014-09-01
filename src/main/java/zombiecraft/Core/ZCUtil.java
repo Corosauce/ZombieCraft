@@ -138,6 +138,10 @@ public class ZCUtil {
 		((DataLatcher)ZCGame.instance().entFields.get(CoroUtilEntity.getName(ent))).values.put(dtEnum, obj);
 	}
 	
+	public static void setData(String username, DataTypes dtEnum, Object obj) {
+		((DataLatcher)ZCGame.instance().entFields.get(username)).values.put(dtEnum, obj);
+	}
+	
 	public static Object getData(EntityPlayer ent, DataTypes dtEnum) {
 		return getData(CoroUtilEntity.getName(ent), dtEnum);
 	}
@@ -158,7 +162,7 @@ public class ZCUtil {
 		}
 	}
 	
-	public static void reload(EntityPlayer var0, int var1, World var2) {
+	/*public static void reload(EntityPlayer var0, int var1, World var2) {
 		int ammoCount = getAmmoData(var0, var1);
 		int clipSize = Item.itemsList[var1].getItemStackLimit();
 		
@@ -174,7 +178,7 @@ public class ZCUtil {
 			//mod_ZCSdkGuns.reload(var2, (EntityPlayer)var0);
 			
 		}
-	}
+	}*/
 	
 	//var1 = item ammo shifted index
 	public static int useItemInInventory(EntityPlayer var0, String name, ItemGun item)

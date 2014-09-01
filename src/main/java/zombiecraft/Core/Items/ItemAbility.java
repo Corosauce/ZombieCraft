@@ -56,6 +56,7 @@ public class ItemAbility extends Item {
         			double z = par2World.rand.nextFloat() - 0.5F;
         			comrade.setPosition(par3EntityPlayer.posX + x, par3EntityPlayer.posY, par3EntityPlayer.posZ + z);
         			par2World.spawnEntityInWorld(comrade);
+        			comrade.onSpawnWithEgg(null);
         			comrade.agent.spawnedOrNBTReloadedInit();
     			} else {
     				//redeem points

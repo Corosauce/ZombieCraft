@@ -13,11 +13,13 @@ import zombiecraft.Core.Dimension.ZCTeleporter;
 import zombiecraft.Core.Dimension.ZCWorldProvider;
 import zombiecraft.Core.GameLogic.ZCGame;
 import zombiecraft.Core.config.ConfigMisc;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
@@ -75,6 +77,8 @@ public class ZombieCraftMod
 		MinecraftForge.EVENT_BUS.register(new ZCEventHandler());
 		//GameRegistry.registerPlayerTracker(new ZCPlayerTracker());
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+		FMLCommonHandler.instance().bus().register(new EventHandlerFML());
+		eventChannel.register(new EventHandlerPacket());
 		
 		//custom texture sheet info:
 		//just do MinecraftForge.registerTextureSheet or something like that in ClientProxy
@@ -83,6 +87,12 @@ public class ZombieCraftMod
 		
         
         //int what = Potion.potionTypes[0].id;
+    }
+    
+    @Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+    	event.registerServerCommand(new CommandTeleportZC());
+    	event.registerServerCommand(new CommandPoints());
     }
 
     @Mod.EventHandler

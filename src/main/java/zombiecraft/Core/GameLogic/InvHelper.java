@@ -60,184 +60,8 @@ public class InvHelper {
 
         return -1;
     }
-	
-	public static int getOptimalBuySlotOld(EntityPlayer player, InventoryPlayer inventory, ItemStack item) {
-		
-		Item buyItem = null;
-		if (item != null) {
-			buyItem = item.getItem();
-		}
-		
-    	/*System.out.print("buyItem: ");
-    	System.out.println(buyItem);
-    	
-    	System.out.print("buyBlock: ");
-    	System.out.println(buyBlock);*/
-		
-		inventoryRef = inventory;
-    	
-    	//if (buyItem == mod_ZombieCraft.frienddrink || buyItem == mod_ZombieCraft.jugg || buyItem == mod_ZombieCraft.speed || buyItem instanceof ItemAbility) {
-    		//return 8; //doesnt matter, item to get auto used
-    	//}
-    	
-    	ItemStack tStack = null;
-    	Item itemInSlot = null;
-    	
-		/*if (buyBlock == mod_ZombieCraft.betty || buyItem instanceof ZCSdkItemGrenadeStun) {
-			tStack = inventory.getStackInSlot(2);
-    		if (tStack == null) {
-    			return 2;
-    		}
-    		tStack = inventory.getStackInSlot(3);
-    		if (tStack == null) {
-    			return 3;
-    		}
-    		tStack = inventory.getStackInSlot(2);
-    		if (tStack != null) {
-    			if (tStack.stackSize < 4) { 
-    				return 2;
-    			}
-    		}
-    		tStack = inventory.getStackInSlot(3);
-    		if (tStack != null) {
-    			if (tStack.stackSize < 4) { 
-    				return 3;
-    			}
-    		}
-    		return -1;
-    	}*/
-		
-		
-		
-		if (buyItem instanceof ItemSword/* || buyItem instanceof ItemLSword*/) {
-			tStack = inventory.getStackInSlot(0);
-    		if (tStack == null || inventory.currentItem == 0) {
-    			return 0;
-    		}
-    		tStack = inventory.getStackInSlot(1);
-    		if (tStack == null || inventory.currentItem == 1) {
-    			return 1;
-    		}
-    		
-    		return -1;
-    	}
-		
-		if (buyItem instanceof ItemGun) {
-			
-			tStack = inventory.getStackInSlot(0);
-			if (tStack != null) {
-				if (tStack.getItem() instanceof ItemGun) {
-					firstGun = (ItemGun)tStack.getItem();
-				}
-			}
-			tStack = inventory.getStackInSlot(1);
-			if (tStack != null) {
-				if (tStack.getItem() instanceof ItemGun) {
-					secondGun = (ItemGun)tStack.getItem();
-				}
-			}
-		}
-		
-		//
-		tStack = inventory.getStackInSlot(0);
-		if (tStack == null || emptyOrDiffGun(player, inventory,buyItem,0)) {
-			return 0;
-		}
-		//if (((SdkItemGun)itemInSlot).requiredBullet.shiftedIndex)
-		tStack = inventory.getStackInSlot(1);
-		if (tStack == null || emptyOrDiffGun(player, inventory,buyItem,1)) {
-			return 1;
-		}
-		
-		//now do a full check
-		/*tStack = inventory.getStackInSlot(0);
-		if (tStack == null || emptyOrDiffGun(inventory,buyItem,0)) {
-			return 0;
-		}*/
-		
-			
-		
-		/*tStack = inventory.getStackInSlot(inventory.currentItem);
-		if (tStack != null) {
-    		itemInSlot = tStack.getItem();
-    		if (!(itemInSlot.shiftedIndex == itemtype.shiftedIndex)) {
-    			//tryID = mc.thePlayer.inventory.currentItem;
-    		}
-		}*/
-		
-		if (buyItem instanceof ItemGun) {
-			tStack = inventory.getStackInSlot(0);
-			if (tStack != null) {
-				if (tStack.getItem() instanceof ItemGun) {
-					firstGun = (ItemGun)tStack.getItem();
-				}
-			}
-			tStack = inventory.getStackInSlot(1);
-			if (tStack != null) {
-				if (tStack.getItem() instanceof ItemGun) {
-					secondGun = (ItemGun)tStack.getItem();
-				}
-			}
-			
-	    	//find gun without ammo
-	    	for (int j = 2+27; j < 9+27; j++) {
-	    		tStack = inventory.getStackInSlot(j);
-	    		if (tStack != null) {
-		    		itemInSlot = tStack.getItem();
-		    		
-		    		if (itemInSlot == null && (firstGun == buyItem || secondGun == buyItem)) {
-		    			return j-27;
-		    		}
-		    		
-		    		if (firstGun == buyItem) {
-		    			/*if (itemInSlot.shiftedIndex == ((ItemGun)buyItem).requiredBullet.shiftedIndex) {
-		    				continue;
-		    			}*/
-		    		}
-		    		
-		    		if (secondGun == buyItem) {
-		    			/*if (itemInSlot.shiftedIndex == ((ItemGun)buyItem).requiredBullet.shiftedIndex) {
-		    				continue;
-		    			}*/
-		    		}
-		    		
-		    		
-		    		
-		    		/*if (itemInSlot instanceof SdkItemGun)
-		    		{
-		    			int bulletID = ((SdkItemGun)itemInSlot).requiredBullet.shiftedIndex;
-			    		if (tStack != null) {
-			    			//if this gun has no ammo (above it)
-			    			if (getSlotAboveItem(inventory, bulletID, j) == -1) {
-			    				return j;
-			    			}
-			    		}
-		    		}*/
-	    		} else {
-	    			if ((firstGun == buyItem || secondGun == buyItem)) {
-		    			return j-27;
-		    		}
-	    		}
-	    	}
-		}
-		
-		if (inventory.currentItem < 2) {
-			return inventory.currentItem;
-		}
-    	
-    	//find empty slot instead
-    	/*for (int j = 0; j < 9; j++) {
-    		tStack = inventory.getStackInSlot(j);
-    		if (tStack == null) {
-    			return j;
-    		}
-    	}*/
-    	
-    	return -1;
-		
-    }
     
-    public static boolean emptyOrDiffGun(EntityPlayer player, InventoryPlayer inventory, Item buyItem, int slot) {
+    /*public static boolean emptyOrDiffGun(EntityPlayer player, InventoryPlayer inventory, Item buyItem, int slot) {
     	
     	ItemStack gunStack = inventory.getStackInSlot(slot);
     	
@@ -262,15 +86,6 @@ public class InvHelper {
         			} else {
         				return false;
         			}
-        			/*ItemStack ammoStack = inventory.getStackInSlot();
-	        		Item ammoInSlot = ammoStack.getItem();
-	        		if (ammoStack != null && ammoInSlot != null) {
-		        		if (ammoInSlot.shiftedIndex == ((SdkItemGun)gunInSlot).requiredBullet.shiftedIndex) {
-		        			return false;
-		        		}
-	        		} else {
-	        			return true;
-	        		}*/
         		} else { return true; }
     		} else {
     			return true;
@@ -282,7 +97,7 @@ public class InvHelper {
     	}
     	
     	//return false;
-    }
+    }*/
     
    /*public static int getSlotAboveItem(InventoryPlayer inventory, int i, int curSlot)
     {

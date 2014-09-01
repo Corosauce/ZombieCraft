@@ -2,6 +2,7 @@ package zombiecraft.Forge;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.sound.PlayBackgroundMusicEvent;
@@ -16,7 +17,6 @@ import net.minecraftforge.event.world.WorldEvent.Unload;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.Entities.Projectiles.EntityBullet;
 import zombiecraft.Core.GameLogic.ZCGame;
-import CoroUtil.componentAI.ICoroAI;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -107,12 +107,12 @@ public class ZCEventHandler {
 	        		entSource = ((EntityBullet)entSource).owner;
 	        	}
 	        	
-	        	EntityPlayer playerRef = null;
-	        	if (entSource instanceof ICoroAI && ((ICoroAI)entSource).getAIAgent().useInv) {
+	        	Entity playerRef = entSource;
+	        	/*if (entSource instanceof ICoroAI && ((ICoroAI)entSource).getAIAgent().useInv) {
 	        		playerRef = ((ICoroAI)entSource).getAIAgent().entInv.fakePlayer;
 	        	} else if (entSource instanceof EntityPlayer) {
 	        		playerRef = (EntityPlayer)entSource;
-	        	}
+	        	}*/
 	        	
 	        	if (!event.entityLiving.worldObj.isRemote) {
 		        	if (event.entityLiving instanceof BaseEntAI) {
@@ -120,10 +120,10 @@ public class ZCEventHandler {
 		        	}
 	        	}
 	        	
-	        	if (playerRef instanceof EntityPlayer) {
+	        	if (playerRef instanceof EntityLivingBase) {
 	        		ZCGame zcG = ZCGame.instance();
 	            	if (zcG != null) {
-	            		zcG.playerKillEvent(playerRef, event.entity);
+	            		zcG.playerKillEvent((EntityLivingBase)playerRef, event.entity);
 	            	}
 	        	} else {
 	        		//System.out.println("entSource: " + entSource);

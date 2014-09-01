@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -14,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import zombiecraft.Client.GameLogic.InterfaceManagerMP;
 import zombiecraft.Core.Buyables;
@@ -30,6 +32,7 @@ import zombiecraft.Forge.ZCClientTicks;
 import zombiecraft.Forge.ZombieCraftMod;
 import CoroUtil.OldUtil;
 import CoroUtil.pathfinding.c_IEnhPF;
+import CoroUtil.util.CoroUtilItem;
 import build.render.Overlays;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -162,10 +165,10 @@ public class ZCGameSP extends ZCGame {
 	        		resetBuyState(mc.thePlayer, packet.dataInt[2]);
 	        	} else {
 	        		resetBuyState(mc.thePlayer);
-	        		if (ZCItems.itemPerkCharge.itemID == packet.dataInt[0]) {
+	        		if (CoroUtilItem.getNameByItem(ZCItems.itemPerkCharge).equals(packet.dataString[0])) {
 	        			//ZCClientTicks.iMan.hasCharge = true;
 	        			ZCUtil.setData(player, DataTypes.hasCharge, 1);
-	        		} else if (ZCItems.itemPerkSpeed.itemID == packet.dataInt[0]) {
+	        		} else if (CoroUtilItem.getNameByItem(ZCItems.itemPerkSpeed).equals(packet.dataString[0])) {
 	        			ZCUtil.setData(player, DataTypes.speedTime, Buyables.perkLengthSpeed);
 	        		}
 	        	}
@@ -183,10 +186,12 @@ public class ZCGameSP extends ZCGame {
 	        	if (packet.dataInt[0] > wMan.wave_Stage && wMan.wave_Stage != 0) {
 	        		//playSoundEffect("sdkzc.round_over", player, 2F, 1.0F);
 	        		//player.worldObj.playSoundAtEntity(player, "sdkzc.round_over", 1.0F, 1.0F);
-	        		ZCClientTicks.mc.sndManager.playSoundFX(ZombieCraftMod.modID + ":zc.round_over", 1F, 1.0F);
+	        		//ZCClientTicks.mc.getS.playSoundFX(ZombieCraftMod.modID + ":zc.round_over", 1F, 1.0F);
+	        		ZCClientTicks.mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation(ZombieCraftMod.modID + ":zc.round_over"/*"gui.button.press"*/), 1.0F));
 	        		//System.out.println("HYYYYYYYYYYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 	        	} else if (packet.dataInt[0] == 1 && packet.dataInt[0] > wMan.wave_Stage) {
-	        		ZCClientTicks.mc.sndManager.playSoundFX(ZombieCraftMod.modID + ":zc.start", 1F, 1.0F);
+	        		//ZCClientTicks.mc.sndManager.playSoundFX(ZombieCraftMod.modID + ":zc.start", 1F, 1.0F);
+	        		ZCClientTicks.mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation(ZombieCraftMod.modID + ":zc.start"/*"gui.button.press"*/), 1.0F));
 	        	}
 	        	wMan.wave_Stage = packet.dataInt[0];
 	        	wMan.wave_StartDelay = packet.dataInt[1];

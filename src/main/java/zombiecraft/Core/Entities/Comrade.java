@@ -1,7 +1,10 @@
 package zombiecraft.Core.Entities;
 
+import java.util.Random;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +21,7 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
 {
 	
 	//public static Entity owner = null;
+	public String comradeName = "fakePlayer"; //gets changed, needs to be set to this for first time spawn
 	
 	public Comrade(World par1World, double x, double y, double z) {
 		this(par1World);
@@ -139,15 +143,37 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
     {
     	
     }
+    
+    @Override
+    public IEntityLivingData onSpawnWithEgg(IEntityLivingData p_110161_1_) {
+    	
+    	//lazy ID assigning, bug prone but will do for old system
+    	comradeName = "fakePlayer" + this.getEntityId();//(new Random()).nextInt(999999);
+    	
+    	//from postInitFakePlayer()
+    	if (agent.entInv.inventory.getStackInSlot(0) == null) {
+	    	agent.entInv.inventory.addItemStackToInventory(new ItemStack(ZCItems.itemSword, 1));
+			ItemGun spawnGun = (ItemGun)ZCItems.itemDEagle;
+			agent.entInv.inventory.addItemStackToInventory(new ItemStack(spawnGun, 1));
+			ZCUtil.setAmmoData(comradeName, spawnGun.ammoType.ordinal(), spawnGun.magSize * 4);
+    	}
+    	
+    	return super.onSpawnWithEgg(p_110161_1_);
+    }
 
 	@Override
 	public void postInitFakePlayer() {
-		if (agent.entInv.inventory.mainInventory[0] == null) {
-			agent.entInv.inventory.addItemStackToInventory(new ItemStack(ZCItems.itemSword, 1));
+		if (agent.entInv.inventory.getStackInSlot(0) == null) {
+			/*agent.entInv.inventory.addItemStackToInventory(new ItemStack(ZCItems.itemSword, 1));
 			ItemGun spawnGun = (ItemGun)ZCItems.itemDEagle;
 			agent.entInv.inventory.addItemStackToInventory(new ItemStack(spawnGun, 1));
-			ZCUtil.setAmmoData(agent.entInv.fakePlayer.username, spawnGun.ammoType.ordinal(), spawnGun.magSize * 4);
+			ZCUtil.setAmmoData(comradeName, spawnGun.ammoType.ordinal(), spawnGun.magSize * 4);*/
 		}
+	}
+	
+	@Override
+	public String getCommandSenderName() {
+		return comradeName;
 	}
 
 	@Override
@@ -179,7 +205,7 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
 					int giveAmount = ZCUtil.getAmmoData(CoroUtilEntity.getName(entP), ammoID);
 					
 					//give all your ammo of that gun to him
-					ZCUtil.setAmmoData(agent.entInv.fakePlayer.username, ammoID, giveAmount + ZCUtil.getAmmoData(agent.entInv.fakePlayer.username, ammoID));
+					ZCUtil.setAmmoData(comradeName, ammoID, giveAmount + ZCUtil.getAmmoData(comradeName, ammoID));
 					ZCUtil.setAmmoData(CoroUtilEntity.getName(entP), ammoID, 0);
 					
 					entP.inventory.setInventorySlotContents(entP.inventory.currentItem, null);
@@ -205,5 +231,19 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
     		double par5) {
     	
     	//super.knockBack(par1Entity, par2, par3, par5);
+    }
+    
+    @Override
+    public void readFromNBT(NBTTagCompound p_70020_1_) {
+    	super.readFromNBT(p_70020_1_);
+    	
+    	comradeName = p_70020_1_.getString("comradeName");
+    }
+    
+    @Override
+    public void writeToNBT(NBTTagCompound p_70109_1_) {
+    	super.writeToNBT(p_70109_1_);
+    	
+    	p_70109_1_.setString("comradeName", comradeName);
     }
 }

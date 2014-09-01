@@ -65,7 +65,7 @@ public class ZCBlocks {
 	//ALWAYS ADD IDS TO END!!!! THINK OF THE SCHEMATICS!
 	public static void load(ZombieCraftMod pMod) {
 		b_mobSpawnerWave = (new BlockMobSpawnerWave()).setCreativeTab(ZombieCraftMod.tabBlock);
-		b_buyBlock = (new BlockPurchasePlate(EnumMobType.players, Material.circuits)).setCreativeTab(ZombieCraftMod.tabBlock);
+		b_buyBlock = (new BlockPurchasePlate(/*EnumMobType.players, */Material.circuits)).setCreativeTab(ZombieCraftMod.tabBlock);
     	
     	//int stateToBlockID[] = {ConfigIDs.ID_B_BARRICADE0, ConfigIDs.ID_B_BARRICADE1, ConfigIDs.ID_B_BARRICADE2, ConfigIDs.ID_B_BARRICADE3, ConfigIDs.ID_B_BARRICADE4, ConfigIDs.ID_B_BARRICADE5};
     	addBlock(barricadeS0 = (new BlockBarricade(Material.circuits, 0)), "barricadeBroken", "barricadeBroken");
@@ -73,7 +73,9 @@ public class ZCBlocks {
     	addBlock(barricadeS2 = (new BlockBarricade(Material.circuits, 2)), "barricadeS2", "barricadeS2");
     	addBlock(barricadeS3 = (new BlockBarricade(Material.circuits, 3)), "barricadeS3", "barricadeS3");
     	addBlock(barricadeS4 = (new BlockBarricade(Material.circuits, 4)), "barricadeS4", "barricadeS4");
-    	addBlock(barricadeS5 = (new BlockBarricade(Material.circuits, 5)), "barricade", "barricade");
+    	barricadeS5 = (new BlockBarricade(Material.circuits, 5));;
+    	addBlock(barricadeS5, "Barricade", "Barricade");
+    	
 		//barricadeS5 = Block.doorWood;//(new BlockDoor(121, Material.wood, 5)).setHardness(3F).setStepSound(Block.soundWoodFootstep).setBlockName("doorWood");
 		
 		barricadeStates.add(barricadeS0);
@@ -100,7 +102,7 @@ public class ZCBlocks {
 		
         addBlock(b_mobSpawnerWave, TileEntityMobSpawnerWave.class, "z_spawnblock", "SpawnBlock Wave");
         addBlock(b_buyBlock, TileEntityPurchasePlate.class, "z_purchaseBlock", "Purchase Block");
-        addBlock(barricadeS5, "Barricade", "Barricade");
+        //addBlock(barricadeS5, "Barricade", "Barricade");
         addBlock(barrier, "barrier", "ZC Barrier");
         addBlock(barricadePlaceable, "barricadePlacable", "Placeable Barricade");
         addBlock(betty, "betty", "Bouncing Betty");
@@ -110,7 +112,7 @@ public class ZCBlocks {
         //addBlock(tower, TileEntityTower.class, "Tower");
         //addBlock(wall, "Wall");
         
-        GameRegistry.addRecipe(new ItemStack(session, 1), new Object[] {"III", "ICI", "III", 'I', Items.iron_ingot, 'C', Item.fireballCharge});
+        GameRegistry.addRecipe(new ItemStack(session, 1), new Object[] {"III", "ICI", "III", 'I', Items.iron_ingot, 'C', Items.fire_charge});
 	}
 	
 	public static void addBlock(Block block, Class tEnt, String unlocalizedName, String blockNameBase) {
