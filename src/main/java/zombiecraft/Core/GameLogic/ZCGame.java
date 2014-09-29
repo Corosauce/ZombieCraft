@@ -450,11 +450,17 @@ public abstract class ZCGame {
 			int ammoID = 0;
 			int giveAmount = 0;
 			
-			AIInventory inv = AIInventory.getInventory(player);
+			BaseEntAI entAI = (BaseEntAI)OldUtil.playerToCompAILookup.get(username);
+			AIInventory inv = AIInventory.getInventory(entAI);
 			
-			ItemStack itemStack = inv.inventory.getStackInSlot(1);
+			ItemStack itemStack = null;
+			try {
+				itemStack = inv.inventory.getStackInSlot(1);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 			
-			if (itemStack != null &&itemStack.getItem() instanceof ItemGun) {
+			if (itemStack != null && itemStack.getItem() instanceof ItemGun) {
 				ammoID = ((ItemGun)itemStack.getItem()).ammoType.ordinal();
 				
 				int curPoints = Integer.valueOf((ZCUtil.getData(username, DataTypes.zcPoints)).toString());
@@ -475,8 +481,8 @@ public abstract class ZCGame {
 			
 			
 			//BaseEntAI ent = (BaseEntAI)OldUtil.playerToCompAILookup.get(CoroUtilEntity.getName(player));
-			if (player instanceof BaseEntAI) {
-				BaseEntAI ent = (BaseEntAI)player;
+			if (entAI instanceof BaseEntAI) {
+				BaseEntAI ent = (BaseEntAI)entAI;
 				if (ent != null) {
 					JobBase jb = ent.agent.jobMan.getPrimaryJob();
 					if (jb instanceof JobProtect) {
@@ -1109,7 +1115,7 @@ public abstract class ZCGame {
     	
     }
     
-    public void notifyBlockUpdates(int x, int y, int z) {
+    public void notifyBlockUpdates(World parWorld, int x, int y, int z, Block parBlock) {
     	
     }
     

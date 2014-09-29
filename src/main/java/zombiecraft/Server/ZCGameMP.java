@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
@@ -27,6 +28,7 @@ import zombiecraft.Core.CommandTypes;
 import zombiecraft.Core.DataTypes;
 import zombiecraft.Core.EnumGameMode;
 import zombiecraft.Core.PacketTypes;
+import zombiecraft.Core.ZCBlocks;
 import zombiecraft.Core.ZCUtil;
 import zombiecraft.Core.Entities.BaseEntAI;
 import zombiecraft.Core.GameLogic.ZCGame;
@@ -437,7 +439,7 @@ public class ZCGameMP extends ZCGame {
 			int x = (Integer)this.getData(player, DataTypes.purchaseCoordX);
 			int y = (Integer)this.getData(player, DataTypes.purchaseCoordY);
 			int z = (Integer)this.getData(player, DataTypes.purchaseCoordZ);
-			notifyBlockUpdates(x, y, z);
+			notifyBlockUpdates(player.worldObj, x, y, z, ZCBlocks.barricadeS5);
 			
 			/*((EntityPlayerMP)player).playerNetServerHandler.sendPacket(new Packet53BlockChange(x, y, z, getWorld()));
 			((EntityPlayerMP)player).playerNetServerHandler.sendPacket(new Packet53BlockChange(x, y+1, z, getWorld()));
@@ -459,9 +461,13 @@ public class ZCGameMP extends ZCGame {
 	}
 	
 	@Override
-	public void notifyBlockUpdates(int x, int y, int z) {
+	public void notifyBlockUpdates(World parWorld, int x, int y, int z, Block parBlock) {
 		
-		System.out.println("notifyBlockUpdates needs a proper fix!!!");
+		System.out.println("notifyBlockUpdates needs a proper fix!!! TEST FIX!");
+		//world.notifyBlockChange might be what we need
+		
+		parWorld.notifyBlockChange(x, y, z, parBlock);
+		
 		/*ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y, z, getWorld()));
 		ZCServerTicks.sendPacketToAll(new Packet53BlockChange(x, y+1, z, getWorld()));
 		

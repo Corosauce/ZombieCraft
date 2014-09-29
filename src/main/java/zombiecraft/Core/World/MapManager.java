@@ -108,6 +108,7 @@ public class MapManager {
 			}
 			
 			zcLevel.buildJob = new BuildJob(BuildServerTicks.buildMan.nextBuildID++, zcLevel.buildData);
+			zcLevel.buildJob.centerBuildIfNoRotate = false;
 			BuildServerTicks.buildMan.addBuild(zcLevel.buildJob);
 		}
 	}
@@ -227,6 +228,7 @@ public class MapManager {
 					CoroUtilBlock.isAir(world.getBlock(zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_maxZ-1))) {
 				System.out.println("lobby missing: generating");
 				BuildJob bj = new BuildJob(lobbyBuildID, zcLevel.lobby_coord_minX, zcLevel.lobby_coord_minY, zcLevel.lobby_coord_minZ, zcGame.getSaveFolderPath() + "Lobby");
+				bj.centerBuildIfNoRotate = false;
 				bj.build.dim = ZCGame.ZCDimensionID;
 				BuildServerTicks.buildMan.addBuild(bj);
 				

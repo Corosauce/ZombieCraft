@@ -87,6 +87,9 @@ public class ZCServerTicks
     		//outputStream.writeInt(Mouse.isButtonDown(0) ? 1 : 0);
     		//outputStream.writeBoolean(Mouse.isButtonDown(0));
     		
+    		//new for 1.7.10
+    		ByteBufUtils.writeUTF8String(outputStream, channel);
+    		
     		outputStream.writeInt(packetType);
     		int i = 0;
     		for (i = 0; i < 20; i++) {

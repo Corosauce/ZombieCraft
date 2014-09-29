@@ -17,16 +17,11 @@ import zombiecraft.Core.Items.ItemGun;
 import CoroUtil.componentAI.IInvUser;
 import CoroUtil.util.CoroUtilEntity;
 
-public class Comrade extends BaseEntAI_Ally implements IInvUser
+public class Comrade extends BaseEntAI_Ally
 {
 	
 	//public static Entity owner = null;
 	public String comradeName = "fakePlayer"; //gets changed, needs to be set to this for first time spawn
-	
-	public Comrade(World par1World, double x, double y, double z) {
-		this(par1World);
-		this.setPosition(x, y, z);
-	}
 	
     public Comrade(World par1World)
     {
@@ -160,25 +155,10 @@ public class Comrade extends BaseEntAI_Ally implements IInvUser
     	
     	return super.onSpawnWithEgg(p_110161_1_);
     }
-
-	@Override
-	public void postInitFakePlayer() {
-		if (agent.entInv.inventory.getStackInSlot(0) == null) {
-			/*agent.entInv.inventory.addItemStackToInventory(new ItemStack(ZCItems.itemSword, 1));
-			ItemGun spawnGun = (ItemGun)ZCItems.itemDEagle;
-			agent.entInv.inventory.addItemStackToInventory(new ItemStack(spawnGun, 1));
-			ZCUtil.setAmmoData(comradeName, spawnGun.ammoType.ordinal(), spawnGun.magSize * 4);*/
-		}
-	}
 	
 	@Override
 	public String getCommandSenderName() {
 		return comradeName;
-	}
-
-	@Override
-	public String getLocalizedName() {
-		return "A ZombieCraft Comrade";
 	}
     
     @Override

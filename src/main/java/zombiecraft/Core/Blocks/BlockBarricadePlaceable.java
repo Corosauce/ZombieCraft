@@ -117,7 +117,7 @@ public class BlockBarricadePlaceable extends Block
 				
 				//System.out.println("meta: " + meta);
 				
-				ZCGame.instance().notifyBlockUpdates(i,j,k);
+				ZCGame.instance().notifyBlockUpdates(world, i,j,k, this);
 				
 				//((BaseEntAI)entity).noMoveTicks = 0;
 				//int newid = world.getBlockId(i, j - 1, k);

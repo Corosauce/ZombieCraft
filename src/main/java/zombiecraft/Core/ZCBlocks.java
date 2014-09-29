@@ -74,7 +74,7 @@ public class ZCBlocks {
     	addBlock(barricadeS3 = (new BlockBarricade(Material.circuits, 3)), "barricadeS3", "barricadeS3");
     	addBlock(barricadeS4 = (new BlockBarricade(Material.circuits, 4)), "barricadeS4", "barricadeS4");
     	barricadeS5 = (new BlockBarricade(Material.circuits, 5));;
-    	addBlock(barricadeS5, "Barricade", "Barricade");
+    	addBlock(barricadeS5, "barricade", "Barricade");
     	
 		//barricadeS5 = Block.doorWood;//(new BlockDoor(121, Material.wood, 5)).setHardness(3F).setStepSound(Block.soundWoodFootstep).setBlockName("doorWood");
 		

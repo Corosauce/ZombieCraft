@@ -42,60 +42,64 @@ public class ItemAbility extends Item {
     
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
-    	if (!par2World.isRemote) {
-    		ZCGame.instance().check(par3EntityPlayer);
-    		if (abilityID == ((ItemAbility)ZCItems.itemPerkCharge).abilityID) {
-    			
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkComrade).abilityID) {
-    			int count = (Integer)ZCUtil.getData(par3EntityPlayer, DataTypes.comrades);
-    			if (count < Buyables.perkMaxComrades) {
-    				ZCUtil.setData(par3EntityPlayer, DataTypes.comrades, count + 1);
-    				
-    				Comrade comrade = new Comrade(par2World);
-    				double x = par2World.rand.nextFloat() - 0.5F;
-        			double z = par2World.rand.nextFloat() - 0.5F;
-        			comrade.setPosition(par3EntityPlayer.posX + x, par3EntityPlayer.posY, par3EntityPlayer.posZ + z);
-        			par2World.spawnEntityInWorld(comrade);
-        			comrade.onSpawnWithEgg(null);
-        			comrade.agent.spawnedOrNBTReloadedInit();
-    			} else {
-    				//redeem points
-    				ZCGame.instance().givePoints(par3EntityPlayer, Buyables.perkCostComrades, true);
-    				ZCGame.instance().updateInfo(par3EntityPlayer, PacketTypes.PLAYER_POINTS, new int[] {(Integer)ZCGame.instance().getData(par3EntityPlayer, DataTypes.zcPoints)});
-    			}
-    			//System.out.println("spawn comrade: " + par3EntityPlayer.rotationYaw);
-    			
-    			//BaseEntAI comrade = new Imp(par2World);
-    			
-    			
-    			//comrade.initJobAndStates(EnumJob.INVADER);
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkExStatic).abilityID) {
-    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.exStaticCooldown, 0); //0 sets to enabled
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkJugg).abilityID) {
-    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.juggTime, Buyables.perkLengthJugg);
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupDoublePoints).abilityID) {
-    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.doublePointsTime, Buyables.pickupLengthDoublePoints);
-    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.doublepoints", 1.0F, 1.0F);
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupInstaKill).abilityID) {
-    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.instaKillTime, Buyables.pickupLengthInstaKill);
-    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.instakill", 1.0F, 1.0F);
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupMaxAmmo).abilityID) {
-    			ZCGame.instance().refillAmmo(par3EntityPlayer);
-    			ZCGame.instance().syncPlayer(par3EntityPlayer);
-    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":" + "zc.ammo", 1.0F, 1.0F);
-    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupNuke).abilityID) {
-    			ZCGame.instance().nukeInvaders(par3EntityPlayer);
-    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.nuke", 1.0F, 1.0F);
-    		} else {
-    			//par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
-    		}
-    		
-    		//par2World.playSoundAtEntity(par3EntityPlayer, "zc.doublepointsc", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
-    	} else {
-    		
-    		//item perks are bought, handle on transact confirm packet
-    		//pickups might get called here since they are server side picked up
-    		
+    	try {
+	    	if (!par2World.isRemote) {
+	    		ZCGame.instance().check(par3EntityPlayer);
+	    		if (abilityID == ((ItemAbility)ZCItems.itemPerkCharge).abilityID) {
+	    			
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkComrade).abilityID) {
+	    			int count = (Integer)ZCUtil.getData(par3EntityPlayer, DataTypes.comrades);
+	    			if (count < Buyables.perkMaxComrades) {
+	    				ZCUtil.setData(par3EntityPlayer, DataTypes.comrades, count + 1);
+	    				
+	    				Comrade comrade = new Comrade(par2World);
+	    				//double x = par2World.rand.nextFloat() - 0.5F;
+	        			//double z = par2World.rand.nextFloat() - 0.5F;
+	        			comrade.setPosition(par3EntityPlayer.posX, par3EntityPlayer.posY, par3EntityPlayer.posZ);
+	        			par2World.spawnEntityInWorld(comrade);
+	        			comrade.onSpawnWithEgg(null);
+	        			comrade.agent.spawnedOrNBTReloadedInit();
+	    			} else {
+	    				//redeem points
+	    				ZCGame.instance().givePoints(par3EntityPlayer, Buyables.perkCostComrades, true);
+	    				ZCGame.instance().updateInfo(par3EntityPlayer, PacketTypes.PLAYER_POINTS, new int[] {(Integer)ZCGame.instance().getData(par3EntityPlayer, DataTypes.zcPoints)});
+	    			}
+	    			//System.out.println("spawn comrade: " + par3EntityPlayer.rotationYaw);
+	    			
+	    			//BaseEntAI comrade = new Imp(par2World);
+	    			
+	    			
+	    			//comrade.initJobAndStates(EnumJob.INVADER);
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkExStatic).abilityID) {
+	    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.exStaticCooldown, 0); //0 sets to enabled
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPerkJugg).abilityID) {
+	    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.juggTime, Buyables.perkLengthJugg);
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupDoublePoints).abilityID) {
+	    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.doublePointsTime, Buyables.pickupLengthDoublePoints);
+	    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.doublepoints", 1.0F, 1.0F);
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupInstaKill).abilityID) {
+	    			ZCGame.instance().setData(par3EntityPlayer, DataTypes.instaKillTime, Buyables.pickupLengthInstaKill);
+	    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.instakill", 1.0F, 1.0F);
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupMaxAmmo).abilityID) {
+	    			ZCGame.instance().refillAmmo(par3EntityPlayer);
+	    			ZCGame.instance().syncPlayer(par3EntityPlayer);
+	    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":" + "zc.ammo", 1.0F, 1.0F);
+	    		} else if (abilityID == ((ItemAbility)ZCItems.itemPickupNuke).abilityID) {
+	    			ZCGame.instance().nukeInvaders(par3EntityPlayer);
+	    			par2World.playSoundAtEntity(par3EntityPlayer, ZombieCraftMod.modID + ":zc.nuke", 1.0F, 1.0F);
+	    		} else {
+	    			//par3EntityPlayer.addPotionEffect(new PotionEffect(potionID, potionLength, 1));
+	    		}
+	    		
+	    		//par2World.playSoundAtEntity(par3EntityPlayer, "zc.doublepointsc", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 0.8F));
+	    	} else {
+	    		
+	    		//item perks are bought, handle on transact confirm packet
+	    		//pickups might get called here since they are server side picked up
+	    		
+	    	}
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
     	}
     	
         return null;

@@ -102,6 +102,13 @@ public class BlockBarricade extends BlockDoor
     	return this.getIcon(par4, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
     }
     
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(IBlockAccess p_149673_1_, int p_149673_2_, int p_149673_3_, int p_149673_4_, int p_149673_5_) {
+    	//side, meta
+    	int meta = p_149673_1_.getBlockMetadata(p_149673_2_, p_149673_3_, p_149673_4_);
+    	return getIcon(p_149673_5_, meta);
+    }
+    
     @Override
     public IIcon getIcon(int i, int j)
     {
@@ -256,12 +263,12 @@ public class BlockBarricade extends BlockDoor
     		//System.out.print("updating: ");
     		//System.out.println(state+1);
     		if (state < 5) {
-    			world.setBlock(i, j + 1, k, ZCBlocks.barricadeStates.get(state+1), 0, 0);
+    			world.setBlock(i, j + 1, k, ZCBlocks.barricadeStates.get(state+1), 0, 2);
     		}
             //world.setBlockMetadataWithNotify(i, j + 1, k, (meta ^ 4) + 8);
         }
     	if (state < 5) {
-			world.setBlock(i, j, k, ZCBlocks.barricadeStates.get(state+1), 0, 0);
+			world.setBlock(i, j, k, ZCBlocks.barricadeStates.get(state+1), 0, 2);
 			return true;
 		} else {
 			return false;
@@ -439,7 +446,7 @@ public class BlockBarricade extends BlockDoor
 				List<EntityPlayer> players = ZCGame.instance().getPlayers();
 				if (players != null && players.size() > 0) {
 					tryDamageDoor(world,i,j,k,players.get(0));
-					ZCGame.instance().notifyBlockUpdates(i,j,k);
+					ZCGame.instance().notifyBlockUpdates(world, i,j,k, this);
 				}
 				
 				

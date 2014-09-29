@@ -100,35 +100,37 @@ public class ZCEventHandler {
 		@SubscribeEvent
         public void deathEvent(LivingDeathEvent event) {
         	
-        	if (event.entityLiving.dimension == ZCGame.ZCDimensionID) {
-	        	Entity entSource = event.source.getSourceOfDamage();
-	        	
-	        	if (entSource instanceof EntityBullet) {
-	        		entSource = ((EntityBullet)entSource).owner;
-	        	}
-	        	
-	        	Entity playerRef = entSource;
-	        	/*if (entSource instanceof ICoroAI && ((ICoroAI)entSource).getAIAgent().useInv) {
-	        		playerRef = ((ICoroAI)entSource).getAIAgent().entInv.fakePlayer;
-	        	} else if (entSource instanceof EntityPlayer) {
-	        		playerRef = (EntityPlayer)entSource;
-	        	}*/
-	        	
-	        	if (!event.entityLiving.worldObj.isRemote) {
-		        	if (event.entityLiving instanceof BaseEntAI) {
-		        		((BaseEntAI)event.entityLiving).dropItems();
+			if (!event.entityLiving.worldObj.isRemote) {
+	        	if (event.entityLiving.dimension == ZCGame.ZCDimensionID) {
+		        	Entity entSource = event.source.getSourceOfDamage();
+		        	
+		        	if (entSource instanceof EntityBullet) {
+		        		entSource = ((EntityBullet)entSource).owner;
+		        	}
+		        	
+		        	Entity playerRef = entSource;
+		        	/*if (entSource instanceof ICoroAI && ((ICoroAI)entSource).getAIAgent().useInv) {
+		        		playerRef = ((ICoroAI)entSource).getAIAgent().entInv.fakePlayer;
+		        	} else if (entSource instanceof EntityPlayer) {
+		        		playerRef = (EntityPlayer)entSource;
+		        	}*/
+		        	
+		        	if (!event.entityLiving.worldObj.isRemote) {
+			        	if (event.entityLiving instanceof BaseEntAI) {
+			        		((BaseEntAI)event.entityLiving).dropItems();
+			        	}
+		        	}
+		        	
+		        	if (playerRef instanceof EntityLivingBase) {
+		        		ZCGame zcG = ZCGame.instance();
+		            	if (zcG != null) {
+		            		zcG.playerKillEvent((EntityLivingBase)playerRef, event.entity);
+		            	}
+		        	} else {
+		        		//System.out.println("entSource: " + entSource);
 		        	}
 	        	}
-	        	
-	        	if (playerRef instanceof EntityLivingBase) {
-	        		ZCGame zcG = ZCGame.instance();
-	            	if (zcG != null) {
-	            		zcG.playerKillEvent((EntityLivingBase)playerRef, event.entity);
-	            	}
-	        	} else {
-	        		//System.out.println("entSource: " + entSource);
-	        	}
-        	}
+			}
         }
         
 		@SubscribeEvent
