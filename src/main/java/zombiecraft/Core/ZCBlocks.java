@@ -125,7 +125,7 @@ public class ZCBlocks {
 		GameRegistry.registerBlock(parBlock, unlocalizedName);
 		parBlock.setBlockName(ZombieCraftMod.modID + ":" + unlocalizedName);
 		parBlock.setBlockTextureName(ZombieCraftMod.modID + ":" + unlocalizedName);
-		parBlock.setCreativeTab(CreativeTabs.tabMisc);
+		//parBlock.setCreativeTab(CreativeTabs.tabMisc);
 		LanguageRegistry.addName(parBlock, blockNameBase);
 	}
 	

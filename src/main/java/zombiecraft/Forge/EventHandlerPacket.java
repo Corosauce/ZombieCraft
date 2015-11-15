@@ -51,7 +51,7 @@ public class EventHandlerPacket {
 	        	
 	        	packetMLMP.packetType = dis.readInt();
 	        	
-	        	//System.out.println("packetType: " + packetMLMP.packetType);
+	        	System.out.println("packetType: " + packetMLMP.packetType);
 	        	
         		for (int i = 0; i < 20; i++) {
         			

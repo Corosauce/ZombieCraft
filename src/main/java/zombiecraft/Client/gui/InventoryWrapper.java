@@ -21,7 +21,7 @@ public class InventoryWrapper implements IInventory {
             byte slot = tag.getByte("Slot");
             if (slot >= 0 && slot < invList.length) {
             	invList[slot] = ItemStack.loadItemStackFromNBT(tag);
-            	//System.out.println(invList[slot]);
+            	System.out.println(invList[slot]);
             }
 		}
 	}

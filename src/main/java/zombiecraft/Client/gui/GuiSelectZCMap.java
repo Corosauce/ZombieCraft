@@ -271,7 +271,8 @@ public class GuiSelectZCMap extends GuiScreen
                 ISaveHandler var6 = this.mc.getSaveLoader().getSaveLoader(this.getSaveFileName(this.selectedWorld), false);
                 WorldInfo var4 = var6.loadWorldInfo();
                 var6.flush();
-                var5.func_82286_a(var4);
+                //TODO: commented out to compile, fix later
+                //var5.func_82286_a(var4);
                 this.mc.displayGuiScreen(var5);
             }
             else
@@ -290,7 +291,8 @@ public class GuiSelectZCMap extends GuiScreen
         //ZCUtil.setPrivateValueBoth(WorldInfo.class, var4, "commandsAllowed", "commandsAllowed", true);
         //
         WorldSettings var66 = new WorldSettings((new Random()).nextLong(), edit ? WorldSettings.GameType.CREATIVE : WorldSettings.GameType.SURVIVAL, false, false, WorldType.DEFAULT);
-        var66.func_82750_a(var5.generatorOptionsToUse);
+        //TODO: commented out to compile, fix later
+        //var66.func_82750_a(var5.generatorOptionsToUse);
         var66.enableCommands();
         //this.mc.displayGuiScreen(var5);
         
@@ -446,12 +448,14 @@ public class GuiSelectZCMap extends GuiScreen
      */
     public static GuiYesNo getDeleteWorldScreen(GuiScreen par0GuiScreen, String par1Str, int par2)
     {
-        String var4 = I18n.getString("selectWorld.deleteQuestion");
+    	//TODO: commented out to compile, fix later
+        /*String var4 = I18n.getString("selectWorld.deleteQuestion");
         String var5 = "\'" + par1Str + "\' " + I18n.getString("selectWorld.deleteWarning");
         String var6 = I18n.getString("selectWorld.deleteButton");
         String var7 = I18n.getString("gui.cancel");
         GuiYesNo var8 = new GuiYesNo(par0GuiScreen, var4, var5, var6, var7, par2);
-        return var8;
+        return var8;*/
+    	return null;
     }
 
     public static List getList(GuiSelectZCMap par0GuiSelectWorld)

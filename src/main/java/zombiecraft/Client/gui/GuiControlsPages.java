@@ -134,7 +134,8 @@ public class GuiControlsPages extends GuiScreen
     {
         if (this.buttonId >= 0)
         {
-            this.options.setKeyBinding(this.buttonId, -100 + par3);
+        	//TODO: commented out to compile, fix later
+            //this.options.setKeyBinding(this.buttonId, -100 + par3);
             ((GuiButton)this.buttonList.get(this.buttonIndex)).displayString = this.options.getKeyDisplayString(this.buttonId);
             this.buttonId = -1;
             KeyBinding.resetKeyBindingArrayAndHash();
@@ -152,7 +153,8 @@ public class GuiControlsPages extends GuiScreen
     {
         if (this.buttonId >= 0)
         {
-            this.options.setKeyBinding(this.buttonId, par2);
+        	//TODO: commented out to compile, fix later
+            //this.options.setKeyBinding(this.buttonId, par2);
             ((GuiButton)this.buttonList.get(this.buttonIndex)).displayString = this.options.getKeyDisplayString(this.buttonId);
             this.buttonId = -1;
             KeyBinding.resetKeyBindingArrayAndHash();
@@ -203,7 +205,8 @@ public class GuiControlsPages extends GuiScreen
             	}
             }
 
-            this.drawString(FMLClientHandler.instance().getClient().fontRenderer, this.options.getKeyBindingDescription(var5), var4 + counter % 2 * 160 + 70 + 6, this.height / 6 + 24 * (counter >> 1) + 7, -1);
+            //TODO: commented out to compile, fix later
+            //this.drawString(FMLClientHandler.instance().getClient().fontRenderer, this.options.getKeyBindingDescription(var5), var4 + counter % 2 * 160 + 70 + 6, this.height / 6 + 24 * (counter >> 1) + 7, -1);
             
             counter++;
         }

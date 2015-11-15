@@ -164,7 +164,7 @@ public class TileEntityMysteryBox extends TileEntity implements ITilePacket, ITi
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
         nbtInfoServer.setTag("tileData", CoroUtilNBT.copyOntoNBT(nbtInfoServer.getCompoundTag("tileData"), tagCompound.getCompoundTag("tileData")));
-        invHandler.invInitData(tagCompound.getTagList(nbtStrInventory, 9), maxInvSlots);
+        //invHandler.invInitData(tagCompound.getTagList(nbtStrInventory, 10), maxInvSlots);
         //readFromNBTPacket(tagCompound);
         updateReferences();
     }
